@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DB.Models.EnumTypes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -23,22 +24,21 @@ namespace DB.Models
         public virtual DbSet<Song> Songs { get; set; } = null!;
         public virtual DbSet<UserInfo> UserInfos { get; set; } = null!;
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=spotify;Username=postgres;Password=3369");
             }
-        }
+        }*/
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasPostgresEnum("country", new[] { "russia", "ukraine", "usa", "greece" })
-                .HasPostgresEnum("genre_type", new[] { "rock", "jazz", "techno", "electro", "country", "pop" })
-                .HasPostgresEnum("playlist_type", new[] { "album", "single", "ep", "user", "liked_songs" })
-                .HasPostgresEnum("premium_type", new[] { "individual", "student", "duo", "family", "basic" })
-                .HasPostgresEnum("user_type", new[] { "user", "artist", "admin" });
+            modelBuilder.HasPostgresEnum<Country>()
+                .HasPostgresEnum<GenreType>()
+                .HasPostgresEnum<PlaylistType>()
+                .HasPostgresEnum<PremiumType>()
+                .HasPostgresEnum<UserType>();
 
             modelBuilder.Entity<Genre>(entity =>
             {
