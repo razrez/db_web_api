@@ -13,14 +13,21 @@ namespace DB.Models
         [Key]
         [Column("user_id")]
         public int UserId { get; set; }
+        
         [Column("username")]
         [StringLength(255)]
         public string? Username { get; set; }
+        
         [Column("birthday")]
         public DateOnly? Birthday { get; set; }
+        
+        [Column("country")]
+        public Country? Country { get; set; }
+        
         [Column("profile_img")]
         [StringLength(255)]
         public string? ProfileImg { get; set; }
+        
         [Column("user_type")]
         public UserType UserType { get; set; }
         

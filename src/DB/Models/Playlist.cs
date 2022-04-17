@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DB.Models.EnumTypes;
 using Microsoft.EntityFrameworkCore;
 
 namespace DB.Models
@@ -18,14 +19,21 @@ namespace DB.Models
         [Key]
         [Column("id")]
         public int Id { get; set; }
+        
         [Column("title")]
         [StringLength(255)]
         public string Title { get; set; } = null!;
+        
         [Column("user_id")]
         public int UserId { get; set; }
+
+        [Column("playlist_type")] 
+        public PlaylistType PlaylistType { get; set; }
+
         [Column("img_src")]
         [StringLength(255)]
         public string? ImgSrc { get; set; }
+        
         [Column("verified")]
         public bool? Verified { get; set; }
 
@@ -36,6 +44,7 @@ namespace DB.Models
         [ForeignKey("PlaylistId")]
         [InverseProperty("Playlists")]
         public virtual ICollection<Song> Songs { get; set; }
+        
         [ForeignKey("PlaylistId")]
         [InverseProperty("Playlists")]
         public virtual ICollection<UserInfo> Users { get; set; }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DB.Models.EnumTypes;
 using Microsoft.EntityFrameworkCore;
 
 namespace DB.Models
@@ -12,8 +13,13 @@ namespace DB.Models
         [Key]
         [Column("user_id")]
         public int UserId { get; set; }
+
+        [Column("premium_type")] 
+        public PremiumType PremiumType { get; set; }
+
         [Column("start_at", TypeName = "timestamp without time zone")]
         public DateTime StartAt { get; set; }
+        
         [Column("end_at", TypeName = "timestamp without time zone")]
         public DateTime EndAt { get; set; }
 
