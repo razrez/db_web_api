@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DB.Models.EnumTypes;
 using Microsoft.EntityFrameworkCore;
 
 namespace DB.Models
@@ -20,7 +21,9 @@ namespace DB.Models
         [Column("profile_img")]
         [StringLength(255)]
         public string? ProfileImg { get; set; }
-
+        [Column("user_type")]
+        public UserType UserType { get; set; }
+        
         [ForeignKey("UserId")]
         [InverseProperty("Profile")]
         public virtual UserInfo User { get; set; } = null!;
