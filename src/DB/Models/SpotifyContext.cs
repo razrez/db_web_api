@@ -1,30 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Xml.Schema;
 using DB.Models.EnumTypes;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace DB.Models
 {
-    public partial class SpotifyContext : DbContext
+    public sealed class SpotifyContext : IdentityDbContext<UserInfo>
     {
         public SpotifyContext()
         {
+            Database.EnsureDeleted();
+            Database.EnsureCreated();
         }
 
-        public SpotifyContext(DbContextOptions<SpotifyContext> options)
+        public SpotifyContext(DbContextOptions<SpotifyContext> options, DbSet<Genre> genres, DbSet<Playlist> playlists, DbSet<Premium> premia, DbSet<Profile> profiles, DbSet<Song> songs, DbSet<UserInfo> userInfos)
             : base(options)
         {
         }
 
-        public virtual DbSet<Genre> Genres { get; set; } = null!;
-        public virtual DbSet<Playlist> Playlists { get; set; } = null!;
-        public virtual DbSet<Premium> Premia { get; set; } = null!;
-        public virtual DbSet<Profile> Profiles { get; set; } = null!;
-        public virtual DbSet<Song> Songs { get; set; } = null!;
-        public virtual DbSet<UserInfo> UserInfos { get; set; } = null!;
-        
+        public DbSet<Playlist> Playlists { get; set; } = null!;
+        public DbSet<Premium> Premia { get; set; } = null!;
+        public DbSet<Profile> Profiles { get; set; } = null!;
+        public DbSet<Song> Songs { get; set; } = null!;
+        public DbSet<UserInfo> UserInfos { get; set; } = null!;
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -40,6 +39,7 @@ namespace DB.Models
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.HasPostgresEnum<Country>()
                 .HasPostgresEnum<GenreType>()
                 .HasPostgresEnum<PlaylistType>()
@@ -57,6 +57,7 @@ namespace DB.Models
 
             modelBuilder.Entity<Playlist>(entity =>
             {
+                //entity.HasKey(k => new { k.UserId, k.Id });
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
                 entity.HasOne(d => d.User)
@@ -120,7 +121,7 @@ namespace DB.Models
 
             modelBuilder.Entity<UserInfo>(entity =>
             {
-                entity.Property(e => e.Id).UseIdentityAlwaysColumn();
+                //entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
                 entity.HasMany(d => d.Playlists)
                     .WithMany(p => p.Users)
@@ -133,16 +134,14 @@ namespace DB.Models
                             j.HasKey("UserId", "PlaylistId").HasName("liked_playlist_pkey");
 
                             j.ToTable("liked_playlist");
-
-                            j.IndexerProperty<int>("UserId").HasColumnName("user_id");
+                            
+                            //warning bro
+                            j.IndexerProperty<string>("UserId").HasColumnName("user_id");
 
                             j.IndexerProperty<int>("PlaylistId").HasColumnName("playlist_id");
                         });
             });
 
-            OnModelCreatingPartial(modelBuilder);
         }
-
-        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }

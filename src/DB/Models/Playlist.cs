@@ -23,9 +23,9 @@ namespace DB.Models
         [Column("title")]
         [StringLength(255)]
         public string Title { get; set; } = null!;
-        
+
         [Column("user_id")]
-        public int UserId { get; set; }
+        public string UserId { get; set; } = null!;
 
         [Column("playlist_type")] 
         public PlaylistType PlaylistType { get; set; }

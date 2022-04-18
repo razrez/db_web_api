@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using DB.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<SpotifyContext>(options =>
     options.UseNpgsql(connectionString));
+builder.Services.AddIdentity<UserInfo, IdentityRole>()
+    .AddEntityFrameworkStores<SpotifyContext>();
 builder.Services.AddControllers().AddJsonOptions(x =>
     x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 builder.Services.AddControllers();
