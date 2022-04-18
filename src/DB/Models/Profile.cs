@@ -35,6 +35,6 @@ namespace DB.Models
         
         [ForeignKey("UserId")]
         [InverseProperty("Profile")]
-        public virtual UserInfo User { get; set; } = null!;
+        public virtual UserInfo? User { get; set; } = null!;
     }
 }

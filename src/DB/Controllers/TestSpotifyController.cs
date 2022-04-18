@@ -1,3 +1,4 @@
+using System.Data.Common;
 using DB.Models;
 using DB.Models.EnumTypes;
 using Microsoft.AspNetCore.Authorization;
@@ -11,25 +12,32 @@ namespace DB.Controllers;
 public class TestSpotifyController : ControllerBase
 {
     private readonly ILogger<TestSpotifyController> _logger;
-
-    public TestSpotifyController(ILogger<TestSpotifyController> logger)
+    private readonly SpotifyContext _ctx;
+    public TestSpotifyController(ILogger<TestSpotifyController> logger, SpotifyContext ctx)
     {
         _logger = logger;
+        _ctx = ctx;
     }
 
-    [HttpGet(Name = "GetSong")]
+    [HttpGet(Name = "GetProfiles")]
     public IEnumerable<Profile> Get()
     {
-        using var context = new SpotifyContext();
         //return context.Songs.ToList();
+        var userInfo = new UserInfo
+        {
+            Email = "email@mail.ru",
+            Password = "228пудриносик"
+        };
         var profile = new Profile
         {
             Username = "user",
-            Country = Country.Russia,
-            UserType = UserType.User
+            Country = Country.Ukraine,
+            UserType = UserType.User, 
+            User = userInfo
         };
-        /*context.Profiles.Add(profile);
-        context.SaveChanges();*/
-        return context.Profiles.ToList();
+        
+        _ctx.Profiles.Add(profile);
+        _ctx.SaveChanges();
+        return _ctx.Profiles.ToList();
     }
 }
