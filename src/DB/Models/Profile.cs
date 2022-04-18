@@ -31,6 +31,8 @@ namespace DB.Models
         [Column("user_type")]
         public UserType UserType { get; set; }
         
+        
+        
         [ForeignKey("UserId")]
         [InverseProperty("Profile")]
         public virtual UserInfo User { get; set; } = null!;

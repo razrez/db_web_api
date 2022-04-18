@@ -17,11 +17,14 @@ namespace DB.Models
         [Key]
         [Column("id")]
         public int Id { get; set; }
+        
         [Column("user_id")]
         public int UserId { get; set; }
+        
         [Column("name")]
         [StringLength(250)]
         public string Name { get; set; } = null!;
+        
         [Column("source")]
         [StringLength(150)]
         public string Source { get; set; } = null!;

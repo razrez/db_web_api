@@ -19,19 +19,25 @@ namespace DB.Models
         [Key]
         [Column("id")]
         public int Id { get; set; }
+        
         [Column("email")]
         [StringLength(255)]
         public string Email { get; set; } = null!;
+        
         [Column("password")]
         [StringLength(255)]
         public string Password { get; set; } = null!;
+        
 
         [InverseProperty("User")]
         public virtual Premium Premium { get; set; } = null!;
+        
         [InverseProperty("User")]
         public virtual Profile Profile { get; set; } = null!;
+        
         [InverseProperty("User")]
         public virtual ICollection<Playlist> PlaylistsNavigation { get; set; }
+        
         [InverseProperty("User")]
         public virtual ICollection<Song> Songs { get; set; }
 
