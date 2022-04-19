@@ -9,20 +9,22 @@ namespace DB.Models
     {
         public SpotifyContext()
         {
-            Database.EnsureDeleted();
-            Database.EnsureCreated();
+            //раскомить, сделай миграцию, раскомить, обнови бд
+            /*Database.EnsureDeleted();
+            Database.EnsureCreated();*/
         }
 
-        public SpotifyContext(DbContextOptions<SpotifyContext> options, DbSet<Genre> genres, DbSet<Playlist> playlists, DbSet<Premium> premia, DbSet<Profile> profiles, DbSet<Song> songs, DbSet<UserInfo> userInfos)
+        public SpotifyContext(DbContextOptions<SpotifyContext> options)
             : base(options)
         {
+            Database.EnsureDeleted();
         }
 
         public DbSet<Playlist> Playlists { get; set; } = null!;
         public DbSet<Premium> Premia { get; set; } = null!;
         public DbSet<Profile> Profiles { get; set; } = null!;
         public DbSet<Song> Songs { get; set; } = null!;
-        public DbSet<UserInfo> UserInfos { get; set; } = null!;
+        //public DbSet<UserInfo> UserInfos { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -40,12 +42,12 @@ namespace DB.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.HasPostgresEnum<Country>()
+            /*modelBuilder.HasPostgresEnum<Country>()
                 .HasPostgresEnum<GenreType>()
                 .HasPostgresEnum<PlaylistType>()
                 .HasPostgresEnum<PremiumType>()
-                .HasPostgresEnum<UserType>();
-
+                .HasPostgresEnum<UserType>();*/
+            
             modelBuilder.Entity<Genre>(entity =>
             {
                 entity.HasOne(d => d.Playlist)
