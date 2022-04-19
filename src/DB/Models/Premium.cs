@@ -12,7 +12,7 @@ namespace DB.Models
     {
         [Key]
         [Column("user_id")]
-        public int UserId { get; set; }
+        public string UserId { get; set; } = null!;
 
         [Column("premium_type")] 
         public PremiumType PremiumType { get; set; }

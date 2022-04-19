@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DB.Models
 {
     [Table("user_info")]
-    public partial class UserInfo
+    public sealed partial class UserInfo:IdentityUser
     {
         public UserInfo()
         {
@@ -18,31 +19,31 @@ namespace DB.Models
 
         [Key]
         [Column("id")]
-        public int Id { get; set; }
-        
+        public override string Id { get; set; } = null!;
+
         [Column("email")]
         [StringLength(255)]
-        public string Email { get; set; } = null!;
-        
+        public override string Email { get; set; } = null!;
+
         [Column("password")]
         [StringLength(255)]
         public string Password { get; set; } = null!;
-        
+
 
         [InverseProperty("User")]
-        public virtual Premium Premium { get; set; } = null!;
+        public Premium Premium { get; set; } = null!;
+
+        [InverseProperty("User")]
+        public Profile Profile { get; set; } = null!;
+
+        [InverseProperty("User")]
+        public ICollection<Playlist> PlaylistsNavigation { get; set; }
         
         [InverseProperty("User")]
-        public virtual Profile Profile { get; set; } = null!;
-        
-        [InverseProperty("User")]
-        public virtual ICollection<Playlist> PlaylistsNavigation { get; set; }
-        
-        [InverseProperty("User")]
-        public virtual ICollection<Song> Songs { get; set; }
+        public ICollection<Song> Songs { get; set; }
 
         [ForeignKey("UserId")]
         [InverseProperty("Users")]
-        public virtual ICollection<Playlist> Playlists { get; set; }
+        public ICollection<Playlist> Playlists { get; set; }
     }
 }

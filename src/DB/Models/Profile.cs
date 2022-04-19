@@ -12,8 +12,8 @@ namespace DB.Models
     {
         [Key]
         [Column("user_id")]
-        public int UserId { get; set; }
-        
+        public string UserId { get; set; } = null!;
+
         [Column("username")]
         [StringLength(255)]
         public string? Username { get; set; }
@@ -35,6 +35,6 @@ namespace DB.Models
         
         [ForeignKey("UserId")]
         [InverseProperty("Profile")]
-        public virtual UserInfo? User { get; set; } = null!;
+        public virtual UserInfo? User { get; set; } 
     }
 }

@@ -3,7 +3,6 @@ using DB.Models;
 using DB.Models.EnumTypes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web.Resource;
 
 namespace DB.Controllers;
 
