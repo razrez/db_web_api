@@ -1,4 +1,5 @@
-﻿using DB.Models.EnumTypes;
+﻿using System;
+using DB.Models.EnumTypes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
@@ -8,11 +9,15 @@ namespace DB.Models
     {
         public SpotifyContext()
         {
+            //раскомить, сделай миграцию, раскомить, обнови бд
+            /*Database.EnsureDeleted();
+            Database.EnsureCreated();*/
         }
 
         public SpotifyContext(DbContextOptions<SpotifyContext> options)
             : base(options)
         {
+            Database.EnsureDeleted();
         }
 
         public DbSet<Playlist> Playlists { get; set; } = null!;
@@ -37,11 +42,11 @@ namespace DB.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.HasPostgresEnum<Country>()
+            /*modelBuilder.HasPostgresEnum<Country>()
                 .HasPostgresEnum<GenreType>()
                 .HasPostgresEnum<PlaylistType>()
                 .HasPostgresEnum<PremiumType>()
-                .HasPostgresEnum<UserType>();
+                .HasPostgresEnum<UserType>();*/
             
             modelBuilder.Entity<Genre>(entity =>
             {
