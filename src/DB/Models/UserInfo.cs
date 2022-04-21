@@ -25,11 +25,6 @@ namespace DB.Models
         [StringLength(255)]
         public override string Email { get; set; } = null!;
 
-        [Column("password")]
-        [StringLength(255)]
-        public string Password { get; set; } = null!;
-
-
         [InverseProperty("User")]
         public Premium Premium { get; set; } = null!;
 
