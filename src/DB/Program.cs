@@ -59,7 +59,7 @@ builder.Services.AddOpenIddict()
             .AllowRefreshTokenFlow();
 
         serverOptions
-            .SetTokenEndpointUris("/authenticate"); //метод аутентификации и выдачи JWT
+            .SetTokenEndpointUris("/signup"); //метод аутентификации и выдачи JWT
 
         var cfg = serverOptions.UseAspNetCore();
         if (builder.Environment.IsDevelopment() || builder.Environment.IsStaging())
