@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using DB.Models;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Identity;
