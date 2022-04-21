@@ -27,7 +27,7 @@ public class TestSpotifyController : ControllerBase
         var userInfo = new UserInfo
         {
             Email = "email@mail.ru",
-            Password = "228пудриносик"
+            PasswordHash = "228пудриносик"
         };
         var profile = new Profile
         {

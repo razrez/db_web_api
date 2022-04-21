@@ -49,23 +49,22 @@ public class AuthorizationController : ControllerBase
 
         await _userStore.SetUserNameAsync(user, request?.Username, CancellationToken.None);
         await _emailStore.SetEmailAsync(user, request?.Username, CancellationToken.None);
-        user.Password = request?.Password;
         user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, request?.Password);
         var result = await _userManager.CreateAsync(user);
-        
-        var profile = JsonConvert.DeserializeObject<Profile>(profileJson);
-        if (profile != null)
-        {
-            profile.UserId = user.Id;
-            await _ctx.Profiles.AddAsync(profile);
-            await _ctx.SaveChangesAsync();
-        }
 
         if (result.Succeeded)
         {
             var userId = await _userManager.GetUserIdAsync(user);
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             await _userManager.ConfirmEmailAsync(user, code);
+            
+            var profile = JsonConvert.DeserializeObject<Profile>(profileJson);
+            if (profile != null)
+            {
+                profile.UserId = user.Id;
+                await _ctx.Profiles.AddAsync(profile);
+                await _ctx.SaveChangesAsync();
+            }
             
             var principal = await _signInManager.CreateUserPrincipalAsync(user);
             
