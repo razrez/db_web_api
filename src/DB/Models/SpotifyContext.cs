@@ -17,7 +17,7 @@ namespace DB.Models
         public SpotifyContext(DbContextOptions<SpotifyContext> options)
             : base(options)
         {
-            Database.EnsureDeleted();
+
         }
 
         public DbSet<Playlist> Playlists { get; set; } = null!;

@@ -1,12 +1,14 @@
 using System.Security.Claims;
 using DB.Models;
 using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using static OpenIddict.Abstractions.OpenIddictConstants.Permissions;
+using static OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreConstants;
 
 
 namespace DB.Controllers;
@@ -83,11 +85,68 @@ public class AuthorizationController : ControllerBase
             await _signInManager.SignInAsync(user, isPersistent: false);
             return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
-        foreach(IdentityError error in result.Errors)
-            Console.WriteLine($"Oops! {error.Description} ({error.Code})");
+        var properties = new AuthenticationProperties(new Dictionary<string, string?>
+        {
+            [Properties.Error] = OpenIddictConstants.Errors.InvalidGrant,
+            [Properties.ErrorDescription] =
+                "Unable to create new user"
+        });
 
-        throw new NotImplementedException("Unable to create new user");
+        return Forbid(properties, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
+    
+    [HttpPost("~/login"), Produces("application/json")]
+    public async Task<IActionResult> LogIn()
+        {
+            var request = HttpContext.GetOpenIddictServerRequest();
+            if (request?.IsPasswordGrantType() == true)
+            {
+                var user = await _userManager.FindByNameAsync(request.Username);
+                if (user == null)
+                {
+                    var properties = new AuthenticationProperties(new Dictionary<string, string?>
+                    { 
+                        [Properties.Error] = OpenIddictConstants.Errors.InvalidGrant,
+                        [Properties.ErrorDescription] =
+                            "The username/password couple is invalid."
+                    });
+
+                    return Forbid(properties, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                }
+                
+                var result = await _signInManager
+                    .CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
+                if (!result.Succeeded)
+                {
+                    var properties = new AuthenticationProperties(new Dictionary<string, string?>
+                    {
+                        [Properties.Error] = OpenIddictConstants.Errors.InvalidGrant,
+                        [Properties.ErrorDescription] =
+                            "The username/password couple is invalid."
+                    });
+
+                    return Forbid(properties, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                }
+                
+                var principal = await _signInManager.CreateUserPrincipalAsync(user);
+                
+                principal.SetScopes(new[]
+                {
+                    Scopes.Email,
+                    Scopes.Profile,
+                    Scopes.Roles
+                }.Intersect(request.GetScopes()));
+
+                foreach (var claim in principal.Claims)
+                {
+                    claim.SetDestinations(GetDestinations(claim, principal));
+                }
+
+                return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            }
+
+            throw new NotImplementedException("The specified grant type is not implemented.");
+        }
     
     private IEnumerable<string> GetDestinations(Claim claim, ClaimsPrincipal principal)
     {
