@@ -1,10 +1,8 @@
 using System.Data.Common;
-using DB.Attributes;
 using DB.Models;
 using DB.Models.EnumTypes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace DB.Controllers;
 
@@ -21,7 +19,7 @@ public class TestSpotifyController : ControllerBase
     }
 
     [HttpGet(Name = "GetProfiles")]
-    public string Get()
+    public IEnumerable<Profile> Get()
     {
         //return context.Songs.ToList();
         var userInfo = new UserInfo
@@ -39,6 +37,6 @@ public class TestSpotifyController : ControllerBase
         
         _ctx.Profiles.Add(profile);
         _ctx.SaveChanges();
-        return JsonConvert.SerializeObject( _ctx.Profiles.FirstOrDefault());
+        return _ctx.Profiles.ToList();
     }
 }
