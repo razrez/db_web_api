@@ -1,6 +1,3 @@
-
-<<<<<<< Registration
-
 namespace DB.Controllers;
 
 [ApiController]
@@ -122,5 +119,3 @@ public class AuthorizationController : ControllerBase
         }
     }
 }
-=======
->>>>>>> main
