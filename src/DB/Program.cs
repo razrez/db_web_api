@@ -59,7 +59,7 @@ builder.Services.AddOpenIddict()
             .AllowRefreshTokenFlow();
 
         serverOptions
-            .SetTokenEndpointUris("/signup");
+            .SetTokenEndpointUris("/signup", "/login");
 
         var cfg = serverOptions.UseAspNetCore();
         if (builder.Environment.IsDevelopment() || builder.Environment.IsStaging())
