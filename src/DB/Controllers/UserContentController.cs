@@ -69,7 +69,10 @@ public class UserContentController : ControllerBase
         _ctx.SaveChanges();
 
         var createdPlaylists = user.PlaylistsNavigation.ToList();
-        var likedPlaylists = user.Playlists.ToList();
+        var likedPlaylists = user.Playlists.Select(s => new 
+            {s.Id, s.Title, s.User.UserName,
+                Songs = s.Songs
+                .Select(s2 => new{s2.Id, s2.Name, s2.Source })});
         
         return new JsonResult(likedPlaylists);
     }
