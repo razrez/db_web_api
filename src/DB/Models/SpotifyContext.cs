@@ -10,7 +10,6 @@ namespace DB.Models
         public SpotifyContext()
         {
             //раскомить, сделай миграцию, раскомить, обнови бд
-            Database.EnsureCreated();
             /*Database.EnsureDeleted();
             Database.EnsureCreated();*/
         }
@@ -56,12 +55,6 @@ namespace DB.Models
                     };
             modelBuilder.Entity<UserInfo>().HasData(user);
             
-            /*modelBuilder.HasPostgresEnum<Country>()
-                .HasPostgresEnum<GenreType>()
-                .HasPostgresEnum<PlaylistType>()
-                .HasPostgresEnum<PremiumType>()
-                .HasPostgresEnum<UserType>();*/
-            
             modelBuilder.Entity<Genre>(entity =>
             {
                 entity.HasOne(d => d.Playlist)
@@ -71,9 +64,18 @@ namespace DB.Models
                     .HasConstraintName("fk_genre");
             });
 
+            modelBuilder.Entity<Song>(entity =>
+            {
+                entity.Property(e => e.Id).UseIdentityAlwaysColumn();
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Songs)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("fk_song");
+            });
+            
             modelBuilder.Entity<Playlist>(entity =>
             {
-                //entity.HasKey(k => new { k.UserId, k.Id });
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
                 entity.HasOne(d => d.User)
@@ -99,6 +101,17 @@ namespace DB.Models
                         });
             });
 
+            //data fot UserContent
+            var playlist = new Playlist
+            {
+                UserId = user.Id,
+                Id = 1,
+                Title = "Playlist",
+                PlaylistType = PlaylistType.User,
+            };
+            modelBuilder.Entity<Playlist>().HasData(playlist);
+
+            
             modelBuilder.Entity<Premium>(entity =>
             {
                 entity.HasKey(e => e.UserId)
@@ -125,15 +138,6 @@ namespace DB.Models
                     .HasConstraintName("fk_profile");
             });
 
-            modelBuilder.Entity<Song>(entity =>
-            {
-                entity.Property(e => e.Id).UseIdentityAlwaysColumn();
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.Songs)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("fk_song");
-            });
 
             modelBuilder.Entity<UserInfo>(entity =>
             {

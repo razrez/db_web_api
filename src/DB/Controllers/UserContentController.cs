@@ -39,7 +39,7 @@ public class UserContentController : ControllerBase
     public JsonResult GetPlaylists(string userId)
     {
         var user = _userManager.FindByIdAsync(userId).Result;
-        
+
         var song = new Song
         {
             Name = "song1",
@@ -61,9 +61,16 @@ public class UserContentController : ControllerBase
         };
         playlist.Songs.Add(song);
         playlist.Songs.Add(song2);
+        
+        //add to liked playlist
+        playlist.Users.Add(user);
 
         _ctx.Playlists.Add(playlist);
         _ctx.SaveChanges();
-        return new JsonResult(user);
+
+        var createdPlaylists = user.PlaylistsNavigation.ToList();
+        var likedPlaylists = user.Playlists.ToList();
+        
+        return new JsonResult(likedPlaylists);
     }
 }

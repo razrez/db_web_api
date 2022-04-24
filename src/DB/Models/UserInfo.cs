@@ -32,6 +32,7 @@ namespace DB.Models
         public Profile Profile { get; set; } = null!;
 
         [InverseProperty("User")]
+        //плейлисты, которые создал юзер
         public ICollection<Playlist> PlaylistsNavigation { get; set; }
         
         [InverseProperty("User")]
@@ -39,6 +40,7 @@ namespace DB.Models
 
         [ForeignKey("UserId")]
         [InverseProperty("Users")]
+        //плейлисты, которые юзер лайкнул
         public ICollection<Playlist> Playlists { get; set; }
     }
 }
