@@ -10,6 +10,7 @@ namespace DB.Models
         public SpotifyContext()
         {
             //раскомить, сделай миграцию, раскомить, обнови бд
+            Database.EnsureCreated();
             /*Database.EnsureDeleted();
             Database.EnsureCreated();*/
         }
