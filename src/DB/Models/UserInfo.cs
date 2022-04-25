@@ -32,9 +32,9 @@ namespace DB.Models
         [InverseProperty("User")]
         public Profile Profile { get; set; } = null!;
 
-        /*[InverseProperty("User")]
+        /*[InverseProperty("UserInfo")]
         //плейлисты, которые создал юзер
-        public ICollection<Playlist> PlaylistsNavigation { get; set; }*/
+        public ICollection<Playlist> CreatedPlaylists { get; set; }*/
         
         [InverseProperty("User")]
         public ICollection<Song> Songs { get; set; }

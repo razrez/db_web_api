@@ -66,7 +66,14 @@ namespace DB.Models
 
             modelBuilder.Entity<Playlist>(entity =>
             {
-                //entity.HasKey(k => new { k.UserId, k.Id });
+                entity.HasKey(k => k.Id);
+
+                entity.HasOne(x => x.UserInfo)
+                    .WithMany(x => x.Playlists)
+                    .HasForeignKey(x => x.UserId)
+                    .HasPrincipalKey(x => x.Id)
+                    .OnDelete(DeleteBehavior.Cascade);
+
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
                 //это про то, что у юзер может быть сохдателем многих плейлистов
@@ -74,6 +81,10 @@ namespace DB.Models
                     .WithMany(p => p.PlaylistsNavigation)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("fk_playlist");*/
+                /*entity.HasOne(u => u.UserInfo)
+                    .WithMany()
+                    .HasForeignKey(fk => fk.UserId)
+                    .HasForeignKey("fk_playlist");*/
                 
                 entity.HasMany(u => u.Users)
                     .WithMany(p => p.Playlists)

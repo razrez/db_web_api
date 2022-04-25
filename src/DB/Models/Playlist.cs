@@ -27,8 +27,7 @@ namespace DB.Models
         //айдишник именно создателя!
         //(не юзера, который просто лайкнул, для этого есть индекс таблица Liked_Playlist)
         [Column("user_id")]
-        [ForeignKey("UserInfo")]
-        public string UserInfoId { get; set; } = null!;
+        public string UserId { get; set; } = null!;
         public virtual UserInfo UserInfo { get; set; } = null!;
         
         [Column("playlist_type")] 
