@@ -64,11 +64,12 @@ public class UserContentController : ControllerBase
         
         //add to liked playlist
         playlist.Users.Add(user);
+        
 
-        _ctx.Playlists.Add(playlist);
+        _ctx.Playlists.Update(playlist);
         _ctx.SaveChanges();
 
-        var createdPlaylists = user.PlaylistsNavigation.ToList();
+       //var createdPlaylists = user.PlaylistsNavigation.ToList();
         var likedPlaylists = user.Playlists.Select(s => new 
             {s.Id, s.Title, s.User.UserName,
                 Songs = s.Songs
