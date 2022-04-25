@@ -23,10 +23,14 @@ namespace DB.Models
         [Column("title")]
         [StringLength(255)]
         public string Title { get; set; } = null!;
-
+        
+        //айдишник именно создателя!
+        //(не юзера, который просто лайкнул, для этого есть индекс таблица Liked_Playlist)
         [Column("user_id")]
-        public string UserId { get; set; } = null!;
-
+        [ForeignKey("UserInfo")]
+        public string UserInfoId { get; set; } = null!;
+        public virtual UserInfo UserInfo { get; set; } = null!;
+        
         [Column("playlist_type")] 
         public PlaylistType PlaylistType { get; set; }
 
@@ -36,15 +40,19 @@ namespace DB.Models
         
         [Column("verified")]
         public bool? Verified { get; set; }
+        
 
-        [ForeignKey("UserId")]
+        /*[ForeignKey("UserId")]
         [InverseProperty("PlaylistsNavigation")]
-        public virtual UserInfo User { get; set; } = null!;
-
+        public virtual UserInfo User { get; set; } = null!;*/
+        
+        
+        //это для индекс таблицы (связь многие ко многим)
         [ForeignKey("PlaylistId")]
         [InverseProperty("Playlists")]
         public virtual ICollection<Song> Songs { get; set; }
         
+        //это тоже для индекс таблицы (связь многие ко многим)
         [ForeignKey("PlaylistId")]
         [InverseProperty("Playlists")]
         public virtual ICollection<UserInfo> Users { get; set; }

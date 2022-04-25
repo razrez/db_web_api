@@ -28,6 +28,9 @@ namespace DB.Models
         [Column("source")]
         [StringLength(150)]
         public string Source { get; set; } = null!;
+        
+        
+        
 
         [ForeignKey("UserId")]
         [InverseProperty("Songs")]

@@ -27,11 +27,11 @@ public class UserContentController : ControllerBase
     [Route("name/user/{userId}", Name="GetUserName")]
     public JsonResult GetUserName(string userId)
     {
-        var res = _ctx.Users
+        var name = _ctx.Users
             .AsSplitQuery()
             .Where(us => us.Id == userId)
             .Select(name => name.UserName).First();
-        return new JsonResult(res);
+        return new JsonResult(name);
     }
     
     [HttpGet]
@@ -39,7 +39,10 @@ public class UserContentController : ControllerBase
     public JsonResult GetPlaylists(string userId)
     {
         var user = _userManager.FindByIdAsync(userId).Result;
-
+        /*var user
+            = _ctx.Users
+            .AsSplitQuery().First(us => us.Id == userId);
+        
         var song = new Song
         {
             Name = "song1",
@@ -53,28 +56,29 @@ public class UserContentController : ControllerBase
             User = user
         };
         
+        var songs = new HashSet<Song>{ song, song2};
         var playlist = new Playlist
         {
             Title = "Playlist",
             PlaylistType = PlaylistType.User,
-            User = user,
+            User = user,//будет создателем плейлиста
+            Songs = songs
         };
-        playlist.Songs.Add(song);
-        playlist.Songs.Add(song2);
+        
         
         //add to liked playlist
-        playlist.Users.Add(user);
-        
-
-        _ctx.Playlists.Update(playlist);
-        _ctx.SaveChanges();
-
+        //playlist.Users.Add(user);
+        user.Playlists.Add(playlist);
+        user.PlaylistsNavigation.Add(playlist);
+        _ctx.Users.Update(user);
+        _ctx.Playlists.Add(playlist);
+        _ctx.SaveChanges();*/
        //var createdPlaylists = user.PlaylistsNavigation.ToList();
-        var likedPlaylists = user.Playlists.Select(s => new 
+        /*var likedPlaylists = user.Playlists.Select(s => new 
             {s.Id, s.Title, s.User.UserName,
                 Songs = s.Songs
-                .Select(s2 => new{s2.Id, s2.Name, s2.Source })});
+                .Select(s2 => new{s2.Id, s2.Name, s2.Source })});*/
         
-        return new JsonResult(likedPlaylists);
+        return new JsonResult(_ctx.Playlists.ToList());
     }
 }
