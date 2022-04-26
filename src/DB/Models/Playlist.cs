@@ -13,7 +13,7 @@ namespace DB.Models
         public Playlist()
         {
             Songs = new HashSet<Song>();
-            Users = new HashSet<UserInfo>();
+            LikedPlaylist = new HashSet<LikedPlaylist>();
         }
 
         [Key]
@@ -41,9 +41,9 @@ namespace DB.Models
         
         
         
-        [ForeignKey("UserId")]
+        /*[ForeignKey("UserId")]
         [InverseProperty("CreatedPlaylists")]
-        public UserInfo? User { get; set; } = null!;
+        public UserInfo? User { get; set; } = null!;*/
         
         //это для индекс таблицы liled_playlist (связь многие ко многим)
         [ForeignKey("PlaylistId")]
@@ -51,9 +51,9 @@ namespace DB.Models
         public ICollection<Song> Songs { get; set; }
         
         //это тоже для индекс таблицы playlist_song (связь многие ко многим)
-        [ForeignKey("PlaylistId")]
-        [InverseProperty("Playlists")]
-        public ICollection<UserInfo> Users { get; set; }
+        /*[ForeignKey("PlaylistId")]
+        [InverseProperty("Playlists")]*/
+        public ICollection<LikedPlaylist> LikedPlaylist { get; set; }
         
     }
 }

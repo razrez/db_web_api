@@ -14,8 +14,7 @@ namespace DB.Models
         {
             //PlaylistsNavigation = new HashSet<Playlist>();
             Songs = new HashSet<Song>();
-            Playlists = new HashSet<Playlist>();
-            CreatedPlaylists = new HashSet<Playlist>();
+            Playlists = new HashSet<LikedPlaylist>();
         }
         [Key]
         [Column("id")]
@@ -33,17 +32,14 @@ namespace DB.Models
         [InverseProperty("User")]
         public Profile Profile { get; set; } = null!;
         
-        //плейлисты, которые создал юзер
-        [InverseProperty("User")]
-        public ICollection<Playlist> CreatedPlaylists { get; set; }
         
         [InverseProperty("User")]
         public ICollection<Song> Songs { get; set; }
         
         //для связи многие ко многим
-        [ForeignKey("UserId")]
-        [InverseProperty("Users")]
+        /*[ForeignKey("UserId")]
+        [InverseProperty("Users")]*/
         //плейлисты, которые юзер лайкнул + создал(автоатически)
-        public ICollection<Playlist> Playlists { get; set; }
+        public ICollection<LikedPlaylist> Playlists { get; set; }
     }
 }

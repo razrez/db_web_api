@@ -47,20 +47,15 @@ public class UserContentController : ControllerBase
             SecurityStamp = "DKBWMTFC7TZQZ6UFNZ5BN5XQNDYUBJYQ,09bd35b0-9c9f-4772-8789-e6d4b9fbe9c4",
             EmailConfirmed = true
         };
+        
         var playlist = new Playlist()
         {
             Title = "playlist3",
             PlaylistType = PlaylistType.User,
             ImgSrc = "src2",
             Verified = true,
-            User = user3
         };
-        playlist.Users.Add(user3);
-        user3.CreatedPlaylists.Add(playlist);
-        user3.Playlists.Add(playlist);
-        user3.Playlists.Add(playlist);
-        //await _ctx.AddAsync(playlist);
-        await _ctx.AddAsync(user3);
+        
         await _ctx.SaveChangesAsync();
         
         return new JsonResult(_ctx.Users.ToList());
