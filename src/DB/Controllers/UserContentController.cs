@@ -1,4 +1,4 @@
-using System.Data.Common;
+using System;
 using DB.Models;
 using DB.Models.EnumTypes;
 using Microsoft.AspNetCore.Authorization;
@@ -25,56 +25,65 @@ public class UserContentController : ControllerBase
 
     [HttpGet]
     [Route("name/user/{userId}", Name="GetUserName")]
-    public JsonResult GetUserName(string userId)
+    public async Task<JsonResult> GetUserName(string userId)
     {
-        var res = _ctx.Users
-            .AsSplitQuery()
-            .Where(us => us.Id == userId)
-            .Select(name => name.UserName).First();
-        return new JsonResult(res);
+        var name = await _userManager.FindByIdAsync(userId);
+        return new JsonResult(name.UserName);
     }
     
     [HttpGet]
-    [Route("playlists/user/{userId}", Name="GetPlaylists")]
-    public JsonResult GetPlaylists(string userId)
+    [Route("playlists/user/", Name="GetPlaylists")]
+    public async Task<JsonResult> GetPlaylists()
     {
-        var user = _userManager.FindByIdAsync(userId).Result;
-
-        var song = new Song
+        /*var user2 = new UserInfo()
+        {
+            Id = "5f34130c-2ed9-4c83-a600-e474e8f42bac",
+            UserName = "user02@gamil.com",
+            Email = "user02@gamil.com",
+            ConcurrencyStamp = "37285e0f-b3c2-4a75-85f6-73a3c4c6da29",
+            PasswordHash = "AQAAAAEAACcQAAAAEED86xKz3bHadNf8B1Hg8t5qNefw4Bq1Kr2q6Jx9Ss/DcRIcUpLiFkDgQZTqUgJThA==", //qWe!123
+            SecurityStamp = "DKBWMTFC7TZQZ6UFNZ5BN5XQNDYUBJYQ,09bd35b0-9c9f-4772-8789-e6d4b9fbe9c4",
+            EmailConfirmed = true
+        };
+        
+        //await _userManager.CreateAsync(user2);
+        
+        //step2
+        var playlist = new Playlist()
+        {
+            UserId = user2.Id,
+            Title = "playlist3",
+            PlaylistType = PlaylistType.User,
+            ImgSrc = "src2",
+            Verified = true,
+        };
+        
+        var song1 = new Song()
         {
             Name = "song1",
-            Source = "source1",
-            User = user
+            Source = "src1",
+            User = user2
         };
-        var song2 = new Song
-        {
-            Name = "song2",
-            Source = "source2",
-            User = user
-        };
-        
-        var playlist = new Playlist
-        {
-            Title = "Playlist",
-            PlaylistType = PlaylistType.User,
-            User = user,
-        };
-        playlist.Songs.Add(song);
-        playlist.Songs.Add(song2);
-        
-        //add to liked playlist
-        playlist.Users.Add(user);
-        
+        song1.Playlists.Add(playlist);
 
-        _ctx.Playlists.Update(playlist);
-        _ctx.SaveChanges();
-
-       //var createdPlaylists = user.PlaylistsNavigation.ToList();
-        var likedPlaylists = user.Playlists.Select(s => new 
-            {s.Id, s.Title, s.User.UserName,
-                Songs = s.Songs
-                .Select(s2 => new{s2.Id, s2.Name, s2.Source })});
+        user2.Playlists.Add(playlist);
+        await _ctx.AddAsync(user2);
+        await _ctx.Songs.AddAsync(song1);
         
-        return new JsonResult(likedPlaylists);
+        await _ctx.SaveChangesAsync();*/
+        
+        /*var user = await _userManager.FindByIdAsync("5f34130c-2ed9-4c83-a600-e474e8f48bac");
+        var pl = await _ctx.Playlists.FirstAsync();
+        pl.Users.Add(user);
+        _ctx.Playlists.Update(pl);
+        await _ctx.SaveChangesAsync();*/
+        var userId = "5f34130c-2ed9-4c83-a600-e474e8f42bac";
+        var pl = _ctx.Playlists
+            .Include(x => x.Songs)
+            .Include(x => x.Users)
+            .AsSplitQuery()
+            .Where(k => k.UserId == userId)
+            .ToList();
+        return new JsonResult(pl);
     }
 }

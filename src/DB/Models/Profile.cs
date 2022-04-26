@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DB.Models
 {
     [Table("profile")]
-    public partial class Profile
+    public class Profile
     {
         [Key]
         [Column("user_id")]
@@ -35,6 +35,6 @@ namespace DB.Models
         
         [ForeignKey("UserId")]
         [InverseProperty("Profile")]
-        public virtual UserInfo? User { get; set; } 
+        public UserInfo? User { get; set; } 
     }
 }

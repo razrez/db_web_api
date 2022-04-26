@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DB.Models
 {
     [Table("song")]
-    public partial class Song
+    public sealed class Song
     {
         public Song()
         {
@@ -28,13 +27,16 @@ namespace DB.Models
         [Column("source")]
         [StringLength(150)]
         public string Source { get; set; } = null!;
+        
+        
+        
 
         [ForeignKey("UserId")]
         [InverseProperty("Songs")]
-        public virtual UserInfo User { get; set; } = null!;
+        public UserInfo User { get; set; } = null!;
 
         [ForeignKey("SongId")]
         [InverseProperty("Songs")]
-        public virtual ICollection<Playlist> Playlists { get; set; }
+        public ICollection<Playlist> Playlists { get; set; }
     }
 }

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DB.Models
 {
     [Table("playlist")]
-    public partial class Playlist
+    public class Playlist
     {
         public Playlist()
         {
@@ -23,10 +23,12 @@ namespace DB.Models
         [Column("title")]
         [StringLength(255)]
         public string Title { get; set; } = null!;
-
+        
+        //айдишник именно создателя!
+        //(не юзера, который просто лайкнул, для этого есть индекс таблица Liked_Playlist)
         [Column("user_id")]
         public string UserId { get; set; } = null!;
-
+        
         [Column("playlist_type")] 
         public PlaylistType PlaylistType { get; set; }
 
@@ -36,17 +38,17 @@ namespace DB.Models
         
         [Column("verified")]
         public bool? Verified { get; set; }
-
-        [ForeignKey("UserId")]
-        [InverseProperty("PlaylistsNavigation")]
-        public virtual UserInfo User { get; set; } = null!;
-
-        [ForeignKey("PlaylistId")]
-        [InverseProperty("Playlists")]
-        public virtual ICollection<Song> Songs { get; set; }
         
+        
+        
+        
+        //это для индекс таблицы playlist_song (связь многие ко многим)
         [ForeignKey("PlaylistId")]
         [InverseProperty("Playlists")]
-        public virtual ICollection<UserInfo> Users { get; set; }
+        public ICollection<Song> Songs { get; set; }
+        
+        //это тоже для индекс таблицы liked_playlist (связь многие ко многим)
+        public ICollection<UserInfo> Users { get; set; }
+        
     }
 }
