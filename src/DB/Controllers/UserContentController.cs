@@ -32,8 +32,8 @@ public class UserContentController : ControllerBase
     }
     
     [HttpGet]
-    [Route("playlists/user/", Name="GetPlaylists")]
-    public async Task<JsonResult> GetPlaylists()
+    [Route("playlists/user/{userId}", Name="GetPlaylists")]
+    public async Task<JsonResult> GetPlaylists(string userId)
     {
         /*var user2 = new UserInfo()
         {
@@ -77,13 +77,24 @@ public class UserContentController : ControllerBase
         pl.Users.Add(user);
         _ctx.Playlists.Update(pl);
         await _ctx.SaveChangesAsync();*/
-        var userId = "5f34130c-2ed9-4c83-a600-e474e8f42bac";
-        var pl = _ctx.Playlists
+        
+        var resultPlaylistInfo = await _ctx.Playlists
             .Include(x => x.Songs)
             .Include(x => x.Users)
             .AsSplitQuery()
             .Where(k => k.UserId == userId)
-            .ToList();
-        return new JsonResult(pl);
+            .Select(s => new
+            {
+                s.Id, 
+                s.UserId,
+                s.Title,
+                s.PlaylistType,
+                Songs = s.Songs.Select(sk => new
+                {
+                    sk.Id, sk.UserId, sk.Name, sk.Source
+                })
+            })
+            .ToListAsync();
+        return new JsonResult(resultPlaylistInfo);
     }
 }

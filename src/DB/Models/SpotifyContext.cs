@@ -16,14 +16,12 @@ namespace DB.Models
         public SpotifyContext(DbContextOptions<SpotifyContext> options)
             : base(options)
         {
-
         }
 
         public DbSet<Playlist> Playlists { get; set; } = null!;
         public DbSet<Premium> Premia { get; set; } = null!;
         public DbSet<Profile> Profiles { get; set; } = null!;
         public DbSet<Song> Songs { get; set; } = null!;
-        //public DbSet<LikedPlaylist> LikedPlaylists { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -61,8 +59,6 @@ namespace DB.Models
                     .HasConstraintName("fk_song");
 
                 entity.HasMany(p => p.Playlists)
-                    /*.HasForeignKey(fk => fk.User)
-                    .HasConstraintName("fk_playlist");*/
                     .WithMany(p => p.Users)
                     .UsingEntity<Dictionary<string, object>>(
                         "LikedPlaylist" ,
@@ -139,20 +135,10 @@ namespace DB.Models
                     .HasConstraintName("fk_profile");
             });
 
-            /*modelBuilder.Entity<LikedPlaylist>(entity =>
-            {
-                entity.ToTable("liked_playlist");
-                entity.HasKey(k => new {k.PlaylistId, k.UserId}).HasName("liked_playlist_pkey");
-            });*/
-
             modelBuilder.Entity<Song>(entity =>
             {
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
-                /*entity.HasOne(d => d.User)
-                    .WithMany(p => p.Songs)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("fk_song");*/
             });
 
         }
