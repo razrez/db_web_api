@@ -16,14 +16,12 @@ namespace DB.Models
         public SpotifyContext(DbContextOptions<SpotifyContext> options)
             : base(options)
         {
-
         }
 
         public DbSet<Playlist> Playlists { get; set; } = null!;
         public DbSet<Premium> Premia { get; set; } = null!;
         public DbSet<Profile> Profiles { get; set; } = null!;
         public DbSet<Song> Songs { get; set; } = null!;
-        //public DbSet<LikedPlaylist> LikedPlaylists { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -61,8 +59,6 @@ namespace DB.Models
                     .HasConstraintName("fk_song");
 
                 entity.HasMany(p => p.Playlists)
-                    /*.HasForeignKey(fk => fk.User)
-                    .HasConstraintName("fk_playlist");*/
                     .WithMany(p => p.Users)
                     .UsingEntity<Dictionary<string, object>>(
                         "LikedPlaylist" ,
@@ -99,8 +95,10 @@ namespace DB.Models
                     .WithMany(p => p.Playlists)
                     .UsingEntity<Dictionary<string, object>>(
                         "PlaylistSong",
-                        l => l.HasOne<Song>().WithMany().HasForeignKey("SongId").HasConstraintName("fk_playlist_song_song_id"),
-                        r => r.HasOne<Playlist>().WithMany().HasForeignKey("PlaylistId").HasConstraintName("fk_playlist_song_playlist_id"),
+                        l => l.HasOne<Song>().WithMany()
+                            .HasForeignKey("SongId").HasConstraintName("fk_playlist_song_song_id"),
+                        r => r.HasOne<Playlist>().WithMany()
+                            .HasForeignKey("PlaylistId").HasConstraintName("fk_playlist_song_playlist_id"),
                         j =>
                         {
                             j.HasKey("PlaylistId", "SongId").HasName("playlist_song_pkey");
@@ -111,6 +109,28 @@ namespace DB.Models
 
                             j.IndexerProperty<int>("SongId").HasColumnName("song_id");
                         });
+                //при создании пользователя создается басовый плейлист LikedSongs с
+                //PlaylistType = PlaylistType.LikedSongs,
+                entity.HasData(
+                    new Playlist[]
+                    {
+                        new Playlist{
+                            Id = 1,
+                            UserId = user.Id,
+                            Title = "LikedSongs",
+                            PlaylistType = PlaylistType.LikedSongs,
+                            ImgSrc = "src1",
+                            Verified = true
+                        },
+                        new Playlist{
+                            Id = 2,
+                            UserId = user.Id,
+                            Title = "simple playlist",
+                            PlaylistType = PlaylistType.User,
+                            ImgSrc = "src12",
+                            Verified = true
+                        }
+                    });
             });
 
             modelBuilder.Entity<Premium>(entity =>
@@ -139,20 +159,18 @@ namespace DB.Models
                     .HasConstraintName("fk_profile");
             });
 
-            /*modelBuilder.Entity<LikedPlaylist>(entity =>
-            {
-                entity.ToTable("liked_playlist");
-                entity.HasKey(k => new {k.PlaylistId, k.UserId}).HasName("liked_playlist_pkey");
-            });*/
-
             modelBuilder.Entity<Song>(entity =>
             {
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
-
-                /*entity.HasOne(d => d.User)
-                    .WithMany(p => p.Songs)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("fk_song");*/
+                entity.HasData(
+                    new Song[]
+                    {
+                        new Song{Id = 1, UserId = user.Id, Name = "song1", Source = "src1"},
+                        new Song{Id = 2, UserId = user.Id, Name = "song2", Source = "src2"},
+                        new Song{Id = 3, UserId = user.Id, Name = "song3", Source = "src3"},
+                        new Song{Id = 4, UserId = user.Id, Name = "song4", Source = "src4"},
+                        new Song{Id = 5, UserId = user.Id, Name = "song5", Source = "src5"},
+                    });
             });
 
         }
