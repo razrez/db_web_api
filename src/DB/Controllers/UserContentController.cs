@@ -38,7 +38,7 @@ public class UserContentController : ControllerBase
     {
         //свяжем для примера имеющиеся в бд песни с плейлистами, плейлисты с пользователем
         //один раз использовал - закоммитить можно
-        //await LikeAllSongs(userId);
+        await LikeAllSongs(userId);
 
         var usersPlaylists = await _ctx.Playlists
             .Include(x => x.Songs)
