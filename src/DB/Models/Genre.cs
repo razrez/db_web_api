@@ -9,7 +9,7 @@ namespace DB.Models
 {
     [Keyless]
     [Table("genre")]
-    public partial class Genre
+    public class Genre
     {
         [Column("playlist_id")]
         public int? PlaylistId { get; set; }

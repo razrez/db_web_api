@@ -1,4 +1,5 @@
 using System.Data.Common;
+using System.Security.Claims;
 using DB.Models;
 using DB.Models.EnumTypes;
 using Microsoft.AspNetCore.Authorization;
@@ -25,60 +26,43 @@ public class UserContentController : ControllerBase
 
     [HttpGet]
     [Route("name/user/{userId}", Name="GetUserName")]
-    public JsonResult GetUserName(string userId)
+    public async Task<JsonResult> GetUserName(string userId)
     {
-        var name = _ctx.Users
-            .AsSplitQuery()
-            .Where(us => us.Id == userId)
-            .Select(name => name.UserName).First();
-        return new JsonResult(name);
+        var name = await _userManager.FindByIdAsync(userId);
+        return new JsonResult(name.UserName);
     }
     
     [HttpGet]
-    [Route("playlists/user/{userId}", Name="GetPlaylists")]
-    public JsonResult GetPlaylists(string userId)
+    [Route("playlists/user/", Name="GetPlaylists")]
+    public async Task<JsonResult> GetPlaylists()
     {
-        var user = _userManager.FindByIdAsync(userId).Result;
-        /*var user
-            = _ctx.Users
-            .AsSplitQuery().First(us => us.Id == userId);
-        
-        var song = new Song
+        var user = await _userManager.FindByIdAsync("5f34130c-2ed9-4c83-a600-e474e8f48bac");
+        var user3 = new UserInfo()
         {
-            Name = "song1",
-            Source = "source1",
-            User = user
+            Id = "5f34130c-2ed9-4c83-a600-e474e8f43bac",
+            UserName = "user01@gamil.com",
+            Email = "user01@gamil.com",
+            ConcurrencyStamp = "37285e0f-b3c2-4a75-85f6-73a3c4c6da29",
+            PasswordHash = "AQAAAAEAACcQAAAAEED86xKz3bHadNf8B1Hg8t5qNefw4Bq1Kr2q6Jx9Ss/DcRIcUpLiFkDgQZTqUgJThA==", //qWe!123
+            SecurityStamp = "DKBWMTFC7TZQZ6UFNZ5BN5XQNDYUBJYQ,09bd35b0-9c9f-4772-8789-e6d4b9fbe9c4",
+            EmailConfirmed = true
         };
-        var song2 = new Song
+        var playlist = new Playlist()
         {
-            Name = "song2",
-            Source = "source2",
-            User = user
-        };
-        
-        var songs = new HashSet<Song>{ song, song2};
-        var playlist = new Playlist
-        {
-            Title = "Playlist",
+            Title = "playlist3",
             PlaylistType = PlaylistType.User,
-            User = user,//будет создателем плейлиста
-            Songs = songs
+            ImgSrc = "src2",
+            Verified = true,
+            User = user3
         };
+        playlist.Users.Add(user3);
+        user3.CreatedPlaylists.Add(playlist);
+        user3.Playlists.Add(playlist);
+        user3.Playlists.Add(playlist);
+        //await _ctx.AddAsync(playlist);
+        await _ctx.AddAsync(user3);
+        await _ctx.SaveChangesAsync();
         
-        
-        //add to liked playlist
-        //playlist.Users.Add(user);
-        user.Playlists.Add(playlist);
-        user.PlaylistsNavigation.Add(playlist);
-        _ctx.Users.Update(user);
-        _ctx.Playlists.Add(playlist);
-        _ctx.SaveChanges();*/
-       //var createdPlaylists = user.PlaylistsNavigation.ToList();
-        /*var likedPlaylists = user.Playlists.Select(s => new 
-            {s.Id, s.Title, s.User.UserName,
-                Songs = s.Songs
-                .Select(s2 => new{s2.Id, s2.Name, s2.Source })});*/
-        
-        return new JsonResult(_ctx.Playlists.ToList());
+        return new JsonResult(_ctx.Users.ToList());
     }
 }

@@ -8,13 +8,14 @@ using Microsoft.EntityFrameworkCore;
 namespace DB.Models
 {
     [Table("user_info")]
-    public sealed partial class UserInfo:IdentityUser
+    public class UserInfo:IdentityUser
     {
         public UserInfo()
         {
             //PlaylistsNavigation = new HashSet<Playlist>();
             Songs = new HashSet<Song>();
             Playlists = new HashSet<Playlist>();
+            CreatedPlaylists = new HashSet<Playlist>();
         }
         [Key]
         [Column("id")]
@@ -31,10 +32,10 @@ namespace DB.Models
 
         [InverseProperty("User")]
         public Profile Profile { get; set; } = null!;
-
-        /*[InverseProperty("UserInfo")]
+        
         //плейлисты, которые создал юзер
-        public ICollection<Playlist> CreatedPlaylists { get; set; }*/
+        [InverseProperty("User")]
+        public ICollection<Playlist> CreatedPlaylists { get; set; }
         
         [InverseProperty("User")]
         public ICollection<Song> Songs { get; set; }

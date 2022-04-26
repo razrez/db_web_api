@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace DB.Models
 {
-    public sealed class SpotifyContext : IdentityDbContext<UserInfo>
+    public class SpotifyContext : IdentityDbContext<UserInfo>
     {
         public SpotifyContext()
         {
@@ -68,24 +68,8 @@ namespace DB.Models
             {
                 entity.HasKey(k => k.Id);
 
-                entity.HasOne(x => x.UserInfo)
-                    .WithMany(x => x.Playlists)
-                    .HasForeignKey(x => x.UserId)
-                    .HasPrincipalKey(x => x.Id)
-                    .OnDelete(DeleteBehavior.Cascade);
-
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
-                //это про то, что у юзер может быть сохдателем многих плейлистов
-                /*entity.HasOne(d => d.User)
-                    .WithMany(p => p.PlaylistsNavigation)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("fk_playlist");*/
-                /*entity.HasOne(u => u.UserInfo)
-                    .WithMany()
-                    .HasForeignKey(fk => fk.UserId)
-                    .HasForeignKey("fk_playlist");*/
-                
                 entity.HasMany(u => u.Users)
                     .WithMany(p => p.Playlists)
                     .UsingEntity<Dictionary<string, object>>(
@@ -160,28 +144,15 @@ namespace DB.Models
                     .HasConstraintName("fk_song");
             });
 
-            /*modelBuilder.Entity<UserInfo>(entity =>
+            modelBuilder.Entity<UserInfo>(entity =>
             {
-                //entity.Property(e => e.Id).UseIdentityAlwaysColumn();
-
-                entity.HasMany(d => d.Playlists)
-                    .WithMany(p => p.Users)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "LikedPlaylist",
-                        l => l.HasOne<Playlist>().WithMany().HasForeignKey("PlaylistId").HasConstraintName("fk_liked_playlist_playlist_id"),
-                        r => r.HasOne<UserInfo>().WithMany().HasForeignKey("UserId").HasConstraintName("fk_liked_playlist_user_id"),
-                        j =>
-                        {
-                            j.HasKey("UserId", "PlaylistId").HasName("liked_playlist_pkey");
-
-                            j.ToTable("liked_playlist");
-                            
-                            //warning bro
-                            j.IndexerProperty<string>("UserId").HasColumnName("user_id");
-
-                            j.IndexerProperty<int>("PlaylistId").HasColumnName("playlist_id");
-                        });
-            });*/
+                entity.HasMany(p => p.CreatedPlaylists)
+                    .WithOne(x => x.User)
+                    .HasForeignKey(k => k.UserId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("fk_playlist");
+                
+            });
 
         }
     }

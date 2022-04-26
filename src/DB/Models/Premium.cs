@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DB.Models
 {
     [Table("premium")]
-    public partial class Premium
+    public class Premium
     {
         [Key]
         [Column("user_id")]

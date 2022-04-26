@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DB.Models
 {
     [Table("song")]
-    public partial class Song
+    public sealed class Song
     {
         public Song()
         {
@@ -34,10 +34,10 @@ namespace DB.Models
 
         [ForeignKey("UserId")]
         [InverseProperty("Songs")]
-        public virtual UserInfo User { get; set; } = null!;
+        public UserInfo User { get; set; } = null!;
 
         [ForeignKey("SongId")]
         [InverseProperty("Songs")]
-        public virtual ICollection<Playlist> Playlists { get; set; }
+        public ICollection<Playlist> Playlists { get; set; }
     }
 }
