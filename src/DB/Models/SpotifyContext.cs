@@ -9,7 +9,6 @@ namespace DB.Models
     {
         public SpotifyContext()
         {
-            //раскомить, сделай миграцию, раскомить, обнови бд
             /*Database.EnsureDeleted();
             Database.EnsureCreated();*/
         }
@@ -70,25 +69,6 @@ namespace DB.Models
 
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
-                /*entity.HasMany(u => u.Users)
-                    .WithMany(p => p.Playlists)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "LikedPlaylist",
-                        r => r.HasOne<UserInfo>().WithMany().HasForeignKey("UserId").HasConstraintName("fk_liked_playlist_user_id"),
-                        l => l.HasOne<Playlist>().WithMany().HasForeignKey("PlaylistId").HasConstraintName("fk_liked_playlist_playlist_id"),
-                        j =>
-                        {
-                            j.HasKey("UserId", "PlaylistId").HasName("liked_playlist_pkey");
-
-                            j.ToTable("liked_playlist");
-                            
-                            //warning bro
-                            j.IndexerProperty<string>("UserId").HasColumnName("user_id");
-
-                            j.IndexerProperty<int>("PlaylistId").HasColumnName("playlist_id");
-                        }
-                    );*/
-
                 //индекс таблица Плейлист-Песня
                 entity.HasMany(d => d.Songs)
                     .WithMany(p => p.Playlists)
@@ -136,24 +116,6 @@ namespace DB.Models
 
             modelBuilder.Entity<LikedPlaylist>(entity =>
             {
-                /*entity.HasMany(u => u.Users)
-                    .WithMany(p => p.Playlists)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "LikedPlaylist",
-                        r => r.HasOne<UserInfo>().WithMany().HasForeignKey("UserId").HasConstraintName("fk_liked_playlist_user_id"),
-                        l => l.HasOne<Playlist>().WithMany().HasForeignKey("PlaylistId").HasConstraintName("fk_liked_playlist_playlist_id"),
-                        j =>
-                        {
-                            j.HasKey("UserId", "PlaylistId").HasName("liked_playlist_pkey");
-
-                            j.ToTable("liked_playlist");
-                            
-                            //warning bro
-                            j.IndexerProperty<string>("UserId").HasColumnName("user_id");
-
-                            j.IndexerProperty<int>("PlaylistId").HasColumnName("playlist_id");
-                        }
-                    );*/
                 entity.ToTable("liked_playlist");
                 entity.HasKey(k => new {k.PlaylistId, k.UserId}).HasName("liked_playlist_pkey");
             });
@@ -167,16 +129,6 @@ namespace DB.Models
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("fk_song");
             });
-
-            /*modelBuilder.Entity<UserInfo>(entity =>
-            {
-                entity.HasMany(p => p.CreatedPlaylists)
-                    .WithOne(x => x.User)
-                    .HasForeignKey(k => k.UserId)
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("fk_playlist");
-                
-            });*/
 
         }
     }

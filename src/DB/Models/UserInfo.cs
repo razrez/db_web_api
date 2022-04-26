@@ -36,10 +36,8 @@ namespace DB.Models
         [InverseProperty("User")]
         public ICollection<Song> Songs { get; set; }
         
-        //для связи многие ко многим
-        /*[ForeignKey("UserId")]
-        [InverseProperty("Users")]*/
-        //плейлисты, которые юзер лайкнул + создал(автоатически)
+        //плейлисты, которые юзер лайкнул many-many
+        //(созданные становятся лайкнутыми автоматом)
         public ICollection<LikedPlaylist> Playlists { get; set; }
     }
 }

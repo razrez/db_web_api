@@ -41,18 +41,13 @@ namespace DB.Models
         
         
         
-        /*[ForeignKey("UserId")]
-        [InverseProperty("CreatedPlaylists")]
-        public UserInfo? User { get; set; } = null!;*/
         
-        //это для индекс таблицы liled_playlist (связь многие ко многим)
+        //это для индекс таблицы playlist_song (связь многие ко многим)
         [ForeignKey("PlaylistId")]
         [InverseProperty("Playlists")]
         public ICollection<Song> Songs { get; set; }
         
-        //это тоже для индекс таблицы playlist_song (связь многие ко многим)
-        /*[ForeignKey("PlaylistId")]
-        [InverseProperty("Playlists")]*/
+        //это тоже для индекс таблицы liked_playlist (связь многие ко многим)
         public ICollection<LikedPlaylist> LikedPlaylist { get; set; }
         
     }
