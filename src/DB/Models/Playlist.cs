@@ -13,7 +13,7 @@ namespace DB.Models
         public Playlist()
         {
             Songs = new HashSet<Song>();
-            LikedPlaylist = new HashSet<LikedPlaylist>();
+            Users = new HashSet<UserInfo>();
         }
 
         [Key]
@@ -48,7 +48,7 @@ namespace DB.Models
         public ICollection<Song> Songs { get; set; }
         
         //это тоже для индекс таблицы liked_playlist (связь многие ко многим)
-        public ICollection<LikedPlaylist> LikedPlaylist { get; set; }
+        public ICollection<UserInfo> Users { get; set; }
         
     }
 }

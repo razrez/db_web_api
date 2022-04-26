@@ -14,7 +14,7 @@ namespace DB.Models
         {
             //PlaylistsNavigation = new HashSet<Playlist>();
             Songs = new HashSet<Song>();
-            Playlists = new HashSet<LikedPlaylist>();
+            Playlists = new HashSet<Playlist>();
         }
         [Key]
         [Column("id")]
@@ -38,6 +38,6 @@ namespace DB.Models
         
         //плейлисты, которые юзер лайкнул many-many
         //(созданные становятся лайкнутыми автоматом)
-        public ICollection<LikedPlaylist> Playlists { get; set; }
+        public ICollection<Playlist> Playlists { get; set; }
     }
 }
