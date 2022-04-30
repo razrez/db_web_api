@@ -1,5 +1,6 @@
 ﻿using System;
 using DB.Models.EnumTypes;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
@@ -9,8 +10,6 @@ namespace DB.Models
     {
         public SpotifyContext()
         {
-            /*Database.EnsureDeleted();
-            Database.EnsureCreated();*/
         }
 
         public SpotifyContext(DbContextOptions<SpotifyContext> options)
@@ -43,14 +42,17 @@ namespace DB.Models
             var user = new UserInfo()
                     {
                         Id = "5f34130c-2ed9-4c83-a600-e474e8f48bac",
-                        UserName = "user01@gamil.com",
+                        UserName = "user01@gmail.com",
+                        NormalizedUserName = "USER01@GMAIL.COM",
                         Email = "user01@gamil.com",
+                        NormalizedEmail = "USER01@GMAIL.COM",
                         ConcurrencyStamp = "37285e0f-b3c2-4a75-85f6-73a3c4c6da29",
                         PasswordHash = "AQAAAAEAACcQAAAAEED86xKz3bHadNf8B1Hg8t5qNefw4Bq1Kr2q6Jx9Ss/DcRIcUpLiFkDgQZTqUgJThA==", //qWe!123
                         SecurityStamp = "DKBWMTFC7TZQZ6UFNZ5BN5XQNDYUBJYQ,09bd35b0-9c9f-4772-8789-e6d4b9fbe9c4",
                         EmailConfirmed = true
                     };
             modelBuilder.Entity<UserInfo>().HasData(user);
+            
             modelBuilder.Entity<UserInfo>(entity =>
             {
                 entity.HasMany(p => p.Songs)
@@ -162,7 +164,7 @@ namespace DB.Models
             modelBuilder.Entity<Song>(entity =>
             {
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
-                entity.HasData(
+                /*entity.HasData(
                     new Song[]
                     {
                         new Song{Id = 1, UserId = user.Id, Name = "song1", Source = "src1"},
@@ -170,7 +172,7 @@ namespace DB.Models
                         new Song{Id = 3, UserId = user.Id, Name = "song3", Source = "src3"},
                         new Song{Id = 4, UserId = user.Id, Name = "song4", Source = "src4"},
                         new Song{Id = 5, UserId = user.Id, Name = "song5", Source = "src5"},
-                    });
+                    });*/
             });
 
         }
