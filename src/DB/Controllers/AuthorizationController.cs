@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using DB.Models;
+using DB.Models.EnumTypes;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -59,16 +60,26 @@ public class AuthorizationController : ControllerBase
             var userId = await _userManager.GetUserIdAsync(user);
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             await _userManager.ConfirmEmailAsync(user, code);
-            
+
             var profile = JsonConvert.DeserializeObject<Profile>(profileJson);
             if (profile != null)
             {
                 profile.UserId = user.Id;
                 await _ctx.Profiles.AddAsync(profile);
-                await _ctx.SaveChangesAsync();
             }
+
+            var likedSongs = new Playlist()
+            {
+                Title = "Liked Songs",
+                UserId = user.Id,
+                PlaylistType = PlaylistType.LikedSongs,
+                Verified = true
+            };
+            await _ctx.AddAsync(likedSongs);
             
-            var principal = await _signInManager.CreateUserPrincipalAsync(user);
+            await _ctx.SaveChangesAsync();
+            
+        var principal = await _signInManager.CreateUserPrincipalAsync(user);
             
             principal.SetScopes(new[]
             {
