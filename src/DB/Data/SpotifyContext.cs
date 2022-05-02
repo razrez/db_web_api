@@ -74,6 +74,35 @@ namespace DB.Data
                             j.IndexerProperty<string>("UserId").HasColumnName("user_id");
                             j.IndexerProperty<int>("PlaylistId").HasColumnName("playlist_id");
                         });
+                entity.HasData(
+                    new UserInfo[]
+                    {
+                        new UserInfo()
+                        {
+                            Id = "5f34130c-2ed9-4c83-a600-e474e8f43bac",
+                            UserName = "user03@gmail.com",
+                            NormalizedUserName = "USER03@GMAIL.COM",
+                            Email = "user03@gamil.com",
+                            NormalizedEmail = "USER03@GMAIL.COM",
+                            ConcurrencyStamp = "37285e0f-b3c2-4a75-85f6-73a3c4c6da29",
+                            PasswordHash = "AQAAAAEAACcQAAAAEED86xKz3bHadNf8B1Hg8t5qNefw4Bq1Kr2q6Jx9Ss/DcRIcUpLiFkDgQZTqUgJThA==", //qWe!123
+                            SecurityStamp = "DKBWMTFC7TZQZ6UFNZ5BN5XQNDYUBJYQ,09bd35b0-9c9f-4772-8789-e6d4b9fbe9c4",
+                            EmailConfirmed = true
+                        },
+                        
+                        new UserInfo()
+                        {
+                            Id = "5f34130c-2ed9-4c83-a600-e474e8f44bac",
+                            UserName = "user04@gmail.com",
+                            NormalizedUserName = "USER04@GMAIL.COM",
+                            Email = "user04@gamil.com",
+                            NormalizedEmail = "USER04@GMAIL.COM",
+                            ConcurrencyStamp = "37285e0f-b3c2-4a75-85f6-73a3c4c6da29",
+                            PasswordHash = "AQAAAAEAACcQAAAAEED86xKz3bHadNf8B1Hg8t5qNefw4Bq1Kr2q6Jx9Ss/DcRIcUpLiFkDgQZTqUgJThA==", //qWe!123
+                            SecurityStamp = "DKBWMTFC7TZQZ6UFNZ5BN5XQNDYUBJYQ,09bd35b0-9c9f-4772-8789-e6d4b9fbe9c4",
+                            EmailConfirmed = true
+                        },
+                    });
             });
 
             modelBuilder.Entity<Genre>(entity =>
