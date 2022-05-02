@@ -37,6 +37,7 @@ namespace DB.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.HasPostgresExtension("uuid-ossp");
             //Entities for testing
             var user = new UserInfo()
                     {
@@ -130,7 +131,71 @@ namespace DB.Data
                             PlaylistType = PlaylistType.User,
                             ImgSrc = "src12",
                             Verified = true
-                        }
+                        },
+                        new Playlist{
+                            Id = 3,
+                            UserId = user.Id,
+                            Title = "simple playlist",
+                            PlaylistType = PlaylistType.User,
+                            ImgSrc = "src12",
+                            Verified = true
+                        },
+                        new Playlist{
+                            Id = 4,
+                            UserId = user.Id,
+                            Title = "simple playlist",
+                            PlaylistType = PlaylistType.User,
+                            ImgSrc = "src12",
+                            Verified = true
+                        },
+                        new Playlist{
+                            Id = 5,
+                            UserId = user.Id,
+                            Title = "simple playlist",
+                            PlaylistType = PlaylistType.User,
+                            ImgSrc = "src12",
+                            Verified = true
+                        },
+                        new Playlist{
+                            Id = 6,
+                            UserId = user.Id,
+                            Title = "simple playlist",
+                            PlaylistType = PlaylistType.User,
+                            ImgSrc = "src12",
+                            Verified = true
+                        },
+                        new Playlist{
+                            Id = 7,
+                            UserId = user.Id,
+                            Title = "simple playlist",
+                            PlaylistType = PlaylistType.User,
+                            ImgSrc = "src12",
+                            Verified = true
+                        },
+                        new Playlist{
+                            Id = 8,
+                            UserId = user.Id,
+                            Title = "simple playlist",
+                            PlaylistType = PlaylistType.User,
+                            ImgSrc = "src12",
+                            Verified = true
+                        },
+                        new Playlist{
+                            Id = 9,
+                            UserId = user.Id,
+                            Title = "simple playlist",
+                            PlaylistType = PlaylistType.User,
+                            ImgSrc = "src12",
+                            Verified = true
+                        },
+                        new Playlist{
+                            Id = 10,
+                            UserId = user.Id,
+                            Title = "simple playlist",
+                            PlaylistType = PlaylistType.User,
+                            ImgSrc = "src12",
+                            Verified = true
+                        },
                     });
             });
 
