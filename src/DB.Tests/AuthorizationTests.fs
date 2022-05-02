@@ -25,7 +25,7 @@ let ``Correct Sign Up returns JWT`` () =
     let profile = "{\"UserId\":\"\",\"Username\":\"user\",\"Birthday\":null,\"Country\":1,\"ProfileImg\":null,\"UserType\":0,\"User\":null}"
     let response = client.PostAsync($"/signup?profileJson={profile}", content)
     Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
-    let responseJson = response.Result.Content.ReadAsStringAsync().Result.Replace("\r\n", "").Replace(" ", "")
+    let responseJson = response.Result.Content.ReadAsStringAsync().Result
     let responseData = JsonSerializer.Deserialize<ResponseToken> responseJson
     Assert.NotNull(responseData.access_token)
     
@@ -60,10 +60,11 @@ let ``Correct Login returns JWT`` () =
     content.Headers.ContentType <- Headers.MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded")
     let response = client.PostAsync($"/login", content)
     Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
-    let responseJson = response.Result.Content.ReadAsStringAsync().Result.Replace("\r\n", "").Replace(" ", "")
+    let responseJson = response.Result.Content.ReadAsStringAsync().Result
     let responseData = JsonSerializer.Deserialize<ResponseToken> responseJson
     Assert.NotNull(responseData.access_token)
-    
+
+[<Fact>]
 let ``Log In with wrong user name return BadRequest`` () =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient();
@@ -79,6 +80,7 @@ let ``Log In with wrong user name return BadRequest`` () =
     let responseJson = response.Result.Content.ReadAsStringAsync().Result
     let responseData = JsonSerializer.Deserialize<ResponseError> responseJson
     Assert.Equal("The username/password couple is invalid.", responseData.error_description)
+    
 [<Fact>]
 let ``Log In with wrong password return BadRequest`` () =
     let _factory = new WebApplicationFactory<Startup>()
