@@ -7,8 +7,8 @@ open System.Text.Json
 open Microsoft.AspNetCore.Mvc.Testing
 open Xunit
 open DB
-open DB.Tests.ResponseToken
 
+type ResponseToken = {access_token: string; token_type: string; expires_in: int}
 type ResponseError = {error: string; error_description: string; error_uri: string}
 
 [<Fact>]
@@ -17,7 +17,7 @@ let ``Correct Sign Up returns JWT`` () =
     let client = _factory.CreateClient();
     let values = [|
         KeyValuePair<string, string>("grant_type", "password");
-        KeyValuePair<string, string>("username", "Admin6932@gmail.com");
+        KeyValuePair<string, string>("username", "Admin689@gmail.com");
         KeyValuePair<string, string>("password", "AsdQwe-123");
     |]
     let content = new FormUrlEncodedContent(values)
@@ -96,4 +96,4 @@ let ``Log In with wrong password return BadRequest`` () =
     Assert.Equal(HttpStatusCode.BadRequest, response.Result.StatusCode)
     let responseJson = response.Result.Content.ReadAsStringAsync().Result
     let responseData = JsonSerializer.Deserialize<ResponseError> responseJson
-    Assert.Equal("The username/password couple is invalid.", responseData.error_description)
+    Assert.Equal("The username/password couple is invalid.", responseData.error_description)   
