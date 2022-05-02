@@ -1,4 +1,5 @@
-﻿using DB.Models;
+﻿using DB.Data;
+using DB.Models;
 using Microsoft.AspNetCore.Identity;
 using OpenIddict.Abstractions;
 using static Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults;

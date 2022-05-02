@@ -1,10 +1,9 @@
-﻿using System;
+﻿using DB.Models;
 using DB.Models.EnumTypes;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
-namespace DB.Models
+namespace DB.Data
 {
     public class SpotifyContext : IdentityDbContext<UserInfo>
     {
@@ -164,7 +163,7 @@ namespace DB.Models
             modelBuilder.Entity<Song>(entity =>
             {
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
-                /*entity.HasData(
+                entity.HasData(
                     new Song[]
                     {
                         new Song{Id = 1, UserId = user.Id, Name = "song1", Source = "src1"},
@@ -172,7 +171,7 @@ namespace DB.Models
                         new Song{Id = 3, UserId = user.Id, Name = "song3", Source = "src3"},
                         new Song{Id = 4, UserId = user.Id, Name = "song4", Source = "src4"},
                         new Song{Id = 5, UserId = user.Id, Name = "song5", Source = "src5"},
-                    });*/
+                    });
             });
 
         }
