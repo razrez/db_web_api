@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using DB.Data;
 using DB.Models;
 using DB.Models.EnumTypes;
 using Microsoft.AspNetCore;
@@ -47,63 +48,74 @@ public class AuthorizationController : ControllerBase
     public async Task<IActionResult> SignUp(string profileJson)
     {
         var request = HttpContext.GetOpenIddictServerRequest();
-        
-        var user = new UserInfo();
-
-        await _userStore.SetUserNameAsync(user, request?.Username, CancellationToken.None);
-        await _emailStore.SetEmailAsync(user, request?.Username, CancellationToken.None);
-        user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, request?.Password);
-        var result = await _userManager.CreateAsync(user);
-
-        if (result.Succeeded)
+        if (request?.IsPasswordGrantType() == true)
         {
-            var userId = await _userManager.GetUserIdAsync(user);
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            await _userManager.ConfirmEmailAsync(user, code);
+            var user = new UserInfo();
 
-            var profile = JsonConvert.DeserializeObject<Profile>(profileJson);
-            if (profile != null)
+            await _userStore.SetUserNameAsync(user, request?.Username, CancellationToken.None);
+            await _emailStore.SetEmailAsync(user, request?.Username, CancellationToken.None);
+            user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, request?.Password);
+            var result = await _userManager.CreateAsync(user);
+
+            if (result.Succeeded)
             {
-                profile.UserId = user.Id;
-                await _ctx.Profiles.AddAsync(profile);
+                var userId = await _userManager.GetUserIdAsync(user);
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                await _userManager.ConfirmEmailAsync(user, code);
+
+                var profile = JsonConvert.DeserializeObject<Profile>(profileJson);
+                if (profile != null)
+                {
+                    profile.UserId = user.Id;
+                    await _ctx.Profiles.AddAsync(profile);
+                }
+
+                var likedSongs = new Playlist()
+                {
+                    Title = "Liked Songs",
+                    UserId = user.Id,
+                    PlaylistType = PlaylistType.LikedSongs,
+                    Verified = true
+                };
+                await _ctx.AddAsync(likedSongs);
+
+                await _ctx.SaveChangesAsync();
+
+                var principal = await _signInManager.CreateUserPrincipalAsync(user);
+
+                principal.SetScopes(new[]
+                {
+                    Scopes.Email,
+                    Scopes.Profile,
+                    Scopes.Roles
+                }.Intersect(request.GetScopes()));
+
+                foreach (var claim in principal.Claims)
+                {
+                    claim.SetDestinations(GetDestinations(claim, principal));
+                }
+
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
 
-            var likedSongs = new Playlist()
+            var properties = new AuthenticationProperties(new Dictionary<string, string?>
             {
-                Title = "Liked Songs",
-                UserId = user.Id,
-                PlaylistType = PlaylistType.LikedSongs,
-                Verified = true
-            };
-            await _ctx.AddAsync(likedSongs);
-            
-            await _ctx.SaveChangesAsync();
-            
-        var principal = await _signInManager.CreateUserPrincipalAsync(user);
-            
-            principal.SetScopes(new[]
-            {
-                Scopes.Email,
-                Scopes.Profile,
-                Scopes.Roles
-            }.Intersect(request.GetScopes()));
-            
-            foreach (var claim in principal.Claims)
-            {
-                claim.SetDestinations(GetDestinations(claim, principal));
-            }
-            
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                [Properties.Error] = OpenIddictConstants.Errors.InvalidGrant,
+                [Properties.ErrorDescription] =
+                    "Unable to create new user"
+            });
+
+            return Forbid(properties, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
-        var properties = new AuthenticationProperties(new Dictionary<string, string?>
+        var responseProperties = new AuthenticationProperties(new Dictionary<string, string?>
         {
             [Properties.Error] = OpenIddictConstants.Errors.InvalidGrant,
             [Properties.ErrorDescription] =
-                "Unable to create new user"
+                "The specified grant type is not implemented."
         });
+        return Forbid(responseProperties, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
-        return Forbid(properties, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
     
     [HttpPost("~/login"), Produces("application/json")]
