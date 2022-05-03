@@ -8,7 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="ResponseToken.fs" />
+        <Compile Include="AuthorizeUser.fs" />
         <Compile Include="AuthorizationTests.fs" />
+        <Compile Include="NewHomePageTests.fs" />
         <Compile Include="UserContentTests.fs" />
     </ItemGroup>
 
