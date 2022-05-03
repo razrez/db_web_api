@@ -73,8 +73,11 @@ public class UserContentController : ControllerBase
         var playlist = await _ctx.Playlists.FirstAsync();
         foreach (var song in songs) playlist.Songs.Add(song);
         playlist.Users.Add(user);
-        _ctx.Playlists.Update(playlist);
-        
-        var res = await _ctx.SaveChangesAsync();
+        if (!_ctx.Playlists.Contains(playlist))
+        {
+            _ctx.Playlists.Update(playlist);
+            
+            var res = await _ctx.SaveChangesAsync();
+        }
     }
 }
