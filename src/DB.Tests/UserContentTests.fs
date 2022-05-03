@@ -14,42 +14,23 @@ type playlist = { id: int; userId: string; title: string; playlistType:int; song
 type responsePlaylists = List<playlist>
 
 
-[<Fact>]
-let ``GetUserName returns real user's name by id 5f34130c-2ed9-4c83-a600-e474e8f48bac`` () =
+[<Theory>]
+[<InlineData("5f34130c-2ed9-4c83-a600-e474e8f48bac","user01@gmail.com")>]
+[<InlineData("5f34130c-2ed9-4c83-a600-e474e8f43bac","user03@gmail.com")>]
+[<InlineData("5f34130c-2ed9-4c83-a600-e474e8f44bac","user04@gmail.com")>]
+let ``GetUserName returns real user's name by id 5f34130c-2ed9-4c83-a600-e474e8f48bac`` (id:string, expected:string) =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient();
     
-    let id = "5f34130c-2ed9-4c83-a600-e474e8f48bac"
+    //let id = "5f34130c-2ed9-4c83-a600-e474e8f48bac"
     let response = client.GetAsync($"/UserContent/name/user/{id}")
     Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
+    
     let responseJson = response.Result.Content.ReadAsStringAsync().Result
     let responseData = JsonSerializer.Deserialize<responseName> responseJson
-    Assert.Equal("user01@gmail.com",responseData.name)
+    Assert.Equal(expected,responseData.name)
     
-[<Fact>]
-let ``GetUserName returns real user's name by id 5f34130c-2ed9-4c83-a600-e474e8f43bac`` () =
-    let _factory = new WebApplicationFactory<Startup>()
-    let client = _factory.CreateClient();
-    
-    let id = "5f34130c-2ed9-4c83-a600-e474e8f43bac"
-    let response = client.GetAsync($"/UserContent/name/user/{id}")
-    Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
-    let responseJson = response.Result.Content.ReadAsStringAsync().Result
-    let responseData = JsonSerializer.Deserialize<responseName> responseJson
-    Assert.Equal("user03@gmail.com",responseData.name)
-    
-[<Fact>]
-let ``GetUserName returns real user's name by id 5f34130c-2ed9-4c83-a600-e474e8f44bac`` () =
-    let _factory = new WebApplicationFactory<Startup>()
-    let client = _factory.CreateClient();
-    
-    let id = "5f34130c-2ed9-4c83-a600-e474e8f44bac"
-    let response = client.GetAsync($"/UserContent/name/user/{id}")
-    Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
-    let responseJson = response.Result.Content.ReadAsStringAsync().Result
-    let responseData = JsonSerializer.Deserialize<responseName> responseJson
-    Assert.Equal("user04@gmail.com",responseData.name)
-    
+
 [<Fact>]
 let ``GetUserName returns NotFound with description`` () =
     let _factory = new WebApplicationFactory<Startup>()
