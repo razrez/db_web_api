@@ -10,8 +10,8 @@
     <ItemGroup>
         <Compile Include="ResponseToken.fs" />
         <Compile Include="AuthorizeUser.fs" />
-        <Compile Include="HomePageTests.fs" />
-        <Compile Include="AuthorizationTests.fs" />
+        <Compile Include="HomePageTests1.fs" />
+        <Compile Include="AuthorizationTests1.fs" />
     </ItemGroup>
 
     <ItemGroup>
