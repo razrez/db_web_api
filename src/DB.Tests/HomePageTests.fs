@@ -40,8 +40,3 @@ let ``Unauthorized get random playlists`` (count: int, statusCode: HttpStatusCod
     let client = _factory.CreateClient()
     let response = client.GetAsync($"/playlists/random?count={count}")
     Assert.Equal(statusCode, response.Result.StatusCode)
-    if response.Result.StatusCode = HttpStatusCode.OK
-    then
-    let responseJson = response.Result.Content.ReadAsStringAsync().Result
-    let responseData = JsonSerializer.Deserialize<List<DB.Models.Playlist>> responseJson
-    Assert.NotNull(responseData)
