@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using DB.Data;
 using DB.Models;
+using DB.Models.Authorization;
 using DB.Models.EnumTypes;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
@@ -44,8 +45,10 @@ public class AuthorizationController : ControllerBase
         return (IUserEmailStore<UserInfo>)_userStore;
     }
     
-    [HttpPost("~/signup"), Produces("application/json")]
-    public async Task<IActionResult> SignUp(string profileJson)
+    [HttpPost("~/signup")]
+    [Produces("application/json")]
+    [Consumes("application/x-www-form-urlencoded")]
+    public async Task<IActionResult> SignUp([FromForm] AuthorizationData authorizationData, string profileJson)
     {
         var request = HttpContext.GetOpenIddictServerRequest();
         if (request?.IsPasswordGrantType() == true)
@@ -118,10 +121,12 @@ public class AuthorizationController : ControllerBase
 
     }
     
-    [HttpPost("~/login"), Produces("application/json")]
-    public async Task<IActionResult> LogIn()
-        {
-            var request = HttpContext.GetOpenIddictServerRequest();
+    [HttpPost("~/login")]
+    [Produces("application/json")]
+    [Consumes("application/x-www-form-urlencoded")]
+    public async Task<IActionResult> LogIn([FromForm] AuthorizationData authorizationData)
+    {
+        var request = HttpContext.GetOpenIddictServerRequest();
             if (request?.IsPasswordGrantType() == true)
             {
                 var user = await _userManager.FindByNameAsync(request.Username);
