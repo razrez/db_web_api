@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using DB.Attributes;
 using DB.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,8 +20,7 @@ public class HomePageController : ControllerBase
         _context = context;
     }
     
-    [AuthorizeWithJwt]
-    [HttpGet("/playlists/random")]
+    [HttpGet("/playlists/random"), AuthorizeWithJwt]
     public async Task<IActionResult> GetRandomPlaylists(int count)
     {
         var playlistsCount = _context.Playlists.Count();
