@@ -37,6 +37,7 @@ namespace DB.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.HasPostgresExtension("uuid-ossp");
             //Entities for testing
             var user = new UserInfo()
                     {
