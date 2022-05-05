@@ -1,8 +1,8 @@
 using System;
 using DB.Data;
+using DB.Data.Repository;
 using DB.Models;
 using DB.Models.EnumTypes;
-using DB.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -45,17 +45,16 @@ public class UserContentController : ControllerBase
     public async Task<IActionResult> GetPlaylists(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
-        if(user == null) {return NotFound(new {Error = "Unexpected id"});}
+        if (user == null)
+        {
+            return NotFound(new {Error = "Unexpected id"});
+        }
         
         //свяжем для примера имеющиеся в бд песни с плейлистами, плейлисты с пользователем
         //один раз использовал - закоммитить можно
         await LikeAllSongs(user);
 
-        var usersPlaylists = await _ctx.Playlists
-            .Include(x => x.Songs)
-            .Include(x => x.Users)
-            .AsSplitQuery()
-            .Where(k => k.UserId == userId)
+        var test = _repository.GetUsersPlaylists(userId).Result
             .Select(s => new
             {
                 s.Id, s.UserId, s.Title, s.PlaylistType,
@@ -63,17 +62,33 @@ public class UserContentController : ControllerBase
                 {
                     sk.Id, sk.UserId, sk.Name, sk.Source
                 })
-            })
-            .ToListAsync();
+            });
         
-        return new JsonResult(usersPlaylists);
+        return new JsonResult(test);
     }
 
     private async Task LikeAllSongs(UserInfo user)
     {
         var songs = await _ctx.Songs.ToListAsync();
         var playlist = await _ctx.Playlists.FirstAsync();
+        //like song
         foreach (var song in songs) playlist.Songs.Add(song);
+        playlist.Users.Add(user); //нужно чтобы по дефолту при
+                                  //создании пользователя у него был плейлист LikedSongs
+                                  //а при создании плейлиста пользователем надо их связать через индекс LikedPlaylists
+        if (!_ctx.Playlists.Contains(playlist))
+        {
+            _ctx.Playlists.Update(playlist);
+            
+            var res = await _ctx.SaveChangesAsync();
+        }
+    }
+    private async Task Test(UserInfo user)
+    {
+        var songs = await _ctx.Songs.ToListAsync();
+        var playlist = await _ctx.Playlists.FirstAsync();
+        //like song
+        foreach (var song in songs) _repository.LikeSong(user,song);
         playlist.Users.Add(user);
         if (!_ctx.Playlists.Contains(playlist))
         {

@@ -1,6 +1,6 @@
 ﻿using DB.Data;
+using DB.Data.Repository;
 using DB.Models;
-using DB.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace DB;
