@@ -2,6 +2,7 @@ using System;
 using DB.Data;
 using DB.Models;
 using DB.Models.EnumTypes;
+using DB.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,12 +17,14 @@ public class UserContentController : ControllerBase
 {
     private readonly ILogger<UserContentController> _logger;
     private readonly SpotifyContext _ctx;
+    private readonly ISpotifyRepository _repository; //чтобы всёе краш лось отдельно добавлю, пока метода не вынес
     private readonly UserManager<UserInfo> _userManager;
-    public UserContentController(ILogger<UserContentController> logger, SpotifyContext ctx, UserManager<UserInfo> userManager)
+    public UserContentController(ILogger<UserContentController> logger, SpotifyContext ctx, UserManager<UserInfo> userManager, ISpotifyRepository repository)
     {
         _logger = logger;
         _ctx = ctx;
         _userManager = userManager;
+        _repository = repository;
     }
 
     [HttpGet]
@@ -33,7 +36,6 @@ public class UserContentController : ControllerBase
         {
             return new JsonResult(new {Name = name.UserName});
         }
-
         return NotFound(new {Error = "Unexpected id"});
     }
     
