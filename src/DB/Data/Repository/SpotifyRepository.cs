@@ -24,7 +24,7 @@ public class SpotifyRepository : ISpotifyRepository
         var playlists = await _ctx.Playlists.ToListAsync();
         return playlists;
     }
-
+    
     public async Task<IEnumerable<Playlist>> GetUsersPlaylists(string userId)
     {
         var usersPlaylists = await _ctx.Playlists
@@ -56,10 +56,31 @@ public class SpotifyRepository : ISpotifyRepository
         Save();
     }
 
-    public void AddSongToPlaylist(UserInfo user, Playlist playlist)
+    //операции с плейлистами
+    public async void CreatePlaylist(UserInfo user, string title, PlaylistType playlistType, string? imgSrc)
     {
-        
-        throw new NotImplementedException();
+        var newPlaylist = new Playlist
+        {
+            UserId = user.Id,
+            Title = title,
+            PlaylistType = playlistType,
+            ImgSrc = imgSrc,
+            Verified = playlistType is PlaylistType.User or PlaylistType.LikedSongs
+        };
+        newPlaylist.Users.Add(user);
+        await _ctx.Playlists.AddAsync(newPlaylist);
+        Save();
+    }
+
+    public async Task<Playlist?> GetPlaylistInfo(int playlistId)
+    {
+        var playlist = await _ctx.Playlists
+            .Include(x => x.Songs)
+            .Include(x => x.Users)
+            .AsSplitQuery()
+            .Where(k => k.Id == playlistId)
+            .FirstOrDefaultAsync();
+        return playlist;
     }
 
     public async void Save()

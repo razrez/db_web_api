@@ -41,7 +41,7 @@ public class UserContentController : ControllerBase
     
     //5f34130c-2ed9-4c83-a600-e474e8f48bac
     [HttpGet]
-    [Route("playlists/user/{userId}", Name="GetPlaylists")]
+    [Route("playlists/user/{userId}", Name="GetUsersPlaylists")]
     public async Task<IActionResult> GetPlaylists(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
@@ -54,7 +54,7 @@ public class UserContentController : ControllerBase
         //один раз использовал - закоммитить можно
         await LikeAllSongs(user);
 
-        var test = _repository.GetUsersPlaylists(userId).Result
+        var usersPlaylists = _repository.GetUsersPlaylists(userId).Result
             .Select(s => new
             {
                 s.Id, s.UserId, s.Title, s.PlaylistType,
@@ -64,7 +64,7 @@ public class UserContentController : ControllerBase
                 })
             });
         
-        return new JsonResult(test);
+        return new JsonResult(usersPlaylists);
     }
 
     private async Task LikeAllSongs(UserInfo user)
@@ -86,15 +86,7 @@ public class UserContentController : ControllerBase
     private async Task Test(UserInfo user)
     {
         var songs = await _ctx.Songs.ToListAsync();
-        var playlist = await _ctx.Playlists.FirstAsync();
-        //like song
+        //like song - adding to LikedSongs-playlist
         foreach (var song in songs) _repository.LikeSong(user,song);
-        playlist.Users.Add(user);
-        if (!_ctx.Playlists.Contains(playlist))
-        {
-            _ctx.Playlists.Update(playlist);
-            
-            var res = await _ctx.SaveChangesAsync();
-        }
     }
 }

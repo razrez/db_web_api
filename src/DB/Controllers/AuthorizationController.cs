@@ -77,6 +77,8 @@ public class AuthorizationController : ControllerBase
                     PlaylistType = PlaylistType.LikedSongs,
                     Verified = true
                 };
+                
+                likedSongs.Users.Add(user);
                 await _ctx.AddAsync(likedSongs);
 
                 await _ctx.SaveChangesAsync();
