@@ -52,7 +52,7 @@ public class UserContentController : ControllerBase
         
         //свяжем для примера имеющиеся в бд песни с плейлистами, плейлисты с пользователем
         //один раз использовал - закоммитить можно
-        await LikeAllSongs(user);
+        await LikeAllSongs(user);//говно метод - надо норм
 
         var usersPlaylists = _repository.GetUsersPlaylists(userId).Result
             .Select(s => new
@@ -76,17 +76,21 @@ public class UserContentController : ControllerBase
         playlist.Users.Add(user); //нужно чтобы по дефолту при
                                   //создании пользователя у него был плейлист LikedSongs
                                   //а при создании плейлиста пользователем надо их связать через индекс LikedPlaylists
+        _ctx.Playlists.Update(playlist);
+        await _ctx.SaveChangesAsync();
+    }
+    
+    private async Task Test(UserInfo user)
+    {
+        var songs = await _ctx.Songs.ToListAsync();
+        //like song
+        foreach (var song in songs) _repository.LikeSong(user,song);
+        /*playlist.Users.Add(user);
         if (!_ctx.Playlists.Contains(playlist))
         {
             _ctx.Playlists.Update(playlist);
             
             var res = await _ctx.SaveChangesAsync();
-        }
-    }
-    private async Task Test(UserInfo user)
-    {
-        var songs = await _ctx.Songs.ToListAsync();
-        //like song - adding to LikedSongs-playlist
-        foreach (var song in songs) _repository.LikeSong(user,song);
+        }*/
     }
 }

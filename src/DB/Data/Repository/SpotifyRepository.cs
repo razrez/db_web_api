@@ -36,12 +36,6 @@ public class SpotifyRepository : ISpotifyRepository
         return usersPlaylists;
     }
     
-    public void LikePlaylist(UserInfo user, Playlist playlist)
-    {
-        playlist.Users.Add(user);
-        _ctx.Playlists.Update(playlist);
-        Save();
-    }
 
     public async void LikeSong(UserInfo user, Song song)
     {
@@ -71,7 +65,12 @@ public class SpotifyRepository : ISpotifyRepository
         await _ctx.Playlists.AddAsync(newPlaylist);
         Save();
     }
-
+    public void LikePlaylist(UserInfo user, Playlist playlist)
+        {
+            playlist.Users.Add(user);
+            _ctx.Playlists.Update(playlist);
+            Save();
+        }
     public async Task<Playlist?> GetPlaylistInfo(int playlistId)
     {
         var playlist = await _ctx.Playlists
@@ -81,6 +80,52 @@ public class SpotifyRepository : ISpotifyRepository
             .Where(k => k.Id == playlistId)
             .FirstOrDefaultAsync();
         return playlist;
+    }
+
+    public bool EditPlaylist(Playlist playlist, string title)
+    {
+        try
+        {
+            playlist.Title = title;
+            _ctx.Playlists.Update(playlist);
+            Save();
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    public bool EditPlaylist(Playlist playlist, string? title, string imgSrc)
+    {
+        try
+        {
+            if (title != null) playlist.Title = title;
+            playlist.ImgSrc = imgSrc;
+            _ctx.Playlists.Update(playlist);
+            Save();
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> DeletePlaylist(int playlistId)
+    {
+        try
+        {
+            var currentPlaylist = await _ctx.Playlists.FindAsync(playlistId);
+            if (currentPlaylist != null) _ctx.Playlists.RemoveRange(currentPlaylist);
+            Save();
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     public async void Save()
