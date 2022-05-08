@@ -1,5 +1,6 @@
 ﻿using DB.Models;
 using DB.Models.EnumTypes;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DB.Data.Repository;
@@ -7,10 +8,12 @@ namespace DB.Data.Repository;
 public class SpotifyRepository : ISpotifyRepository
 {
     private readonly SpotifyContext _ctx;
+    private readonly UserManager<UserInfo> _userManager;
 
-    public SpotifyRepository(SpotifyContext ctx)
+    public SpotifyRepository(SpotifyContext ctx, UserManager<UserInfo> userManager)
     {
         _ctx = ctx;
+        _userManager = userManager;
     }
 
     public async Task<IEnumerable<Song>> GetSongs() => await _ctx.Songs.ToListAsync();
@@ -42,27 +45,35 @@ public class SpotifyRepository : ISpotifyRepository
     }
 
     //операции с плейлистами
-    public async void CreatePlaylist(UserInfo user, string title, PlaylistType playlistType, string? imgSrc)
+    public async Task<bool> CreatePlaylist(Playlist newPlaylist)
     {
-        var newPlaylist = new Playlist
+        try
         {
-            UserId = user.Id,
-            Title = title,
-            PlaylistType = playlistType,
-            ImgSrc = imgSrc,
-            Verified = playlistType is PlaylistType.User or PlaylistType.LikedSongs
-        };
-        newPlaylist.Users.Add(user);
-        await _ctx.Playlists.AddAsync(newPlaylist);
-        Save();
+            var user = await _userManager.FindByIdAsync(newPlaylist.UserId);
+            var isContain = await _ctx.Playlists.ContainsAsync(newPlaylist);
+            if (!isContain && user != null)
+            {
+                newPlaylist.Users.Add(user);
+                await _ctx.Playlists.AddAsync(newPlaylist);
+                Save();
+                return true;
+            }
+
+            return false;//if already exists
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+        
     }
     
     public void LikePlaylist(UserInfo user, Playlist playlist)
-        {
-            playlist.Users.Add(user);
-            _ctx.Playlists.Update(playlist);
-            Save();
-        }
+    {
+        playlist.Users.Add(user);
+        _ctx.Playlists.Update(playlist);
+        Save();
+    }
     
     public async Task<Playlist?> GetPlaylistInfo(int playlistId)
     {

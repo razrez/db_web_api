@@ -76,8 +76,15 @@ public class UserContentController : ControllerBase
         playlist.Users.Add(user); //нужно чтобы по дефолту при
                                   //создании пользователя у него был плейлист LikedSongs
                                   //а при создании плейлиста пользователем надо их связать через индекс LikedPlaylists
-        _ctx.Playlists.Update(playlist);
-        await _ctx.SaveChangesAsync();
+
+        var isContain = await _ctx.Playlists.ContainsAsync(playlist);
+        if (!isContain)
+        {
+            _ctx.Playlists.Update(playlist);
+            await _ctx.SaveChangesAsync();
+        }
+
+        
     }
     
     private async Task Test(UserInfo user)

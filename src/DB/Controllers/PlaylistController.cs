@@ -27,7 +27,19 @@ public class PlaylistController : ControllerBase
     public async Task<IActionResult> EditPlaylist(Playlist newPlaylist)
     {
         if (!ModelState.IsValid) return BadRequest("not a valid model");
+        
         var editRes = await _ctx.EditPlaylist(newPlaylist);
+        
         return editRes ? Ok() : BadRequest(new {Error = "something went wrong"});
+    }
+
+    [HttpPost("create")]
+    public async Task<IActionResult> CreatePlaylist(Playlist newPlaylist)
+    {
+        if (!ModelState.IsValid) return BadRequest("not a valid model");
+        
+        var createRes = await _ctx.CreatePlaylist(newPlaylist);
+        
+        return createRes ? Ok() : BadRequest(new {Error = "something went wrong"});
     }
 }
