@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using DB.Models.EnumTypes;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,14 +41,14 @@ namespace DB.Models
         public bool? Verified { get; set; }
         
         
-        
-        
         //это для индекс таблицы playlist_song (связь многие ко многим)
+        [JsonIgnore]
         [ForeignKey("PlaylistId")]
         [InverseProperty("Playlists")]
         public ICollection<Song> Songs { get; set; }
         
         //это тоже для индекс таблицы liked_playlist (связь многие ко многим)
+        [JsonIgnore]
         public ICollection<UserInfo> Users { get; set; }
         
     }

@@ -22,9 +22,7 @@ public interface ISpotifyRepository
     ///     The task result contains a <see cref="Playlist" /> 
     /// </returns>
     Task<Playlist?> GetPlaylistInfo(int playlistId);
-
-    bool EditPlaylist(Playlist playlist, string title);
-    bool EditPlaylist(Playlist playlist, string? title, string imgSrc);
+    Task<bool> EditPlaylist(Playlist newPlaylist);
     Task<bool> DeletePlaylist(int playlistId);
     void Save();
     

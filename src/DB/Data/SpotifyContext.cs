@@ -140,6 +140,7 @@ namespace DB.Data
 
                             j.IndexerProperty<int>("SongId").HasColumnName("song_id");
                         });
+                
                 //при создании пользователя создается басовый плейлист LikedSongs с
                 //PlaylistType = PlaylistType.LikedSongs,
                 entity.HasData(

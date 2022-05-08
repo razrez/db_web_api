@@ -13,17 +13,9 @@ public class SpotifyRepository : ISpotifyRepository
         _ctx = ctx;
     }
 
-    public async Task<IEnumerable<Song>> GetSongs()
-    {
-        var songs = await _ctx.Songs.ToListAsync();
-        return songs;
-    }
+    public async Task<IEnumerable<Song>> GetSongs() => await _ctx.Songs.ToListAsync();
     
-    public async Task<IEnumerable<Playlist>> GetAllPlaylists()
-    {
-        var playlists = await _ctx.Playlists.ToListAsync();
-        return playlists;
-    }
+    public async Task<IEnumerable<Playlist>> GetAllPlaylists() => await _ctx.Playlists.ToListAsync();
     
     public async Task<IEnumerable<Playlist>> GetUsersPlaylists(string userId)
     {
@@ -36,7 +28,6 @@ public class SpotifyRepository : ISpotifyRepository
         return usersPlaylists;
     }
     
-
     public async void LikeSong(UserInfo user, Song song)
     {
         var likedSongsPlaylist = await _ctx.Playlists
@@ -65,12 +56,14 @@ public class SpotifyRepository : ISpotifyRepository
         await _ctx.Playlists.AddAsync(newPlaylist);
         Save();
     }
+    
     public void LikePlaylist(UserInfo user, Playlist playlist)
         {
             playlist.Users.Add(user);
             _ctx.Playlists.Update(playlist);
             Save();
         }
+    
     public async Task<Playlist?> GetPlaylistInfo(int playlistId)
     {
         var playlist = await _ctx.Playlists
@@ -82,30 +75,25 @@ public class SpotifyRepository : ISpotifyRepository
         return playlist;
     }
 
-    public bool EditPlaylist(Playlist playlist, string title)
-    {
-        try
-        {
-            playlist.Title = title;
-            _ctx.Playlists.Update(playlist);
-            Save();
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
-    }
 
-    public bool EditPlaylist(Playlist playlist, string? title, string imgSrc)
+    public async Task<bool> EditPlaylist(Playlist newPlaylist)
     {
         try
         {
-            if (title != null) playlist.Title = title;
-            playlist.ImgSrc = imgSrc;
-            _ctx.Playlists.Update(playlist);
-            Save();
-            return true;
+            var ctxPlaylist = await _ctx.Playlists.FindAsync(newPlaylist.Id);
+            if (ctxPlaylist != null)
+            {
+                ctxPlaylist.Title = newPlaylist.Title;
+                if (newPlaylist.ImgSrc != null && newPlaylist.ImgSrc != ctxPlaylist.ImgSrc)
+                {
+                    ctxPlaylist.ImgSrc = newPlaylist.ImgSrc;
+                }
+                _ctx.Playlists.Update(ctxPlaylist);
+                Save();
+                return true;
+            }
+            
+            return false;
         }
         catch (Exception)
         {
