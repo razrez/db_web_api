@@ -42,4 +42,21 @@ public class PlaylistController : ControllerBase
         
         return createRes ? Ok() : BadRequest(new {Error = "something went wrong"});
     }
+
+    [HttpGet("getInfo/{playlistId}")]
+    public async Task<IActionResult> GetPlaylistInfo(int playlistId)
+    {
+        var playlist = await _ctx.GetPlaylistInfo(playlistId);
+        if (playlist == null) return NotFound("playlist not found");
+        var result = new JsonResult(new
+        {
+            playlist.Id, playlist.UserId, playlist.Title, playlist.PlaylistType,
+            Songs = playlist.Songs.Select(sk => new
+            {
+                sk.Id, sk.UserId, sk.Name, sk.Source
+            })
+        });
+        
+        return result;
+    }
 }

@@ -86,7 +86,6 @@ public class SpotifyRepository : ISpotifyRepository
         return playlist;
     }
 
-
     public async Task<bool> EditPlaylist(Playlist newPlaylist)
     {
         try
