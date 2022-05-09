@@ -68,11 +68,30 @@ public class SpotifyRepository : ISpotifyRepository
         
     }
     
-    public void LikePlaylist(UserInfo user, Playlist playlist)
+    public async Task<bool> LikePlaylist(int playlistId, string userId)
     {
-        playlist.Users.Add(user);
-        _ctx.Playlists.Update(playlist);
-        Save();
+        try
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            var playlist = await _ctx.Playlists.FindAsync(playlistId);
+            //if any is empty
+            if (playlist == null || user == null) return false;
+            
+            playlist.Users.Add(user);
+            //check if already liked
+            var isContain = await _ctx.Playlists.ContainsAsync(playlist);
+            if (!isContain)
+            {
+                _ctx.Playlists.Update(playlist);
+                await _ctx.SaveChangesAsync();
+            }
+            
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
     
     public async Task<Playlist?> GetPlaylistInfo(int playlistId)

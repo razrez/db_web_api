@@ -20,7 +20,7 @@ public class PlaylistController : ControllerBase
     public async Task<IActionResult> DeletePlaylist(int playlistId)
     {
         var res = await _ctx.DeletePlaylist(playlistId);
-        return res ? Ok() : NotFound("playlist not found");
+        return res ? Ok() : NotFound(new {Errpr = "playlist not found"});
     }
 
     [HttpPut("edit")]
@@ -47,7 +47,8 @@ public class PlaylistController : ControllerBase
     public async Task<IActionResult> GetPlaylistInfo(int playlistId)
     {
         var playlist = await _ctx.GetPlaylistInfo(playlistId);
-        if (playlist == null) return NotFound("playlist not found");
+        if (playlist == null) return NotFound(new {Error = "playlist not found"});
+        
         var result = new JsonResult(new
         {
             playlist.Id, playlist.UserId, playlist.Title, playlist.PlaylistType,
@@ -58,5 +59,12 @@ public class PlaylistController : ControllerBase
         });
         
         return result;
+    }
+
+    [HttpPost("like")]
+    public async Task<IActionResult> LikePlaylist(int playlistId, string userId)
+    {
+        var res = await _ctx.LikePlaylist(playlistId, userId);
+        return res ? Ok() : BadRequest(new {Error = "something went wrong"});
     }
 }

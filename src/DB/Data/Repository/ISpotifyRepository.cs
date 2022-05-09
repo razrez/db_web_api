@@ -11,7 +11,7 @@ public interface ISpotifyRepository
 
     //операции с плейлистами
     Task<bool> CreatePlaylist(Playlist newPlaylist);
-    void LikePlaylist(UserInfo user, Playlist playlist); //+
+    Task<bool> LikePlaylist(int playlistId, string userId); //+
     
     /// <summary>
     ///     Асинхронно возвращает Task плейлист, со всей инфорацией о пользователях и песнях
