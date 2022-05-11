@@ -1,4 +1,5 @@
 ﻿using DB.Data;
+using DB.Data.Repository;
 using DB.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -67,6 +68,7 @@ public class Startup
             options.UseOpenIddict();
         });
         services.AddIdentity();
+        services.AddScoped<ISpotifyRepository, SpotifyRepository>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
