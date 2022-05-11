@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using DB.Data;
+using DB.Data.Repository;
 using DB.Models;
 using DB.Models.Authorization;
 using DB.Models.EnumTypes;
@@ -24,10 +25,10 @@ public class AuthorizationController : ControllerBase
     private readonly UserManager<UserInfo> _userManager;
     private readonly IUserStore<UserInfo> _userStore;
     private readonly IUserEmailStore<UserInfo> _emailStore;
-    private readonly SpotifyContext _ctx;
+    private readonly ISpotifyRepository _ctx;
 
     public AuthorizationController(SignInManager<UserInfo> signInManager, 
-        UserManager<UserInfo> userManager, IUserStore<UserInfo> userStore, SpotifyContext ctx)
+        UserManager<UserInfo> userManager, IUserStore<UserInfo> userStore, ISpotifyRepository ctx)
     {
         _signInManager = signInManager;
         _userManager = userManager;
@@ -70,7 +71,7 @@ public class AuthorizationController : ControllerBase
                 if (profile != null)
                 {
                     profile.UserId = user.Id;
-                    await _ctx.Profiles.AddAsync(profile);
+                    await _ctx.CreateProfileAsync(profile);
                 }
 
                 var likedSongs = new Playlist()
@@ -82,9 +83,9 @@ public class AuthorizationController : ControllerBase
                 };
                 
                 likedSongs.Users.Add(user);
-                await _ctx.AddAsync(likedSongs);
+                await _ctx.CreatePlaylist(likedSongs);
 
-                await _ctx.SaveChangesAsync();
+                await _ctx.Save();
 
                 var principal = await _signInManager.CreateUserPrincipalAsync(user);
 

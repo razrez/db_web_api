@@ -5,7 +5,9 @@ namespace DB.Data.Repository;
 public interface ISpotifyRepository : IDisposable
 {
     Task<IEnumerable<Song>> GetSongs(); 
-    Task<IEnumerable<Playlist>> GetAllPlaylists(); 
+    Task<IEnumerable<Playlist>> GetAllPlaylists();
+    int GetPlaylistsCount();
+    Task<IEnumerable<Playlist>> GetRandomPlaylists(int count);
     Task<IEnumerable<Playlist>> GetUsersPlaylists(string userId); 
     Task<bool> LikeSong(int songId, string userId); //adding to LikedSongs-playlist
     Task<string> GetUserName(string userId);
@@ -14,7 +16,7 @@ public interface ISpotifyRepository : IDisposable
     //операции с плейлистами
     Task<bool> CreatePlaylist(Playlist newPlaylist);
     Task<bool> LikePlaylist(int playlistId, string userId); //+
-    
+
     /// <summary>
     ///     Асинхронно возвращает Task плейлист, со всей инфорацией о пользователях и песнях
     /// </summary>
@@ -27,7 +29,9 @@ public interface ISpotifyRepository : IDisposable
     Task<bool> EditPlaylist(Playlist newPlaylist);
     Task<bool> DeletePlaylist(int playlistId);
     Task<IEnumerable<Playlist>?> GetUserLibrary(string userId);
-    void Save();
+    Task Save();
     Task LikeAllSongs(UserInfo user);
 
+    //операции с профилем
+    Task<bool> CreateProfileAsync(Profile newProfile);
 }

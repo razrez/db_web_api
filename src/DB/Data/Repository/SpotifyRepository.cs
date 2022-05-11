@@ -20,6 +20,15 @@ public class SpotifyRepository : ISpotifyRepository
 
     public async Task<IEnumerable<Playlist>> GetAllPlaylists() => await _ctx.Playlists.ToListAsync();
 
+    public int GetPlaylistsCount()
+    {
+        return _ctx.Playlists.Count();
+    }
+
+    public async Task<IEnumerable<Playlist>> GetRandomPlaylists(int count)
+    {
+        return await _ctx.Playlists.OrderBy(r => Guid.NewGuid()).Take(count).ToListAsync();
+    }
     public async Task<IEnumerable<Playlist>> GetUsersPlaylists(string userId)
     {
         var usersPlaylists = await _ctx.Playlists
@@ -177,9 +186,22 @@ public class SpotifyRepository : ISpotifyRepository
         return userLibrary.SelectMany(s => s.Playlists);
     }
 
-    public async void Save()
+    public async Task Save()
     {
         await _ctx.SaveChangesAsync();
+    }
+
+    public async Task<bool> CreateProfileAsync(Profile newProfile)
+    {
+        try
+        {
+            await _ctx.Profiles.AddAsync(newProfile);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
     
     //тестовая фигня
@@ -201,7 +223,7 @@ public class SpotifyRepository : ISpotifyRepository
             await _ctx.SaveChangesAsync();
         }*/
     }
-    
+
     public void Dispose()
     {
         _ctx.Dispose();

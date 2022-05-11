@@ -17,7 +17,7 @@ let ``Correct Sign Up returns JWT`` () =
     let client = _factory.CreateClient();
     let values = [|
         KeyValuePair<string, string>("grant_type", "password");
-        KeyValuePair<string, string>("username", "Admin10@gmail.com");
+        KeyValuePair<string, string>("username", "Admin101@gmail.com");
         KeyValuePair<string, string>("password", "AsdQwe-123");
     |]
     let content = new FormUrlEncodedContent(values)
