@@ -49,7 +49,7 @@ public class AuthorizationController : ControllerBase
     [HttpPost("~/signup")]
     [Produces("application/json")]
     [Consumes("application/x-www-form-urlencoded")]
-    public async Task<IActionResult> SignUp([FromForm] AuthorizationData authorizationData, string profileJson)
+    public async Task<IActionResult> SignUp([FromForm] AuthorizationData authorizationData, [FromForm] ProfileData profileData)
     {
         var request = HttpContext.GetOpenIddictServerRequest();
         if (request?.IsPasswordGrantType() == true)
@@ -67,14 +67,17 @@ public class AuthorizationController : ControllerBase
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 await _userManager.ConfirmEmailAsync(user, code);
 
-                var profile = JsonConvert.DeserializeObject<Profile>(profileJson);
-                if (profile != null)
+                var profile = new Profile()
                 {
-                    profile.UserId = user.Id;
-                    await _ctx.CreateProfileAsync(profile);
-                }
+                    UserId = user.Id,
+                    Username = profileData.Name ?? authorizationData.username,
+                    Birthday = new DateOnly(profileData.BirthYear, profileData.BirthMonth, profileData.BirthDay),
+                    ProfileImg = profileData.ProfileImg,
+                    UserType = UserType.User
+                };
+                await _ctx.CreateProfileAsync(profile);
 
-                var likedSongs = new Playlist()
+                    var likedSongs = new Playlist()
                 {
                     Title = "Liked Songs",
                     UserId = user.Id,
