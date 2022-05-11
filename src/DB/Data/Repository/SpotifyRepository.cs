@@ -16,30 +16,11 @@ public class SpotifyRepository : ISpotifyRepository
         _userManager = userManager;
     }
     
-    public async Task<IEnumerable<Song>> GetSongs() => await _ctx.Songs.ToListAsync();
-
-    public async Task<IEnumerable<Playlist>> GetAllPlaylists() => await _ctx.Playlists.ToListAsync();
-
-    public int GetPlaylistsCount()
+    //Operations with songs
+    public async Task<IEnumerable<Song>> GetSongs()
     {
-        return _ctx.Playlists.Count();
+        return await _ctx.Songs.ToListAsync();
     }
-
-    public async Task<IEnumerable<Playlist>> GetRandomPlaylists(int count)
-    {
-        return await _ctx.Playlists.OrderBy(r => Guid.NewGuid()).Take(count).ToListAsync();
-    }
-    public async Task<IEnumerable<Playlist>> GetUsersPlaylists(string userId)
-    {
-        var usersPlaylists = await _ctx.Playlists
-            .Include(x => x.Songs)
-            .Include(x => x.Users)
-            .AsSplitQuery()
-            .Where(k => k.UserId == userId)
-            .ToListAsync();
-        return usersPlaylists;
-    }
-    
     public async Task<bool> LikeSong(int songId, string userId)
     {
         try
@@ -65,16 +46,33 @@ public class SpotifyRepository : ISpotifyRepository
             return false;
         }
     }
-
-    public async Task<string> GetUserName(string userId)
-    {
-        var name = await _userManager.FindByIdAsync(userId);
-        return name.UserName;
+    
+    //Operations with playlists
+    public async Task<IEnumerable<Playlist>> GetAllPlaylists()
+    { 
+        return await _ctx.Playlists.ToListAsync();
     }
 
-    public async Task<UserInfo?> FindUserByIdAsync(string userId) => await _userManager.FindByIdAsync(userId);
+    public int GetPlaylistsCount()
+    {
+        return _ctx.Playlists.Count();
+    }
 
-    //операции с плейлистами
+    public async Task<IEnumerable<Playlist>> GetRandomPlaylists(int count)
+    {
+        return await _ctx.Playlists.OrderBy(r => Guid.NewGuid()).Take(count).ToListAsync();
+    }
+    public async Task<IEnumerable<Playlist>> GetUsersPlaylists(string userId)
+    {
+        var usersPlaylists = await _ctx.Playlists
+            .Include(x => x.Songs)
+            .Include(x => x.Users)
+            .AsSplitQuery()
+            .Where(k => k.UserId == userId)
+            .ToListAsync();
+        return usersPlaylists;
+    }
+    
     public async Task<bool> CreatePlaylist(Playlist newPlaylist)
     {
         try
@@ -101,7 +99,7 @@ public class SpotifyRepository : ISpotifyRepository
         }
         
     }
-
+    
     public async Task<bool> LikePlaylist(int playlistId, string userId)
     {
         try
@@ -122,7 +120,7 @@ public class SpotifyRepository : ISpotifyRepository
             return false;
         }
     }
-
+    
     public async Task<Playlist?> GetPlaylistInfo(int playlistId)
     {
         var playlist = await _ctx.Playlists
@@ -174,7 +172,19 @@ public class SpotifyRepository : ISpotifyRepository
             return false;
         }
     }
+    
+    //Operations with users
+    public async Task<string> GetUserName(string userId)
+    {
+        var name = await _userManager.FindByIdAsync(userId);
+        return name.UserName;
+    }
 
+    public async Task<UserInfo?> FindUserByIdAsync(string userId)
+    {
+        return await _userManager.FindByIdAsync(userId);  
+    } 
+    
     public async Task<IEnumerable<Playlist>?> GetUserLibrary(string userId)
     {
         var userLibrary = await _ctx.Users
@@ -185,12 +195,8 @@ public class SpotifyRepository : ISpotifyRepository
             .ToListAsync();
         return userLibrary.SelectMany(s => s.Playlists);
     }
-
-    public async Task Save()
-    {
-        await _ctx.SaveChangesAsync();
-    }
-
+    
+    //Operations with profiles
     public async Task<bool> CreateProfileAsync(Profile newProfile)
     {
         try
@@ -204,7 +210,11 @@ public class SpotifyRepository : ISpotifyRepository
         }
     }
     
-    //тестовая фигня
+    //Other operations
+    public async Task Save()
+    {
+        await _ctx.SaveChangesAsync();
+    }
     public async Task LikeAllSongs(UserInfo user)
     {
         var songs = await _ctx.Songs.ToListAsync();
