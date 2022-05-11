@@ -15,11 +15,11 @@ public class SpotifyRepository : ISpotifyRepository
         _ctx = ctx;
         _userManager = userManager;
     }
-
+    
     public async Task<IEnumerable<Song>> GetSongs() => await _ctx.Songs.ToListAsync();
-    
+
     public async Task<IEnumerable<Playlist>> GetAllPlaylists() => await _ctx.Playlists.ToListAsync();
-    
+
     public async Task<IEnumerable<Playlist>> GetUsersPlaylists(string userId)
     {
         var usersPlaylists = await _ctx.Playlists
@@ -31,18 +31,39 @@ public class SpotifyRepository : ISpotifyRepository
         return usersPlaylists;
     }
     
-    public async void LikeSong(UserInfo user, Song song)
+    public async Task<bool> LikeSong(int songId, string userId)
     {
-        var likedSongsPlaylist = await _ctx.Playlists
-            .Include(x => x.Songs)
-            .Include(x => x.Users)
-            .AsSplitQuery()
-            .Where(k => k.UserId == user.Id && k.PlaylistType == PlaylistType.LikedSongs)
-            .FirstAsync();
-        likedSongsPlaylist.Songs.Add(song);
-        _ctx.Playlists.Update(likedSongsPlaylist);
-        Save();
+        try
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            var song = await _ctx.Songs.FindAsync(songId);
+            var likedSongsPlaylist = await _ctx.Playlists
+                .Where(k => k.UserId == userId && k.PlaylistType == PlaylistType.LikedSongs)
+                .FirstOrDefaultAsync();
+            
+            //if any is empty
+            if (likedSongsPlaylist == null || song == null || user == null) return false;
+
+            likedSongsPlaylist.Songs.Add(song);
+            //likedSongsPlaylist.Users.Add(user);
+            _ctx.Playlists.Update(likedSongsPlaylist);
+            await _ctx.SaveChangesAsync();
+
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
+
+    public async Task<string> GetUserName(string userId)
+    {
+        var name = await _userManager.FindByIdAsync(userId);
+        return name.UserName;
+    }
+
+    public async Task<UserInfo?> FindUserByIdAsync(string userId) => await _userManager.FindByIdAsync(userId);
 
     //операции с плейлистами
     public async Task<bool> CreatePlaylist(Playlist newPlaylist)
@@ -50,16 +71,20 @@ public class SpotifyRepository : ISpotifyRepository
         try
         {
             var user = await _userManager.FindByIdAsync(newPlaylist.UserId);
-            var isContain = await _ctx.Playlists.ContainsAsync(newPlaylist);
-            if (!isContain && user != null)
+            
+            var test = new Playlist
             {
-                newPlaylist.Users.Add(user);
-                await _ctx.Playlists.AddAsync(newPlaylist);
-                Save();
-                return true;
-            }
-
-            return false;//if already exists
+                UserId = user.Id,
+                Title = newPlaylist.Title,
+                PlaylistType = newPlaylist.PlaylistType,
+                ImgSrc = "src3",
+                Verified = true
+            };
+            
+            test.Users.Add(user);
+            await _ctx.AddAsync(test);
+            await _ctx.SaveChangesAsync();
+            return true;
         }
         catch (Exception)
         {
@@ -67,7 +92,7 @@ public class SpotifyRepository : ISpotifyRepository
         }
         
     }
-    
+
     public async Task<bool> LikePlaylist(int playlistId, string userId)
     {
         try
@@ -76,16 +101,11 @@ public class SpotifyRepository : ISpotifyRepository
             var playlist = await _ctx.Playlists.FindAsync(playlistId);
             //if any is empty
             if (playlist == null || user == null) return false;
-            
+
             playlist.Users.Add(user);
-            //check if already liked
-            var isContain = await _ctx.Playlists.ContainsAsync(playlist);
-            if (!isContain)
-            {
-                _ctx.Playlists.Update(playlist);
-                await _ctx.SaveChangesAsync();
-            }
-            
+            _ctx.Playlists.Update(playlist);
+            await _ctx.SaveChangesAsync();
+
             return true;
         }
         catch (Exception)
@@ -93,7 +113,7 @@ public class SpotifyRepository : ISpotifyRepository
             return false;
         }
     }
-    
+
     public async Task<Playlist?> GetPlaylistInfo(int playlistId)
     {
         var playlist = await _ctx.Playlists
@@ -117,11 +137,12 @@ public class SpotifyRepository : ISpotifyRepository
                 {
                     ctxPlaylist.ImgSrc = newPlaylist.ImgSrc;
                 }
+
                 _ctx.Playlists.Update(ctxPlaylist);
-                Save();
+                await _ctx.SaveChangesAsync();
                 return true;
             }
-            
+
             return false;
         }
         catch (Exception)
@@ -135,8 +156,8 @@ public class SpotifyRepository : ISpotifyRepository
         try
         {
             var currentPlaylist = await _ctx.Playlists.FindAsync(playlistId);
-            if (currentPlaylist != null) _ctx.Playlists.RemoveRange(currentPlaylist);
-            Save();
+            if (currentPlaylist != null) _ctx.Remove(currentPlaylist);
+            await _ctx.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -145,8 +166,45 @@ public class SpotifyRepository : ISpotifyRepository
         }
     }
 
+    public async Task<IEnumerable<Playlist>?> GetUserLibrary(string userId)
+    {
+        var userLibrary = await _ctx.Users
+            .Include(p => p.Playlists)
+            .ThenInclude(s => s.Songs)
+            .AsSplitQuery()
+            .Where(u => u.Id == userId)
+            .ToListAsync();
+        return userLibrary.SelectMany(s => s.Playlists);
+    }
+
     public async void Save()
     {
         await _ctx.SaveChangesAsync();
+    }
+    
+    //тестовая фигня
+    public async Task LikeAllSongs(UserInfo user)
+    {
+        var songs = await _ctx.Songs.ToListAsync();
+        var playlist = await _ctx.Playlists.FirstAsync();
+        //like song
+        foreach (var song in songs) playlist.Songs.Add(song);
+        playlist.Users.Add(user); //нужно чтобы по дефолту при
+        //создании пользователя у него был плейлист LikedSongs
+        //а при создании плейлиста пользователем надо их связать через индекс LikedPlaylists
+        _ctx.Playlists.Update(playlist);
+        Save();
+        /*var isContain = await _ctx.Playlists.ContainsAsync(playlist);
+        if (!isContain)
+        {
+            _ctx.Playlists.Update(playlist);
+            await _ctx.SaveChangesAsync();
+        }*/
+    }
+    
+    public void Dispose()
+    {
+        _ctx.Dispose();
+        _userManager.Dispose();
     }
 }

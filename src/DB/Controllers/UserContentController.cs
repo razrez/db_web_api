@@ -1,12 +1,5 @@
-using System;
-using DB.Data;
 using DB.Data.Repository;
-using DB.Models;
-using DB.Models.EnumTypes;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace DB.Controllers;
 
@@ -15,15 +8,10 @@ namespace DB.Controllers;
 [Produces("application/json")]
 public class UserContentController : ControllerBase
 {
-    private readonly ILogger<UserContentController> _logger;
-    private readonly SpotifyContext _ctx;
     private readonly ISpotifyRepository _repository; //чтобы всёе краш лось отдельно добавлю, пока метода не вынес
-    private readonly UserManager<UserInfo> _userManager;
-    public UserContentController(ILogger<UserContentController> logger, SpotifyContext ctx, UserManager<UserInfo> userManager, ISpotifyRepository repository)
+
+    public UserContentController(ISpotifyRepository repository)
     {
-        _logger = logger;
-        _ctx = ctx;
-        _userManager = userManager;
         _repository = repository;
     }
 
@@ -31,10 +19,10 @@ public class UserContentController : ControllerBase
     [Route("name/user/{userId}", Name="GetUserName")]
     public async Task<IActionResult> GetUserName(string userId)
     {
-        var name = await _userManager.FindByIdAsync(userId);
-        if (name != null)
+        var name = await _repository.GetUserName(userId);
+        if (name.Length != 0)
         {
-            return new JsonResult(new {Name = name.UserName});
+            return new JsonResult(new {Name = name});
         }
         return NotFound(new {Error = "Unexpected id"});
     }
@@ -44,16 +32,17 @@ public class UserContentController : ControllerBase
     [Route("playlists/user/{userId}", Name="GetUsersPlaylists")]
     public async Task<IActionResult> GetPlaylists(string userId)
     {
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _repository.FindUserByIdAsync(userId);
         if (user == null)
         {
             return NotFound(new {Error = "Unexpected id"});
         }
         
         //свяжем для примера имеющиеся в бд песни с плейлистами, плейлисты с пользователем
+        //лайкнем самую первую песню
         //один раз использовал - закоммитить можно
-        await LikeAllSongs(user);//говно метод - надо норм
-
+        var isLiked = await _repository.LikeSong(2, userId);
+        if (!isLiked) return NotFound();
         var usersPlaylists = _repository.GetUsersPlaylists(userId).Result
             .Select(s => new
             {
@@ -67,37 +56,4 @@ public class UserContentController : ControllerBase
         return new JsonResult(usersPlaylists);
     }
 
-    private async Task LikeAllSongs(UserInfo user)
-    {
-        var songs = await _ctx.Songs.ToListAsync();
-        var playlist = await _ctx.Playlists.FirstAsync();
-        //like song
-        foreach (var song in songs) playlist.Songs.Add(song);
-        playlist.Users.Add(user); //нужно чтобы по дефолту при
-                                  //создании пользователя у него был плейлист LikedSongs
-                                  //а при создании плейлиста пользователем надо их связать через индекс LikedPlaylists
-
-        var isContain = await _ctx.Playlists.ContainsAsync(playlist);
-        if (!isContain)
-        {
-            _ctx.Playlists.Update(playlist);
-            await _ctx.SaveChangesAsync();
-        }
-
-        
-    }
-    
-    private async Task Test(UserInfo user)
-    {
-        var songs = await _ctx.Songs.ToListAsync();
-        //like song
-        foreach (var song in songs) _repository.LikeSong(user,song);
-        /*playlist.Users.Add(user);
-        if (!_ctx.Playlists.Contains(playlist))
-        {
-            _ctx.Playlists.Update(playlist);
-            
-            var res = await _ctx.SaveChangesAsync();
-        }*/
-    }
 }

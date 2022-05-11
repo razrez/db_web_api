@@ -16,7 +16,7 @@ namespace DB.Models
             Songs = new HashSet<Song>();
             Users = new HashSet<UserInfo>();
         }
-
+        
         [Key]
         [Column("id")]
         public int Id { get; set; }

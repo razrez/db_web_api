@@ -20,7 +20,7 @@ public class PlaylistController : ControllerBase
     public async Task<IActionResult> DeletePlaylist(int playlistId)
     {
         var res = await _ctx.DeletePlaylist(playlistId);
-        return res ? Ok() : NotFound(new {Errpr = "playlist not found"});
+        return res ? Ok() : NotFound(new {Error = "not found"});
     }
 
     [HttpPut("edit")]
@@ -47,7 +47,7 @@ public class PlaylistController : ControllerBase
     public async Task<IActionResult> GetPlaylistInfo(int playlistId)
     {
         var playlist = await _ctx.GetPlaylistInfo(playlistId);
-        if (playlist == null) return NotFound(new {Error = "playlist not found"});
+        if (playlist == null) return NotFound(new {Error = "not found"});
         
         var result = new JsonResult(new
         {
@@ -66,5 +66,27 @@ public class PlaylistController : ControllerBase
     {
         var res = await _ctx.LikePlaylist(playlistId, userId);
         return res ? Ok() : BadRequest(new {Error = "something went wrong"});
+    }
+
+    [HttpGet("library/user/{userId}")]
+    public async Task<IActionResult> GetUserLibrary(string userId)
+    {
+        var userLibrary = await _ctx.GetUserLibrary(userId);
+        if (userLibrary != null)
+        {
+            var result = userLibrary
+                .Select(s => new
+                {
+                    s.Id, s.UserId, s.Title, s.PlaylistType,
+                    Songs = s.Songs.Select(sk => new
+                    {
+                        sk.Id, sk.UserId, sk.Name, sk.Source
+                    })
+                });
+            
+            return new JsonResult(result);
+        }
+        
+        return NotFound(new {Error = "not found"});
     }
 }

@@ -2,12 +2,14 @@
 
 namespace DB.Data.Repository;
 
-public interface ISpotifyRepository
+public interface ISpotifyRepository : IDisposable
 {
     Task<IEnumerable<Song>> GetSongs(); 
     Task<IEnumerable<Playlist>> GetAllPlaylists(); 
     Task<IEnumerable<Playlist>> GetUsersPlaylists(string userId); 
-    void LikeSong(UserInfo user, Song song); //adding to LikedSongs-playlist
+    Task<bool> LikeSong(int songId, string userId); //adding to LikedSongs-playlist
+    Task<string> GetUserName(string userId);
+    Task<UserInfo?> FindUserByIdAsync(string userId);
 
     //операции с плейлистами
     Task<bool> CreatePlaylist(Playlist newPlaylist);
@@ -21,8 +23,11 @@ public interface ISpotifyRepository
     ///     The task result contains a <see cref="Playlist" /> 
     /// </returns>
     Task<Playlist?> GetPlaylistInfo(int playlistId);
+    
     Task<bool> EditPlaylist(Playlist newPlaylist);
     Task<bool> DeletePlaylist(int playlistId);
+    Task<IEnumerable<Playlist>?> GetUserLibrary(string userId);
     void Save();
-    
+    Task LikeAllSongs(UserInfo user);
+
 }
