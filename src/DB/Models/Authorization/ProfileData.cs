@@ -8,5 +8,6 @@ public class ProfileData
     public int BirthYear { get; set; }
     public int BirthMonth { get; set; }
     public int BirthDay { get; set; }
+    public Country Country { get; set; }
     public string ProfileImg { get; set; }
 }

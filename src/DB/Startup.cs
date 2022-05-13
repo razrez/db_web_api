@@ -47,6 +47,7 @@ public class Startup
                         new string[]{}
                     }
                 });
+                option.SchemaFilter<EnumSchemaFilter>();
             }
         );
         services.AddCors(opt =>

@@ -72,6 +72,7 @@ public class AuthorizationController : ControllerBase
                     UserId = user.Id,
                     Username = profileData.Name ?? authorizationData.username,
                     Birthday = new DateOnly(profileData.BirthYear, profileData.BirthMonth, profileData.BirthDay),
+                    Country = profileData.Country,
                     ProfileImg = profileData.ProfileImg,
                     UserType = UserType.User
                 };
