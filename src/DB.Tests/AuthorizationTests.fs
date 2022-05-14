@@ -17,13 +17,18 @@ let ``Correct Sign Up returns JWT`` () =
     let client = _factory.CreateClient();
     let values = [|
         KeyValuePair<string, string>("grant_type", "password");
-        KeyValuePair<string, string>("username", "Admin10@gmail.com");
+        KeyValuePair<string, string>("username", "Admin102@gmail.com");
         KeyValuePair<string, string>("password", "AsdQwe-123");
+        KeyValuePair<string, string>("Name", "User");
+        KeyValuePair<string, string>("BirthYear", "2000");
+        KeyValuePair<string, string>("BirthMonth", "2");
+        KeyValuePair<string, string>("BirthDay", "12");
+        KeyValuePair<string, string>("Country", "Russia");
+        KeyValuePair<string, string>("ProfileImg", "src1");
     |]
     let content = new FormUrlEncodedContent(values)
     content.Headers.ContentType <- Headers.MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded")
-    let profile = "{\"UserId\":\"\",\"Username\":\"user\",\"Birthday\":null,\"Country\":1,\"ProfileImg\":null,\"UserType\":0,\"User\":null}"
-    let response = client.PostAsync($"/signup?profileJson={profile}", content)
+    let response = client.PostAsync($"api/auth/signup", content)
     Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
     let responseJson = response.Result.Content.ReadAsStringAsync().Result
     let responseData = JsonSerializer.Deserialize<ResponseToken> responseJson
@@ -37,11 +42,16 @@ let ``Sign Up with wrong data return BadRequest`` () =
         KeyValuePair<string, string>("grant_type", "password");
         KeyValuePair<string, string>("username", "user01@gmail.com");
         KeyValuePair<string, string>("password", "qWe!123");
+        KeyValuePair<string, string>("Name", "User");
+        KeyValuePair<string, string>("BirthYear", "2000");
+        KeyValuePair<string, string>("BirthMonth", "2");
+        KeyValuePair<string, string>("BirthDay", "12");
+        KeyValuePair<string, string>("Country", "Russia");
+        KeyValuePair<string, string>("ProfileImg", "src1");
     |]
     let content = new FormUrlEncodedContent(values)
     content.Headers.ContentType <- Headers.MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded")
-    let profile = "{\"UserId\":\"\",\"Username\":\"user\",\"Birthday\":null,\"Country\":1,\"ProfileImg\":null,\"UserType\":0,\"User\":null}"
-    let response = client.PostAsync($"/signup?profileJson={profile}", content)
+    let response = client.PostAsync($"api/auth/signup", content)
     Assert.Equal(HttpStatusCode.BadRequest, response.Result.StatusCode)
     let responseJson = response.Result.Content.ReadAsStringAsync().Result
     let responseData = JsonSerializer.Deserialize<ResponseError> responseJson
@@ -58,7 +68,7 @@ let ``Correct Login returns JWT`` () =
     |]
     let content = new FormUrlEncodedContent(values)
     content.Headers.ContentType <- Headers.MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded")
-    let response = client.PostAsync($"/login", content)
+    let response = client.PostAsync($"api/auth/login", content)
     Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
     let responseJson = response.Result.Content.ReadAsStringAsync().Result
     let responseData = JsonSerializer.Deserialize<ResponseToken> responseJson
@@ -75,7 +85,7 @@ let ``Log In with wrong user name return BadRequest`` () =
     |]
     let content = new FormUrlEncodedContent(values)
     content.Headers.ContentType <- Headers.MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded")
-    let response = client.PostAsync($"/login", content)
+    let response = client.PostAsync($"api/auth/login", content)
     Assert.Equal(HttpStatusCode.BadRequest, response.Result.StatusCode)
     let responseJson = response.Result.Content.ReadAsStringAsync().Result
     let responseData = JsonSerializer.Deserialize<ResponseError> responseJson
@@ -92,7 +102,7 @@ let ``Log In with wrong password return BadRequest`` () =
     |]
     let content = new FormUrlEncodedContent(values)
     content.Headers.ContentType <- Headers.MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded")
-    let response = client.PostAsync($"/login", content)
+    let response = client.PostAsync($"api/auth/login", content)
     Assert.Equal(HttpStatusCode.BadRequest, response.Result.StatusCode)
     let responseJson = response.Result.Content.ReadAsStringAsync().Result
     let responseData = JsonSerializer.Deserialize<ResponseError> responseJson

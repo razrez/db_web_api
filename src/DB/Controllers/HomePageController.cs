@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using DB.Attributes;
 using DB.Data;
+using DB.Data.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,20 +11,21 @@ using Microsoft.EntityFrameworkCore;
 namespace DB.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/home")]
 public class HomePageController : ControllerBase
 {
-    private readonly SpotifyContext _context;
+    private readonly ISpotifyRepository _context;
 
-    public HomePageController(SpotifyContext context)
+    public HomePageController(ISpotifyRepository context)
     {
         _context = context;
     }
     
-    [HttpGet("/playlists/random"), AuthorizeWithJwt]
+    [AuthorizeWithJwt]
+    [HttpGet("random/playlists")]
     public async Task<IActionResult> GetRandomPlaylists(int count)
     {
-        var playlistsCount = _context.Playlists.Count();
+        var playlistsCount = _context.GetPlaylistsCount();
         if (count > playlistsCount)
         {
             count = playlistsCount;
@@ -32,7 +34,8 @@ public class HomePageController : ControllerBase
         {
             return BadRequest("Сan't get zero playlists");
         }
-        var playlists = await _context.Playlists.OrderBy(r => Guid.NewGuid()).Take(count).ToListAsync();
+
+        var playlists = await _context.GetRandomPlaylists(count);
         var jsonResult = JsonSerializer.Serialize(playlists);
         return Ok(jsonResult);
     }
