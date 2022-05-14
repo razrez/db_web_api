@@ -8,7 +8,6 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using static OpenIddict.Abstractions.OpenIddictConstants.Permissions;
@@ -18,7 +17,7 @@ using static OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreConstants;
 namespace DB.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/auth")]
 public class AuthorizationController : ControllerBase
 {
     private readonly SignInManager<UserInfo> _signInManager;
@@ -46,7 +45,7 @@ public class AuthorizationController : ControllerBase
         return (IUserEmailStore<UserInfo>)_userStore;
     }
     
-    [HttpPost("~/signup")]
+    [HttpPost("signup")]
     [Produces("application/json")]
     [Consumes("application/x-www-form-urlencoded")]
     public async Task<IActionResult> SignUp([FromForm] AuthorizationData authorizationData, [FromForm] ProfileData profileData)
@@ -128,7 +127,7 @@ public class AuthorizationController : ControllerBase
 
     }
     
-    [HttpPost("~/login")]
+    [HttpPost("login")]
     [Produces("application/json")]
     [Consumes("application/x-www-form-urlencoded")]
     public async Task<IActionResult> LogIn([FromForm] AuthorizationData authorizationData)

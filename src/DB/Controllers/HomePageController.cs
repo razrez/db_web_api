@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DB.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/home")]
 public class HomePageController : ControllerBase
 {
     private readonly ISpotifyRepository _context;
@@ -22,7 +22,7 @@ public class HomePageController : ControllerBase
     }
     
     [AuthorizeWithJwt]
-    [HttpGet("/playlists/random")]
+    [HttpGet("random/playlists")]
     public async Task<IActionResult> GetRandomPlaylists(int count)
     {
         var playlistsCount = _context.GetPlaylistsCount();

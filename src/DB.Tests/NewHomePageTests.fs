@@ -22,7 +22,7 @@ let ``Authorized get random playlists`` (count: int, statusCode: HttpStatusCode)
     let client = _factory.CreateClient()
     let token = AuthorizeUser
     client.DefaultRequestHeaders.Authorization <- new AuthenticationHeaderValue("Bearer", token)
-    let response = client.GetAsync($"/playlists/random?count={count}")
+    let response = client.GetAsync($"/api/home/random/playlists?count={count}")
     Assert.Equal(statusCode, response.Result.StatusCode)
     if response.Result.StatusCode = HttpStatusCode.OK
     then
@@ -38,5 +38,5 @@ let ``Authorized get random playlists`` (count: int, statusCode: HttpStatusCode)
 let ``Unauthorized get random playlists`` (count: int, statusCode: HttpStatusCode) =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient()
-    let response = client.GetAsync($"/playlists/random?count={count}")
+    let response = client.GetAsync($"/api/home/random/playlists?count={count}")
     Assert.Equal(statusCode, response.Result.StatusCode)
