@@ -120,6 +120,12 @@ public class SpotifyRepository : ISpotifyRepository
             return false;
         }
     }
+
+    public async Task<List<Playlist>> SearchPlaylists(string input)
+    {
+        var result = await _ctx.Playlists.Where(p => p.Title == input).ToListAsync();
+        return result;
+    }
     
     public async Task<Playlist?> GetPlaylistInfo(int playlistId)
     {

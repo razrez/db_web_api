@@ -15,6 +15,7 @@ public interface ISpotifyRepository : IDisposable
     Task<IEnumerable<Playlist>> GetUsersPlaylists(string userId);
     Task<bool> CreatePlaylist(Playlist newPlaylist);
     Task<bool> LikePlaylist(int playlistId, string userId); //+
+    Task<List<Playlist>> SearchPlaylists(string input);
     
     /// <summary>
     ///     Асинхронно возвращает Task плейлист, со всей инфорацией о пользователях и песнях
