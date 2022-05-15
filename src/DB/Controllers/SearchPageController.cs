@@ -18,7 +18,7 @@ public class SearchPageController : ControllerBase
     public async Task<IActionResult> SearchPlaylist(string input)
     {
         var result = await _context.SearchPlaylists(input);
-        return Ok(result);
+        return new JsonResult(result);
     }
     
 }

@@ -123,7 +123,10 @@ public class SpotifyRepository : ISpotifyRepository
 
     public async Task<List<Playlist>> SearchPlaylists(string input)
     {
-        var result = await _ctx.Playlists.Where(p => p.Title == input).ToListAsync();
+        
+        var result = await _ctx.Playlists
+            .Where(p => p.Title.ToUpper().Contains(input.ToUpper()))
+            .ToListAsync();
         return result;
     }
     
