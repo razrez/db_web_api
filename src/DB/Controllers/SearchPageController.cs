@@ -1,4 +1,5 @@
-﻿using DB.Data.Repository;
+﻿using System.Text.Json;
+using DB.Data.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DB.Controllers;
@@ -38,7 +39,9 @@ public class SearchPageController : ControllerBase
         var result = await _context.SearchProfile(input, false);
         if (result.Count == 0)
             return NotFound();
-        return new JsonResult(result);
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+        options.Converters.Add(new DateOnlyConverter());
+        return new JsonResult(result, options);
     }
     
     [HttpPost("artists")]
@@ -47,7 +50,8 @@ public class SearchPageController : ControllerBase
         var result = await _context.SearchProfile(input, true);
         if (result.Count == 0)
             return NotFound();
-        return new JsonResult(result);
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+        options.Converters.Add(new DateOnlyConverter());
+        return new JsonResult(result, options);
     }
-    
 }
