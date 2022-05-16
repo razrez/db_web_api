@@ -19,12 +19,16 @@ public class UserContentController : ControllerBase
     [Route("name/user/{userId}", Name="GetUserName")]
     public async Task<IActionResult> GetUserName(string userId)
     {
-        var name = await _repository.GetUserName(userId);
-        if (name.Length != 0)
+        try
         {
+            var name = await _repository.GetUserName(userId);
             return new JsonResult(new {Name = name});
         }
-        return NotFound(new {Error = "Unexpected id"});
+        catch (Exception)
+        {
+            return NotFound(new {Error = "Unexpected id"});
+        }
+        
     }
     
     //5f34130c-2ed9-4c83-a600-e474e8f48bac

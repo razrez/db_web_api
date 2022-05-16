@@ -1,8 +1,6 @@
 ﻿using DB.Data;
 using DB.Data.Repository;
-using DB.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 namespace DB;
