@@ -36,7 +36,6 @@ public class HomePageController : ControllerBase
         }
 
         var playlists = await _context.GetRandomPlaylists(count);
-        var jsonResult = JsonSerializer.Serialize(playlists);
-        return Ok(jsonResult);
+        return new JsonResult(playlists);
     }
 }

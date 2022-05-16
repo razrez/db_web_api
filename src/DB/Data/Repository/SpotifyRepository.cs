@@ -47,6 +47,14 @@ public class SpotifyRepository : ISpotifyRepository
         }
     }
     
+    public async Task<List<Song>> SearchSongs(string input)
+    {
+        var result = await _ctx.Songs
+            .Where(p => p.Name.ToUpper().Contains(input.ToUpper()))
+            .ToListAsync();
+        return result;
+    }
+    
     //Operations with playlists
     public async Task<IEnumerable<Playlist>> GetAllPlaylists()
     { 
@@ -119,6 +127,15 @@ public class SpotifyRepository : ISpotifyRepository
         {
             return false;
         }
+    }
+
+    public async Task<List<Playlist>> SearchPlaylists(string input)
+    {
+        
+        var result = await _ctx.Playlists
+            .Where(p => p.Title.ToUpper().Contains(input.ToUpper()))
+            .ToListAsync();
+        return result;
     }
     
     public async Task<Playlist?> GetPlaylistInfo(int playlistId)
@@ -209,7 +226,19 @@ public class SpotifyRepository : ISpotifyRepository
             return false;
         }
     }
-    
+
+    public async Task<List<Profile>> SearchProfile(string input, bool isArtist)
+    {
+        var userType = UserType.User;
+        if (isArtist)
+            userType = UserType.Artist;
+        var result = await _ctx.Profiles
+            .Where(p => p.UserType == userType)
+            .Where(p => p.Username.ToUpper().Contains(input.ToUpper()))
+            .ToListAsync();
+        return result;
+    }
+
     //Other operations
     public async Task Save()
     {
