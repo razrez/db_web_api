@@ -254,7 +254,7 @@ public class SpotifyRepository : ISpotifyRepository
         //создании пользователя у него был плейлист LikedSongs
         //а при создании плейлиста пользователем надо их связать через индекс LikedPlaylists
         _ctx.Playlists.Update(playlist);
-        Save();
+        await Save();
         /*var isContain = await _ctx.Playlists.ContainsAsync(playlist);
         if (!isContain)
         {
