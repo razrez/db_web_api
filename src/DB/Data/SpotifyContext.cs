@@ -39,19 +39,42 @@ namespace DB.Data
             base.OnModelCreating(modelBuilder);
             modelBuilder.HasPostgresExtension("uuid-ossp");
             //Entities for testing
+
             var user = new UserInfo()
-                    {
-                        Id = "5f34130c-2ed9-4c83-a600-e474e8f48bac",
-                        UserName = "user01@gmail.com",
-                        NormalizedUserName = "USER01@GMAIL.COM",
-                        Email = "user01@gamil.com",
-                        NormalizedEmail = "USER01@GMAIL.COM",
-                        ConcurrencyStamp = "37285e0f-b3c2-4a75-85f6-73a3c4c6da29",
-                        PasswordHash = "AQAAAAEAACcQAAAAEED86xKz3bHadNf8B1Hg8t5qNefw4Bq1Kr2q6Jx9Ss/DcRIcUpLiFkDgQZTqUgJThA==", //qWe!123
-                        SecurityStamp = "DKBWMTFC7TZQZ6UFNZ5BN5XQNDYUBJYQ,09bd35b0-9c9f-4772-8789-e6d4b9fbe9c4",
-                        EmailConfirmed = true
-                    };
+            {
+                Id = "5f34130c-2ed9-4c83-a600-e474e8f48bac",
+                UserName = "user01@gmail.com",
+                NormalizedUserName = "USER01@GMAIL.COM",
+                Email = "user01@gmail.com",
+                NormalizedEmail = "USER01@GMAIL.COM",
+                ConcurrencyStamp = "37285e0f-b3c2-4a75-85f6-73a3c4c6da29",
+                PasswordHash = "AQAAAAEAACcQAAAAEED86xKz3bHadNf8B1Hg8t5qNefw4Bq1Kr2q6Jx9Ss/DcRIcUpLiFkDgQZTqUgJThA==", //qWe!123
+                SecurityStamp = "DKBWMTFC7TZQZ6UFNZ5BN5XQNDYUBJYQ,09bd35b0-9c9f-4772-8789-e6d4b9fbe9c4",
+                EmailConfirmed = true
+            };
+
+            var profile = new Profile()
+            {
+                UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac",
+                Username = "user01@gmail.com",
+                Birthday = new DateOnly(2020, 01, 01),
+                Country = Country.Ukraine,
+                UserType = UserType.User,
+            };
+
+            var premium = new Premium()
+            {
+                UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac",
+                PremiumType = PremiumType.Student,
+                StartAt = new DateTime(2020, 1, 1),
+                EndAt = new DateTime(2020, 6, 6)
+            };
+
+
             modelBuilder.Entity<UserInfo>().HasData(user);
+            modelBuilder.Entity<Profile>().HasData(profile);
+            modelBuilder.Entity<Premium>().HasData(premium);
+            
             
             modelBuilder.Entity<UserInfo>(entity =>
             {
@@ -59,7 +82,7 @@ namespace DB.Data
                     .WithOne(u => u.User)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("fk_song");
-
+                
                 entity.HasMany(p => p.Playlists)
                     .WithMany(p => p.Users)
                     .UsingEntity<Dictionary<string, object>>(
@@ -83,7 +106,7 @@ namespace DB.Data
                             Id = "5f34130c-2ed9-4c83-a600-e474e8f43bac",
                             UserName = "user03@gmail.com",
                             NormalizedUserName = "USER03@GMAIL.COM",
-                            Email = "user03@gamil.com",
+                            Email = "user03@gmail.com",
                             NormalizedEmail = "USER03@GMAIL.COM",
                             ConcurrencyStamp = "37285e0f-b3c2-4a75-85f6-73a3c4c6da29",
                             PasswordHash = "AQAAAAEAACcQAAAAEED86xKz3bHadNf8B1Hg8t5qNefw4Bq1Kr2q6Jx9Ss/DcRIcUpLiFkDgQZTqUgJThA==", //qWe!123
@@ -96,7 +119,7 @@ namespace DB.Data
                             Id = "5f34130c-2ed9-4c83-a600-e474e8f44bac",
                             UserName = "user04@gmail.com",
                             NormalizedUserName = "USER04@GMAIL.COM",
-                            Email = "user04@gamil.com",
+                            Email = "user04@gmail.com",
                             NormalizedEmail = "USER04@GMAIL.COM",
                             ConcurrencyStamp = "37285e0f-b3c2-4a75-85f6-73a3c4c6da29",
                             PasswordHash = "AQAAAAEAACcQAAAAEED86xKz3bHadNf8B1Hg8t5qNefw4Bq1Kr2q6Jx9Ss/DcRIcUpLiFkDgQZTqUgJThA==", //qWe!123
@@ -140,7 +163,7 @@ namespace DB.Data
 
                             j.IndexerProperty<int>("SongId").HasColumnName("song_id");
                         });
-                //при создании пользователя создается басовый плейлист LikedSongs с
+                //при создании пользователя создается базовый плейлист LikedSongs с
                 //PlaylistType = PlaylistType.LikedSongs,
                 entity.HasData(
                     new Playlist[]

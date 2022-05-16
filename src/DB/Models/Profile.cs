@@ -10,6 +10,11 @@ namespace DB.Models
     [Table("profile")]
     public class Profile
     {
+        public Profile()
+        {
+            Premiums = new HashSet<Premium>();
+        }
+
         [Key]
         [Column("user_id")]
         public string UserId { get; set; } = null!;
@@ -35,6 +40,7 @@ namespace DB.Models
         
         [ForeignKey("UserId")]
         [InverseProperty("Profile")]
-        public UserInfo? User { get; set; } 
+        public UserInfo? User { get; set; }
+        public virtual ICollection<Premium> Premiums { get; set; }
     }
 }
