@@ -90,7 +90,7 @@ namespace DB.Data
                         
                         new UserInfo()
                         {
-                            Id = "50210817-88a2-4e07-a4aa-d43603c66ceb",
+                            Id = "5f34130c-2ed9-4c83-a600-e474e8f43bac",
                             UserName = "user03@gmail.com",
                             NormalizedUserName = "USER03@GMAIL.COM",
                             Email = "user03@gamil.com",
@@ -103,7 +103,7 @@ namespace DB.Data
                         
                         new UserInfo()
                         {
-                            Id = "870e9ff5-8feb-4c2e-b839-92b23339793d",
+                            Id = "5f34130c-2ed9-4c83-a600-e474e8f44bac",
                             UserName = "user04@gmail.com",
                             NormalizedUserName = "USER04@GMAIL.COM",
                             Email = "user04@gamil.com",
@@ -195,7 +195,7 @@ namespace DB.Data
                     {
                         new Playlist{
                             Id = 1,
-                            UserId = "5f34130c-2ed9-4c83-a600-e474e8f44bac",
+                            UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac",
                             Title = "LikedSongs",
                             PlaylistType = PlaylistType.LikedSongs,
                             ImgSrc = "src1",
@@ -203,7 +203,7 @@ namespace DB.Data
                         },
                         new Playlist{
                             Id = 2,
-                            UserId = "5f34130c-2ed9-4c83-a600-e474e8f44bac",
+                            UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac",
                             Title = "simple playlist",
                             PlaylistType = PlaylistType.User,
                             ImgSrc = "src12",
@@ -259,7 +259,7 @@ namespace DB.Data
                         },
                         new Profile()
                         {
-                            UserId = "50210817-88a2-4e07-a4aa-d43603c66ceb",
+                            UserId = "5f34130c-2ed9-4c83-a600-e474e8f43bac",
                             Username = "user03",
                             Birthday = new DateOnly(2008, 3, 16),
                             Country = Country.Russia,
@@ -268,7 +268,7 @@ namespace DB.Data
                         },
                         new Profile()
                         {
-                            UserId = "870e9ff5-8feb-4c2e-b839-92b23339793d",
+                            UserId = "5f34130c-2ed9-4c83-a600-e474e8f44bac",
                             Username = "user04",
                             Birthday = new DateOnly(1987, 2, 21),
                             Country = Country.Usa,
