@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using DB.Data;
+using DB.Data.Repository;
 using DB.Models;
 using DB.Models.Authorization;
 using DB.Models.EnumTypes;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using static OpenIddict.Abstractions.OpenIddictConstants.Permissions;
@@ -17,17 +17,17 @@ using static OpenIddict.Server.AspNetCore.OpenIddictServerAspNetCoreConstants;
 namespace DB.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/auth")]
 public class AuthorizationController : ControllerBase
 {
     private readonly SignInManager<UserInfo> _signInManager;
     private readonly UserManager<UserInfo> _userManager;
     private readonly IUserStore<UserInfo> _userStore;
     private readonly IUserEmailStore<UserInfo> _emailStore;
-    private readonly SpotifyContext _ctx;
+    private readonly ISpotifyRepository _ctx;
 
     public AuthorizationController(SignInManager<UserInfo> signInManager, 
-        UserManager<UserInfo> userManager, IUserStore<UserInfo> userStore, SpotifyContext ctx)
+        UserManager<UserInfo> userManager, IUserStore<UserInfo> userStore, ISpotifyRepository ctx)
     {
         _signInManager = signInManager;
         _userManager = userManager;
@@ -45,10 +45,10 @@ public class AuthorizationController : ControllerBase
         return (IUserEmailStore<UserInfo>)_userStore;
     }
     
-    [HttpPost("~/signup")]
+    [HttpPost("signup")]
     [Produces("application/json")]
     [Consumes("application/x-www-form-urlencoded")]
-    public async Task<IActionResult> SignUp([FromForm] AuthorizationData authorizationData, string profileJson)
+    public async Task<IActionResult> SignUp([FromForm] AuthorizationData authorizationData, [FromForm] ProfileData profileData)
     {
         var request = HttpContext.GetOpenIddictServerRequest();
         if (request?.IsPasswordGrantType() == true)
@@ -66,23 +66,29 @@ public class AuthorizationController : ControllerBase
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 await _userManager.ConfirmEmailAsync(user, code);
 
-                var profile = JsonConvert.DeserializeObject<Profile>(profileJson);
-                if (profile != null)
+                var profile = new Profile()
                 {
-                    profile.UserId = user.Id;
-                    await _ctx.Profiles.AddAsync(profile);
-                }
+                    UserId = user.Id,
+                    Username = profileData.Name ?? authorizationData.username,
+                    Birthday = new DateOnly(profileData.BirthYear, profileData.BirthMonth, profileData.BirthDay),
+                    Country = profileData.Country,
+                    ProfileImg = profileData.ProfileImg,
+                    UserType = UserType.User
+                };
+                await _ctx.CreateProfileAsync(profile);
 
-                var likedSongs = new Playlist()
+                    var likedSongs = new Playlist()
                 {
                     Title = "Liked Songs",
                     UserId = user.Id,
                     PlaylistType = PlaylistType.LikedSongs,
                     Verified = true
                 };
-                await _ctx.AddAsync(likedSongs);
+                
+                likedSongs.Users.Add(user);
+                await _ctx.CreatePlaylist(likedSongs);
 
-                await _ctx.SaveChangesAsync();
+                await _ctx.Save();
 
                 var principal = await _signInManager.CreateUserPrincipalAsync(user);
 
@@ -121,7 +127,7 @@ public class AuthorizationController : ControllerBase
 
     }
     
-    [HttpPost("~/login")]
+    [HttpPost("login")]
     [Produces("application/json")]
     [Consumes("application/x-www-form-urlencoded")]
     public async Task<IActionResult> LogIn([FromForm] AuthorizationData authorizationData)

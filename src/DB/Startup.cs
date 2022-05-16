@@ -1,7 +1,6 @@
 ﻿using DB.Data;
-using DB.Models;
+using DB.Data.Repository;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 namespace DB;
@@ -46,6 +45,7 @@ public class Startup
                         new string[]{}
                     }
                 });
+                option.SchemaFilter<EnumSchemaFilter>();
             }
         );
         services.AddCors(opt =>
@@ -67,6 +67,7 @@ public class Startup
             options.UseOpenIddict();
         });
         services.AddIdentity();
+        services.AddScoped<ISpotifyRepository, SpotifyRepository>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

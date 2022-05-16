@@ -20,6 +20,7 @@ namespace DB.Data
         public DbSet<Premium> Premia { get; set; } = null!;
         public DbSet<Profile> Profiles { get; set; } = null!;
         public DbSet<Song> Songs { get; set; } = null!;
+        public DbSet<Genre> Genres { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -38,44 +39,6 @@ namespace DB.Data
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.HasPostgresExtension("uuid-ossp");
-            //Entities for testing
-
-            var user = new UserInfo()
-            {
-                Id = "5f34130c-2ed9-4c83-a600-e474e8f48bac",
-                UserName = "user01@gmail.com",
-                NormalizedUserName = "USER01@GMAIL.COM",
-                Email = "user01@gmail.com",
-                NormalizedEmail = "USER01@GMAIL.COM",
-                ConcurrencyStamp = "37285e0f-b3c2-4a75-85f6-73a3c4c6da29",
-                PasswordHash = "AQAAAAEAACcQAAAAEED86xKz3bHadNf8B1Hg8t5qNefw4Bq1Kr2q6Jx9Ss/DcRIcUpLiFkDgQZTqUgJThA==", //qWe!123
-                SecurityStamp = "DKBWMTFC7TZQZ6UFNZ5BN5XQNDYUBJYQ,09bd35b0-9c9f-4772-8789-e6d4b9fbe9c4",
-                EmailConfirmed = true
-            };
-
-            var profile = new Profile()
-            {
-                UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac",
-                Username = "user01@gmail.com",
-                Birthday = new DateOnly(2020, 01, 01),
-                Country = Country.Ukraine,
-                UserType = UserType.User,
-            };
-
-            var premium = new Premium()
-            {
-                UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac",
-                PremiumType = PremiumType.Student,
-                StartAt = new DateTime(2020, 1, 1),
-                EndAt = new DateTime(2020, 6, 6)
-            };
-
-
-            modelBuilder.Entity<UserInfo>().HasData(user);
-            modelBuilder.Entity<Profile>().HasData(profile);
-            modelBuilder.Entity<Premium>().HasData(premium);
-            
-            
             modelBuilder.Entity<UserInfo>(entity =>
             {
                 entity.HasMany(p => p.Songs)
@@ -103,6 +66,31 @@ namespace DB.Data
                     {
                         new UserInfo()
                         {
+                            Id = "5f34130c-2ed9-4c83-a600-e474e8f48bac",
+                            UserName = "user01@gmail.com",
+                            NormalizedUserName = "USER01@GMAIL.COM",
+                            Email = "user01@gmail.com",
+                            NormalizedEmail = "USER01@GMAIL.COM",
+                            ConcurrencyStamp = "37285e0f-b3c2-4a75-85f6-73a3c4c6da29",
+                            PasswordHash = "AQAAAAEAACcQAAAAEED86xKz3bHadNf8B1Hg8t5qNefw4Bq1Kr2q6Jx9Ss/DcRIcUpLiFkDgQZTqUgJThA==", //qWe!123
+                            SecurityStamp = "DKBWMTFC7TZQZ6UFNZ5BN5XQNDYUBJYQ,09bd35b0-9c9f-4772-8789-e6d4b9fbe9c4",
+                            EmailConfirmed = true
+                        },
+                        new UserInfo()
+                        {
+                            Id = "120877ed-84b9-4ed5-9b87-d78965fc4fe0",
+                            UserName = "user02@gmail.com",
+                            NormalizedUserName = "USER02@GMAIL.COM",
+                            Email = "user02@gamil.com",
+                            NormalizedEmail = "USER02@GMAIL.COM",
+                            ConcurrencyStamp = "37285e0f-b3c2-4a75-85f6-73a3c4c6da29",
+                            PasswordHash = "AQAAAAEAACcQAAAAEED86xKz3bHadNf8B1Hg8t5qNefw4Bq1Kr2q6Jx9Ss/DcRIcUpLiFkDgQZTqUgJThA==", //qWe!123
+                            SecurityStamp = "DKBWMTFC7TZQZ6UFNZ5BN5XQNDYUBJYQ,09bd35b0-9c9f-4772-8789-e6d4b9fbe9c4",
+                            EmailConfirmed = true
+                        },
+                        
+                        new UserInfo()
+                        {
                             Id = "5f34130c-2ed9-4c83-a600-e474e8f43bac",
                             UserName = "user03@gmail.com",
                             NormalizedUserName = "USER03@GMAIL.COM",
@@ -121,6 +109,43 @@ namespace DB.Data
                             NormalizedUserName = "USER04@GMAIL.COM",
                             Email = "user04@gmail.com",
                             NormalizedEmail = "USER04@GMAIL.COM",
+                            ConcurrencyStamp = "37285e0f-b3c2-4a75-85f6-73a3c4c6da29",
+                            PasswordHash = "AQAAAAEAACcQAAAAEED86xKz3bHadNf8B1Hg8t5qNefw4Bq1Kr2q6Jx9Ss/DcRIcUpLiFkDgQZTqUgJThA==", //qWe!123
+                            SecurityStamp = "DKBWMTFC7TZQZ6UFNZ5BN5XQNDYUBJYQ,09bd35b0-9c9f-4772-8789-e6d4b9fbe9c4",
+                            EmailConfirmed = true
+                        },
+                        new UserInfo()
+                        {
+                            Id = "26ecd8e6-2f2c-4385-b855-aa0a2bd8d429",
+                            UserName = "artist01@gmail.com",
+                            NormalizedUserName = "ARTIST01@GMAIL.COM",
+                            Email = "artist01@gmail.com",
+                            NormalizedEmail = "ARTIST01@GMAIL.COM",
+                            ConcurrencyStamp = "37285e0f-b3c2-4a75-85f6-73a3c4c6da29",
+                            PasswordHash = "AQAAAAEAACcQAAAAEED86xKz3bHadNf8B1Hg8t5qNefw4Bq1Kr2q6Jx9Ss/DcRIcUpLiFkDgQZTqUgJThA==", //qWe!123
+                            SecurityStamp = "DKBWMTFC7TZQZ6UFNZ5BN5XQNDYUBJYQ,09bd35b0-9c9f-4772-8789-e6d4b9fbe9c4",
+                            EmailConfirmed = true
+                        },
+                        new UserInfo()
+                        {
+                            Id = "ca2aa01b-a215-4611-838a-f11b9552103e",
+                            UserName = "artist02@gmail.com",
+                            NormalizedUserName = "ARTIST02@GMAIL.COM",
+                            Email = "artist02@gamil.com",
+                            NormalizedEmail = "ARTIST02@GMAIL.COM",
+                            ConcurrencyStamp = "37285e0f-b3c2-4a75-85f6-73a3c4c6da29",
+                            PasswordHash = "AQAAAAEAACcQAAAAEED86xKz3bHadNf8B1Hg8t5qNefw4Bq1Kr2q6Jx9Ss/DcRIcUpLiFkDgQZTqUgJThA==", //qWe!123
+                            SecurityStamp = "DKBWMTFC7TZQZ6UFNZ5BN5XQNDYUBJYQ,09bd35b0-9c9f-4772-8789-e6d4b9fbe9c4",
+                            EmailConfirmed = true
+                        },
+                        
+                        new UserInfo()
+                        {
+                            Id = "4b89cecf-5188-44bf-94b2-6eb0cdf8da02",
+                            UserName = "artist03@gmail.com",
+                            NormalizedUserName = "ARTIST03@GMAIL.COM",
+                            Email = "artist03@gmail.comm",
+                            NormalizedEmail = "ARTIST03@GMAIL.COM",
                             ConcurrencyStamp = "37285e0f-b3c2-4a75-85f6-73a3c4c6da29",
                             PasswordHash = "AQAAAAEAACcQAAAAEED86xKz3bHadNf8B1Hg8t5qNefw4Bq1Kr2q6Jx9Ss/DcRIcUpLiFkDgQZTqUgJThA==", //qWe!123
                             SecurityStamp = "DKBWMTFC7TZQZ6UFNZ5BN5XQNDYUBJYQ,09bd35b0-9c9f-4772-8789-e6d4b9fbe9c4",
@@ -163,6 +188,7 @@ namespace DB.Data
 
                             j.IndexerProperty<int>("SongId").HasColumnName("song_id");
                         });
+                        
                 //при создании пользователя создается базовый плейлист LikedSongs с
                 //PlaylistType = PlaylistType.LikedSongs,
                 entity.HasData(
@@ -170,17 +196,19 @@ namespace DB.Data
                     {
                         new Playlist{
                             Id = 1,
-                            UserId = user.Id,
+                            UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac",
                             Title = "LikedSongs",
                             PlaylistType = PlaylistType.LikedSongs,
+                            GenreType = GenreType.Country,
                             ImgSrc = "src1",
                             Verified = true
                         },
                         new Playlist{
                             Id = 2,
-                            UserId = user.Id,
+                            UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac",
                             Title = "simple playlist",
                             PlaylistType = PlaylistType.User,
+                            GenreType = GenreType.Electro,
                             ImgSrc = "src12",
                             Verified = true
                         }
@@ -211,6 +239,74 @@ namespace DB.Data
                     .WithOne(p => p.Profile)
                     .HasForeignKey<Profile>(d => d.UserId)
                     .HasConstraintName("fk_profile");
+                entity.HasData(
+                    new Profile[]
+                    {
+                        new Profile()
+                        {
+                            UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac",
+                            Username = "user01",
+                            Birthday = new DateOnly(2000, 8, 3),
+                            Country = Country.Russia,
+                            ProfileImg = "src1",
+                            UserType = UserType.User
+                        },
+                        new Profile()
+                        {
+                            UserId = "120877ed-84b9-4ed5-9b87-d78965fc4fe0",
+                            Username = "user02",
+                            Birthday = new DateOnly(1996, 2, 23),
+                            Country = Country.Greece,
+                            ProfileImg = "src2",
+                            UserType = UserType.User
+                        },
+                        new Profile()
+                        {
+                            UserId = "5f34130c-2ed9-4c83-a600-e474e8f43bac",
+                            Username = "user03",
+                            Birthday = new DateOnly(2008, 3, 16),
+                            Country = Country.Russia,
+                            ProfileImg = "src3",
+                            UserType = UserType.User
+                        },
+                        new Profile()
+                        {
+                            UserId = "5f34130c-2ed9-4c83-a600-e474e8f44bac",
+                            Username = "user04",
+                            Birthday = new DateOnly(1987, 2, 21),
+                            Country = Country.Usa,
+                            ProfileImg = "src4",
+                            UserType = UserType.User
+                        },
+                        new Profile()
+                        {
+                            UserId = "26ecd8e6-2f2c-4385-b855-aa0a2bd8d429",
+                            Username = "artist10",
+                            Birthday = new DateOnly(1985, 2, 21),
+                            Country = Country.Russia,
+                            ProfileImg = "src5",
+                            UserType = UserType.Artist
+                        },
+                        new Profile()
+                        {
+                            UserId = "ca2aa01b-a215-4611-838a-f11b9552103e",
+                            Username = "artist02",
+                            Birthday = new DateOnly(1998, 2, 21),
+                            Country = Country.Usa,
+                            ProfileImg = "src6",
+                            UserType = UserType.Artist
+                        },
+                        new Profile()
+                        {
+                            UserId = "4b89cecf-5188-44bf-94b2-6eb0cdf8da02",
+                            Username = "artist03",
+                            Birthday = new DateOnly(1995, 2, 21),
+                            Country = Country.Usa,
+                            ProfileImg = "src7",
+                            UserType = UserType.Artist
+                        },
+                    }
+                    );
             });
 
             modelBuilder.Entity<Song>(entity =>
@@ -219,14 +315,34 @@ namespace DB.Data
                 entity.HasData(
                     new Song[]
                     {
-                        new Song{Id = 1, UserId = user.Id, Name = "song1", Source = "src1"},
-                        new Song{Id = 2, UserId = user.Id, Name = "song2", Source = "src2"},
-                        new Song{Id = 3, UserId = user.Id, Name = "song3", Source = "src3"},
-                        new Song{Id = 4, UserId = user.Id, Name = "song4", Source = "src4"},
-                        new Song{Id = 5, UserId = user.Id, Name = "song5", Source = "src5"},
+                        new Song{Id = 1, UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac", Name = "song1", Source = "src1"},
+                        new Song{Id = 2, UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac", Name = "song2", Source = "src2"},
+                        new Song{Id = 3, UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac", Name = "song3", Source = "src3"},
+                        new Song{Id = 4, UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac", Name = "song4", Source = "src4"},
+                        new Song{Id = 5, UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac", Name = "song5", Source = "src5"},
                     });
             });
+            var profile = new Profile()
+            {
+                UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac",
+                Username = "user01@gmail.com",
+                Birthday = new DateOnly(2020, 01, 01),
+                Country = Country.Ukraine,
+                UserType = UserType.User,
+            };
 
+            var premium = new Premium()
+            {
+                UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac",
+                PremiumType = PremiumType.Student,
+                StartAt = new DateTime(2020, 1, 1),
+                EndAt = new DateTime(2020, 6, 6)
+            };
+
+
+            modelBuilder.Entity<UserInfo>().HasData(user);
+            modelBuilder.Entity<Profile>().HasData(profile);
+            modelBuilder.Entity<Premium>().HasData(premium);
         }
     }
 }
