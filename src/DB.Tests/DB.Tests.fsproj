@@ -13,6 +13,7 @@
         <Compile Include="AuthorizationTests.fs" />
         <Compile Include="NewHomePageTests.fs" />
         <Compile Include="UserContentTests.fs" />
+        <Compile Include="SearchPageTests.fs" />
     </ItemGroup>
 
     <ItemGroup>

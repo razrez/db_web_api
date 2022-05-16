@@ -15,7 +15,7 @@ public class SearchPageController : ControllerBase
         _context = context;
     }
 
-    [HttpPost("playlists")]
+    [HttpGet("playlists")]
     public async Task<IActionResult> SearchPlaylist(string input)
     {
         var result = await _context.SearchPlaylists(input);
@@ -24,7 +24,7 @@ public class SearchPageController : ControllerBase
         return new JsonResult(result);
     }
     
-    [HttpPost("songs")]
+    [HttpGet("songs")]
     public async Task<IActionResult> SearchSongs(string input)
     {
         var result = await _context.SearchSongs(input);
@@ -33,7 +33,7 @@ public class SearchPageController : ControllerBase
         return new JsonResult(result);
     }
     
-    [HttpPost("users")]
+    [HttpGet("users")]
     public async Task<IActionResult> SearchUsers(string input)
     {
         var result = await _context.SearchProfile(input, false);
@@ -44,7 +44,7 @@ public class SearchPageController : ControllerBase
         return new JsonResult(result, options);
     }
     
-    [HttpPost("artists")]
+    [HttpGet("artists")]
     public async Task<IActionResult> SearchArtists(string input)
     {
         var result = await _context.SearchProfile(input, true);
