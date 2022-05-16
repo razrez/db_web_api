@@ -20,6 +20,7 @@ namespace DB.Data
         public DbSet<Premium> Premia { get; set; } = null!;
         public DbSet<Profile> Profiles { get; set; } = null!;
         public DbSet<Song> Songs { get; set; } = null!;
+        public DbSet<Genre> Genres { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -151,6 +152,7 @@ namespace DB.Data
                             UserId = user.Id,
                             Title = "LikedSongs",
                             PlaylistType = PlaylistType.LikedSongs,
+                            GenreType = GenreType.Country,
                             ImgSrc = "src1",
                             Verified = true
                         },
@@ -159,6 +161,7 @@ namespace DB.Data
                             UserId = user.Id,
                             Title = "simple playlist",
                             PlaylistType = PlaylistType.User,
+                            GenreType = GenreType.Electro,
                             ImgSrc = "src12",
                             Verified = true
                         }

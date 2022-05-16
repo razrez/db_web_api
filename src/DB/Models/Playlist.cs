@@ -30,8 +30,8 @@ namespace DB.Models
         [Column("playlist_type")] 
         public PlaylistType PlaylistType { get; set; }
         
-        [Column("genre")] 
-        public Genre? Genre { get; set; }
+        [Column("genre_type")] 
+        public GenreType GenreType { get; set; }
         
         [Column("img_src")]
         [StringLength(255)]
