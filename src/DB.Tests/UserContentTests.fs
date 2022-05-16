@@ -10,7 +10,7 @@ open DB
 type responseName = { name: string }
 type responseNotFound = { error: string }
 type song = {id: int; userId: string; name:string; source: string}
-type playlist = { id: int; userId: string; title: string; playlistType:int; songs:List<song> }
+type playlist = { id: int; userId: string; title: string; playlistType:int; genre:int; songs:List<song> }
 type responsePlaylists = List<playlist>
 
 let getResponseAsync path=

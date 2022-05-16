@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using DB.Models.EnumTypes;
-using Microsoft.EntityFrameworkCore;
 
 namespace DB.Models
 {
@@ -32,7 +29,10 @@ namespace DB.Models
         
         [Column("playlist_type")] 
         public PlaylistType PlaylistType { get; set; }
-
+        
+        [Column("genre")] 
+        public Genre? Genre { get; set; }
+        
         [Column("img_src")]
         [StringLength(255)]
         public string? ImgSrc { get; set; }

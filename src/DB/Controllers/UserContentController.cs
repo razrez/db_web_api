@@ -41,8 +41,9 @@ public class UserContentController : ControllerBase
         //свяжем для примера имеющиеся в бд песни с плейлистами, плейлисты с пользователем
         //лайкнем самую первую песню
         //один раз использовал - закоммитить можно
-        var isLiked = await _repository.LikeSong(2, userId);
-        if (!isLiked) return NotFound();
+        /*var isLiked = await _repository.LikeSong(2, userId);
+        if (!isLiked) return NotFound();*/
+        
         var usersPlaylists = _repository.GetUsersPlaylists(userId).Result
             .Select(s => new
             {
