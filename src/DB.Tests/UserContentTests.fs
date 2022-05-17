@@ -23,7 +23,7 @@ let getResponseAsync path=
 [<InlineData("5f34130c-2ed9-4c83-a600-e474e8f43bac","user03@gmail.com")>]
 [<InlineData("5f34130c-2ed9-4c83-a600-e474e8f44bac","user04@gmail.com")>]
 let ``GetUserName returns real user's name by id 5f34130c-2ed9-4c83-a600-e474e8f48bac`` (id:string, expected:string) =
-    let path = $"/UserContent/name/user/{id}"
+    let path = $"/api/user/content/name/{id}"
     
     let response = getResponseAsync path
     Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
@@ -36,7 +36,7 @@ let ``GetUserName returns real user's name by id 5f34130c-2ed9-4c83-a600-e474e8f
 [<Fact>]
 let ``GetUserName returns NotFound with description`` () =
     let id = "bad id"
-    let path = $"/UserContent/name/user/{id}"
+    let path = $"/api/user/content/name/{id}"
     
     let response = getResponseAsync path
     Assert.Equal(HttpStatusCode.NotFound, response.Result.StatusCode)
@@ -46,9 +46,9 @@ let ``GetUserName returns NotFound with description`` () =
     Assert.Equal("Unexpected id",responseData.error)
     
 [<Fact>]
-let ``GetPlaylists returns NotFound with description`` () =
+let ``GetUserPlaylists returns NotFound with description`` () =
     let id = "bad id"
-    let path = $"/UserContent/playlists/user/{id}"
+    let path = $"/api/user/content/playlists/{id}"
     
     let response = getResponseAsync path
     Assert.Equal(HttpStatusCode.NotFound, response.Result.StatusCode)
@@ -58,9 +58,9 @@ let ``GetPlaylists returns NotFound with description`` () =
     Assert.Equal("Unexpected id",responseData.error)
     
 [<Fact>]
-let ``GetPlaylists returns not empty user's playlists by id 5f34130c-2ed9-4c83-a600-e474e8f48bac`` () =
+let ``GetUserPlaylists returns not empty user's playlists by id 5f34130c-2ed9-4c83-a600-e474e8f48bac`` () =
     let id = "5f34130c-2ed9-4c83-a600-e474e8f48bac"
-    let path = $"/UserContent/playlists/user/{id}"
+    let path = $"/api/user/content/playlists/{id}"
     
     let response = getResponseAsync path
     Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)

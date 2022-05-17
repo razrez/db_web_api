@@ -15,11 +15,16 @@
         <Compile Include="NewHomePageTests.fs" />
         <Compile Include="UserContentTests.fs" />
         <Compile Include="SearchPageTests.fs" />
+        <Compile Include="PlaylistTests.fs" />
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Foq" Version="1.8.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.4" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+        <PackageReference Include="Moq" Version="4.18.1" />
+        <PackageReference Include="Moq.EntityFrameworkCore" Version="6.0.1.2" />
+        <PackageReference Include="Moq.FSharp.Extensions" Version="0.2.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <PackageReference Include="xunit" Version="2.4.1" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">

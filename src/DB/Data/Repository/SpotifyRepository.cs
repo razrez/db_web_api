@@ -180,9 +180,15 @@ public class SpotifyRepository : ISpotifyRepository
         try
         {
             var currentPlaylist = await _ctx.Playlists.FindAsync(playlistId);
-            if (currentPlaylist != null) _ctx.Remove(currentPlaylist);
-            await _ctx.SaveChangesAsync();
-            return true;
+            if (currentPlaylist != null)
+            {
+                _ctx.Remove(currentPlaylist);
+                
+                await _ctx.SaveChangesAsync();
+                return true;
+            }
+            return false;
+            
         }
         catch (Exception)
         {
