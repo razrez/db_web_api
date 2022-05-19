@@ -16,7 +16,7 @@ public class PlaylistController : ControllerBase
         _ctx = ctx;
     }
 
-    [HttpDelete("{playlistId}")]
+    [HttpDelete("{playlistId:int}")]
     public async Task<IActionResult> DeletePlaylist(int playlistId)
     {
         var res = await _ctx.DeletePlaylist(playlistId);
@@ -43,7 +43,7 @@ public class PlaylistController : ControllerBase
         return createRes ? Ok() : BadRequest(new {Error = "something went wrong"});
     }
 
-    [HttpGet("{playlistId}")]
+    [HttpGet("{playlistId:int}")]
     public async Task<IActionResult> GetPlaylistInfo(int playlistId)
     {
         var playlist = await _ctx.GetPlaylistInfo(playlistId);
