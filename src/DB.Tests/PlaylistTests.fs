@@ -9,7 +9,6 @@ open DB.Controllers
 open DB.Data.Repository
 open DB.Models
 open DB.Models.EnumTypes
-open DB.Tests.UserContentTests
 open Microsoft.AspNetCore.Mvc
 open Microsoft.AspNetCore.Mvc.Testing
 open Moq

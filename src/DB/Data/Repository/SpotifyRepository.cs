@@ -210,6 +210,7 @@ public class SpotifyRepository : ISpotifyRepository
     
     public async Task<IEnumerable<Playlist>?> GetUserLibrary(string userId)
     {
+        if (await _ctx.Users.FirstOrDefaultAsync(u => u.Id == userId) == null) return null;
         var userLibrary = await _ctx.Users
             .Include(p => p.Playlists)
             .ThenInclude(s => s.Songs)
