@@ -9,6 +9,7 @@ open DB.Controllers
 open DB.Data.Repository
 open DB.Models
 open DB.Models.EnumTypes
+open DB.Tests.UserContentTests
 open Microsoft.AspNetCore.Mvc
 open Microsoft.AspNetCore.Mvc.Testing
 open Moq
@@ -63,7 +64,7 @@ let ``Delete existent Playlist and get Ok`` () =
     Assert.IsType<OkResult>(myActionResult)
     
 [<Fact>]
-let ``GetPlaylist by id returns Playlist``() =
+let ``GetPlaylist by valid user's id returns Playlist``() =
     let id = 1
     let path = $"/api/playlist/{id}"
     let response = getResponseAsync path
@@ -146,3 +147,43 @@ let ``Create Playlist and get BadRequest``() =
     let playlistController = PlaylistController(moq.Object)
     let myActionResult = playlistController.CreatePlaylist(editedPlaylist).Result
     Assert.IsType<BadRequestObjectResult>(myActionResult)
+    
+[<Fact>]    
+let ``Like Playlist and get Ok``() =
+    let moq = Mock<IRepository>()
+    moq.SetupFunc<bool>(fun f -> f.LikePlaylist(It.IsAny<int>(),It.IsAny<string>()).Result).Returns(true) |> ignore
+    
+    Assert.True(moq.Object.LikePlaylist(2,"5f34130c-2ed9-4c83-a600-e474e8f48bac").Result)
+    
+    let playlistController = PlaylistController(moq.Object)
+    let myActionResult = playlistController.LikePlaylist(2, "5f34130c-2ed9-4c83-a600-e474e8f48bac").Result
+    Assert.IsType<OkResult>(myActionResult)
+    
+[<Fact>]    
+let ``Like Playlist and get BadRequest``() =
+    let moq = Mock<IRepository>()
+    moq.SetupFunc<bool>(fun f -> f.LikePlaylist(It.IsAny<int>(),It.IsAny<string>()).Result).Returns(false) |> ignore
+    
+    Assert.False(moq.Object.LikePlaylist(-123,"adasdsad").Result)
+    
+    let playlistController = PlaylistController(moq.Object)
+    let myActionResult = playlistController.LikePlaylist(-32, "sadsadsafeewx").Result
+    Assert.IsType<BadRequestObjectResult>(myActionResult)
+    
+[<Fact>]    
+let ``GetLibrary by wrong id returns NotFound``() =
+    let id = "sadas-sad11cs" 
+    let path = $"/api/playlist/library/user/{id}"
+    let response = getResponseAsync path
+    Assert.Equal(HttpStatusCode.NotFound, response.Result.StatusCode)
+    
+[<Fact>]
+let ``GetLibrary by valid user's id returns List of liked playlists``() =
+    let id = "5f34130c-2ed9-4c83-a600-e474e8f48bac"
+    let path = $"/api/playlist/library/user/{id}"
+    let response = getResponseAsync path
+    Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
+    
+    (*let responseJson = response.Result.Content.ReadAsStringAsync().Result
+    let responseLibrary = JsonSerializer.Deserialize<responsePlaylists> responseJson
+    Assert.Empty(responseLibrary)*)
