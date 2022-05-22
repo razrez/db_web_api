@@ -37,11 +37,10 @@ public static class StartupExtensions
                 options
                     .AcceptAnonymousClients()
                     .AllowPasswordFlow()
-                    .AllowClientCredentialsFlow()
                     .AllowRefreshTokenFlow();
 
                 options
-                    .SetTokenEndpointUris("/api/auth/signup", "/api/auth/login");
+                    .SetTokenEndpointUris("/api/auth/signup", "/api/auth/login", "/api/auth/refresh_token");
                 
                 options
                     .AddEphemeralEncryptionKey()

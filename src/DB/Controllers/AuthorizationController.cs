@@ -50,11 +50,11 @@ public class AuthorizationController : ControllerBase
         return (IUserEmailStore<UserInfo>)_userStore;
     }
 
+    [AuthorizeWithJwt]
     [HttpPost("refresh_token")]
     [Produces("application/json")]
     [Consumes("application/x-www-form-urlencoded")]
-    public async Task<IActionResult> RefreshToken([FromForm] string grant_type, [FromForm] string refresh_token,
-        [FromForm] string client_id, [FromForm] string client_secret)
+    public async Task<IActionResult> RefreshToken([FromForm] RefreshTokenData refreshTokenData)
     {
         var claimsPrincipal = (await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)).Principal;
         return SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
