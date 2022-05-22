@@ -35,9 +35,9 @@ public static class StartupExtensions
                 
                 
                 options
-                    .AllowClientCredentialsFlow()
                     .AcceptAnonymousClients()
                     .AllowPasswordFlow()
+                    .AllowClientCredentialsFlow()
                     .AllowRefreshTokenFlow();
 
                 options
@@ -46,6 +46,8 @@ public static class StartupExtensions
                 options
                     .AddEphemeralEncryptionKey()
                     .AddEphemeralSigningKey();
+                options.RegisterScopes("api", OpenIddictConstants.Scopes.OfflineAccess);
+                
                 
                 
                 var cfg = options.UseAspNetCore();

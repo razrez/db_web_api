@@ -59,13 +59,19 @@ public class AuthorizationController : ControllerBase
         var identity = new ClaimsIdentity(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         identity.AddClaim(OpenIddictConstants.Claims.Subject, request.ClientId ?? throw new InvalidOperationException());
         var claimsPrincipal = new ClaimsPrincipal(identity);
-        claimsPrincipal.SetScopes(request.GetScopes());
+        claimsPrincipal.SetScopes(OpenIddictConstants.Scopes.OfflineAccess);
         return SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
 
-
-
-
+    [HttpPost("refresh_token")]
+    [Produces("application/json")]
+    [Consumes("application/x-www-form-urlencoded")]
+    public async Task<IActionResult> RefreshToken([FromForm] string grant_type, [FromForm] string refresh_token,
+        [FromForm] string client_id, [FromForm] string client_secret)
+    {
+        var claimsPrincipal = (await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)).Principal;
+        return SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+    }
 
     [HttpPost("signup")]
     [Produces("application/json")]
@@ -120,6 +126,7 @@ public class AuthorizationController : ControllerBase
                     Scopes.Profile,
                     Scopes.Roles
                 }.Intersect(request.GetScopes()));
+                principal.SetScopes(OpenIddictConstants.Scopes.OfflineAccess);
 
                 foreach (var claim in principal.Claims)
                 {
@@ -192,6 +199,7 @@ public class AuthorizationController : ControllerBase
                     Scopes.Profile,
                     Scopes.Roles,
                 }.Intersect(request.GetScopes()));
+                principal.SetScopes(OpenIddictConstants.Scopes.OfflineAccess);
 
                 foreach (var claim in principal.Claims)
                 {
