@@ -41,14 +41,14 @@ public static class StartupExtensions
                     .AllowRefreshTokenFlow();
 
                 options
-                    .SetTokenEndpointUris("/api/auth/signup", "/api/auth/login", "/api/auth/client_credentials");
+                    .SetTokenEndpointUris("/api/auth/signup", "/api/auth/login");
                 
                 options
                     .AddEphemeralEncryptionKey()
                     .AddEphemeralSigningKey();
-                options.RegisterScopes("api", OpenIddictConstants.Scopes.OfflineAccess);
                 
-                
+                options
+                    .RegisterScopes(OpenIddictConstants.Scopes.OfflineAccess);
                 
                 var cfg = options.UseAspNetCore();
                 if (environment.IsDevelopment() || environment.IsStaging())
@@ -61,7 +61,9 @@ public static class StartupExtensions
                 options
                     .AddDevelopmentEncryptionCertificate()
                     .AddDevelopmentSigningCertificate();
-                options.DisableAccessTokenEncryption();
+                
+                options
+                    .DisableAccessTokenEncryption();
             }).AddValidation(options =>
             {
                 options.UseAspNetCore();

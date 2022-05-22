@@ -50,19 +50,6 @@ public class AuthorizationController : ControllerBase
         return (IUserEmailStore<UserInfo>)_userStore;
     }
 
-    [HttpPost("client_credentials")]
-    [Produces("application/json")]
-    [Consumes("application/x-www-form-urlencoded")]
-    public async Task<IActionResult> ClientCredentials([FromForm] ClientCredentialsData clientCredential)
-    {
-        var request = HttpContext.GetOpenIddictServerRequest();
-        var identity = new ClaimsIdentity(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-        identity.AddClaim(OpenIddictConstants.Claims.Subject, request.ClientId ?? throw new InvalidOperationException());
-        var claimsPrincipal = new ClaimsPrincipal(identity);
-        claimsPrincipal.SetScopes(OpenIddictConstants.Scopes.OfflineAccess);
-        return SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-    }
-
     [HttpPost("refresh_token")]
     [Produces("application/json")]
     [Consumes("application/x-www-form-urlencoded")]
