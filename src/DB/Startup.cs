@@ -1,4 +1,5 @@
-﻿using DB.Data;
+﻿using DB.Clients;
+using DB.Data;
 using DB.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -68,6 +69,7 @@ public class Startup
         });
         services.AddIdentity();
         services.AddScoped<ISpotifyRepository, SpotifyRepository>();
+        services.AddHostedService<TestClients>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -32,15 +32,22 @@ public static class StartupExtensions
             })
             .AddServer(options =>
             {
+                
+                
                 options
+                    .AllowClientCredentialsFlow()
                     .AcceptAnonymousClients()
                     .AllowPasswordFlow()
                     .AllowRefreshTokenFlow();
 
                 options
-                    .SetTokenEndpointUris("/api/auth/signup", "/api/auth/login");
+                    .SetTokenEndpointUris("/api/auth/signup", "/api/auth/login", "/api/auth/client_credentials");
                 
-                // Register the ASP.NET Core host and configure the ASP.NET Core-specific options.
+                options
+                    .AddEphemeralEncryptionKey()
+                    .AddEphemeralSigningKey();
+                
+                
                 var cfg = options.UseAspNetCore();
                 if (environment.IsDevelopment() || environment.IsStaging())
                 {
@@ -52,6 +59,7 @@ public static class StartupExtensions
                 options
                     .AddDevelopmentEncryptionCertificate()
                     .AddDevelopmentSigningCertificate();
+                options.DisableAccessTokenEncryption();
             }).AddValidation(options =>
             {
                 options.UseAspNetCore();

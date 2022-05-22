@@ -1,4 +1,7 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
+using DB.Attributes;
 using DB.Data;
 using DB.Data.Repository;
 using DB.Models;
@@ -8,6 +11,8 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using static OpenIddict.Abstractions.OpenIddictConstants.Permissions;
@@ -44,7 +49,25 @@ public class AuthorizationController : ControllerBase
         }
         return (IUserEmailStore<UserInfo>)_userStore;
     }
-    
+
+    [HttpPost("client_credentials")]
+    [Produces("application/json")]
+    [Consumes("application/x-www-form-urlencoded")]
+    public async Task<IActionResult> ClientCredentials([FromForm] string grant_type, [FromForm] string client_id, 
+        [FromForm] string client_secret)
+    {
+        var request = HttpContext.GetOpenIddictServerRequest();
+        var identity = new ClaimsIdentity(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        identity.AddClaim(OpenIddictConstants.Claims.Subject, request.ClientId ?? throw new InvalidOperationException());
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+        claimsPrincipal.SetScopes(request.GetScopes());
+        return SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+    }
+
+
+
+
+
     [HttpPost("signup")]
     [Produces("application/json")]
     [Consumes("application/x-www-form-urlencoded")]
@@ -163,12 +186,12 @@ public class AuthorizationController : ControllerBase
                 }
                 
                 var principal = await _signInManager.CreateUserPrincipalAsync(user);
-                
+
                 principal.SetScopes(new[]
                 {
                     Scopes.Email,
                     Scopes.Profile,
-                    Scopes.Roles
+                    Scopes.Roles,
                 }.Intersect(request.GetScopes()));
 
                 foreach (var claim in principal.Claims)
@@ -176,11 +199,14 @@ public class AuthorizationController : ControllerBase
                     claim.SetDestinations(GetDestinations(claim, principal));
                 }
 
+                
+
                 return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
 
             throw new NotImplementedException("The specified grant type is not implemented.");
-        }
+    }
+    
     
     private IEnumerable<string> GetDestinations(Claim claim, ClaimsPrincipal principal)
     {
