@@ -53,8 +53,7 @@ public class AuthorizationController : ControllerBase
     [HttpPost("client_credentials")]
     [Produces("application/json")]
     [Consumes("application/x-www-form-urlencoded")]
-    public async Task<IActionResult> ClientCredentials([FromForm] string grant_type, [FromForm] string client_id, 
-        [FromForm] string client_secret)
+    public async Task<IActionResult> ClientCredentials([FromForm] ClientCredentialsData clientCredential)
     {
         var request = HttpContext.GetOpenIddictServerRequest();
         var identity = new ClaimsIdentity(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
@@ -71,7 +70,7 @@ public class AuthorizationController : ControllerBase
     [HttpPost("signup")]
     [Produces("application/json")]
     [Consumes("application/x-www-form-urlencoded")]
-    public async Task<IActionResult> SignUp([FromForm] AuthorizationData authorizationData, [FromForm] ProfileData profileData)
+    public async Task<IActionResult> SignUp([FromForm] PasswordFlowData passwordFlowData, [FromForm] ProfileData profileData)
     {
         var request = HttpContext.GetOpenIddictServerRequest();
         if (request?.IsPasswordGrantType() == true)
@@ -92,7 +91,7 @@ public class AuthorizationController : ControllerBase
                 var profile = new Profile()
                 {
                     UserId = user.Id,
-                    Username = profileData.Name ?? authorizationData.username,
+                    Username = profileData.Name ?? passwordFlowData.username,
                     Birthday = new DateOnly(profileData.BirthYear, profileData.BirthMonth, profileData.BirthDay),
                     Country = profileData.Country,
                     ProfileImg = profileData.ProfileImg,
@@ -153,7 +152,7 @@ public class AuthorizationController : ControllerBase
     [HttpPost("login")]
     [Produces("application/json")]
     [Consumes("application/x-www-form-urlencoded")]
-    public async Task<IActionResult> LogIn([FromForm] AuthorizationData authorizationData)
+    public async Task<IActionResult> LogIn([FromForm] PasswordFlowData passwordFlowData)
     {
         var request = HttpContext.GetOpenIddictServerRequest();
             if (request?.IsPasswordGrantType() == true)

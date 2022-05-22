@@ -2,7 +2,7 @@
 
 namespace DB.Models.Authorization;
 
-public class AuthorizationData
+public class PasswordFlowData
 {
     [DefaultValue("password")]
     public string grant_type { get; set; }
