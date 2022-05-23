@@ -1,8 +1,6 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using DB.Attributes;
-using DB.Data;
+using DB.Infrastructure;
 using DB.Data.Repository;
 using DB.Models;
 using DB.Models.Authorization;
@@ -11,8 +9,6 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Logging;
-using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using static OpenIddict.Abstractions.OpenIddictConstants.Permissions;
@@ -58,6 +54,16 @@ public class AuthorizationController : ControllerBase
     {
         var claimsPrincipal = (await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)).Principal;
         return SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+    }
+
+    [AuthorizeWithJwt]
+    [HttpPost("validate_token")]
+    [Produces("application/json")]
+    [Consumes("application/x-www-form-urlencoded")]
+    public async Task<IActionResult> ValidateToken()
+    {
+        var claims = TokenHandler.GetClaims(Request);
+        return Ok(claims);
     }
 
     [HttpPost("signup")]

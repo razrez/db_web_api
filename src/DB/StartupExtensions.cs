@@ -1,4 +1,5 @@
 ﻿using DB.Data;
+using DB.Infrastructure;
 using DB.Models;
 using Microsoft.AspNetCore.Identity;
 using OpenIddict.Abstractions;
@@ -8,14 +9,17 @@ namespace DB;
 
 public static class StartupExtensions
 {
-    public static IServiceCollection AddAuthenticationAndJwt(this IServiceCollection sc)
+    public static IServiceCollection AddAuthenticationAndJwt(this IServiceCollection sc, IConfiguration cf)
     {
         sc.AddAuthentication(configureOptions =>
             {
                 configureOptions.DefaultAuthenticateScheme = AuthenticationScheme;
                 configureOptions.DefaultChallengeScheme = AuthenticationScheme;
             })
-            .AddJwtBearer(options => { options.ClaimsIssuer = AuthenticationScheme; });
+            .AddJwtBearer(options =>
+            {
+                options.ClaimsIssuer = AuthenticationScheme;
+            });
         return sc;
     }
     
@@ -40,7 +44,11 @@ public static class StartupExtensions
                     .AllowRefreshTokenFlow();
 
                 options
-                    .SetTokenEndpointUris("/api/auth/signup", "/api/auth/login", "/api/auth/refresh_token");
+                    .SetTokenEndpointUris(
+                        "/api/auth/signup", 
+                        "/api/auth/login", 
+                        "/api/auth/refresh_token"
+                    );
                 
                 options
                     .AddEphemeralEncryptionKey()

@@ -1,7 +1,9 @@
 ﻿using DB.Data;
 using DB.Data.Repository;
+using DB.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+
 
 namespace DB;
 
@@ -58,7 +60,7 @@ public class Startup
                     .AllowAnyMethod();
             });
         });
-        services.AddAuthenticationAndJwt()
+        services.AddAuthenticationAndJwt(_configuration)
             .AddAuthorization()
             .AddOpenIddictServer(_env);
         services.AddDbContext<SpotifyContext>(options =>
