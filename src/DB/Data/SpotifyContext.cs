@@ -1,7 +1,11 @@
-﻿using DB.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using DB.Models;
 using DB.Models.EnumTypes;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace DB.Data
 {
@@ -340,9 +344,9 @@ namespace DB.Data
             };
 
 
-            modelBuilder.Entity<UserInfo>().HasData(user);
-            modelBuilder.Entity<Profile>().HasData(profile);
-            modelBuilder.Entity<Premium>().HasData(premium);
+            //modelBuilder.Entity<UserInfo>().HasData(user);
+            //modelBuilder.Entity<Profile>().HasData(profile);
+            //modelBuilder.Entity<Premium>().HasData(premium);
         }
     }
 }

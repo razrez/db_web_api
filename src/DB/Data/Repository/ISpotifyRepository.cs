@@ -1,4 +1,7 @@
-﻿using DB.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using DB.Models;
 
 namespace DB.Data.Repository;
 
@@ -7,6 +10,8 @@ public interface ISpotifyRepository : IDisposable
     //Operations with songs
     Task<IEnumerable<Song>> GetSongs(); 
     Task<bool> LikeSong(int songId, string userId);
+    Task<bool> AddSongToPlaylist(int songId, int playlistId);
+    Task<Song> GetSong(int songId);
     Task<List<Song>> SearchSongs(string input);
     
     //Operations with playlists

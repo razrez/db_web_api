@@ -1,4 +1,9 @@
-﻿using DB.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using DB.Data;
+using DB.Models;
 using DB.Models.EnumTypes;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -45,6 +50,37 @@ public class SpotifyRepository : ISpotifyRepository
         {
             return false;
         }
+    }
+
+    public async Task<bool> AddSongToPlaylist(int songId, int playlistId)
+    {
+        try
+        {
+            var userId = _ctx.Songs.FirstOrDefaultAsync(x=>x.Id==songId).Result.UserId;
+            var song = _ctx.Songs.FirstOrDefaultAsync(x => x.Id == songId).Result;
+            
+            var songPlaylist = await _ctx.Playlists
+                .Where(k => k.UserId == userId && k.Id == playlistId)
+                .FirstOrDefaultAsync();
+            
+            if (songPlaylist == null || song == null || userId == null) return false;
+            
+            songPlaylist.Songs.Add(song);
+            _ctx.Playlists.Update(songPlaylist);
+            await _ctx.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    public async Task<Song> GetSong(int songId)
+    {
+        var song = _ctx.Songs
+            .FirstOrDefaultAsync(x => x.Id == songId).Result;
+        return song;
     }
     
     public async Task<List<Song>> SearchSongs(string input)
