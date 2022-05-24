@@ -86,6 +86,7 @@ public class AuthorizationController : ControllerBase
                 var userId = await _userManager.GetUserIdAsync(user);
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 await _userManager.ConfirmEmailAsync(user, code);
+                await _userManager.AddToRoleAsync(user, "User");
 
                 var profile = new Profile()
                 {
@@ -116,7 +117,6 @@ public class AuthorizationController : ControllerBase
                 principal.SetScopes(new[]
                 {
                     Scopes.Email,
-                    Scopes.Profile,
                     Scopes.Roles
                 }.Intersect(request.GetScopes()));
                 principal.SetScopes(OpenIddictConstants.Scopes.OfflineAccess);
@@ -189,8 +189,7 @@ public class AuthorizationController : ControllerBase
                 principal.SetScopes(new[]
                 {
                     Scopes.Email,
-                    Scopes.Profile,
-                    Scopes.Roles,
+                    Scopes.Roles
                 }.Intersect(request.GetScopes()));
                 principal.SetScopes(OpenIddictConstants.Scopes.OfflineAccess);
 
@@ -198,9 +197,7 @@ public class AuthorizationController : ControllerBase
                 {
                     claim.SetDestinations(GetDestinations(claim, principal));
                 }
-
                 
-
                 return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
 

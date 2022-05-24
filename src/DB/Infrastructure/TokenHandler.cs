@@ -23,6 +23,7 @@ public class TokenHandler
         {
             Id = jwt.Claims.First(claim => claim.Type == "sub").Value,
             Name = jwt.Claims.First(claim => claim.Type == "name").Value,
+            Role = jwt.Claims.First(claim => claim.Type == "role").Value,
         };
         return claims;
     }

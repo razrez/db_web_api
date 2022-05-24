@@ -90,9 +90,9 @@ public static class StartupExtensions
         // which saves you from doing the mapping in your authorization controller.
         services.Configure<IdentityOptions>(options =>
         {
-            options.ClaimsIdentity.UserNameClaimType = OpenIddictConstants.Claims.Name;
             options.ClaimsIdentity.UserIdClaimType = OpenIddictConstants.Claims.Subject;
             options.ClaimsIdentity.RoleClaimType = OpenIddictConstants.Claims.Role;
+            options.ClaimsIdentity.UserNameClaimType = OpenIddictConstants.Claims.Name;
             options.ClaimsIdentity.EmailClaimType = OpenIddictConstants.Claims.Email;
         });
 
