@@ -20,7 +20,7 @@ type ResponseToken = {access_token: string; token_type: string; expires_in: int}
 let ``Authorized get random playlists`` (count: int, statusCode: HttpStatusCode) =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient()
-    let token = AuthorizeUser
+    let token = AuthorizeUser.access_token
     client.DefaultRequestHeaders.Authorization <- new AuthenticationHeaderValue("Bearer", token)
     let response = client.GetAsync($"/api/home/random/playlists?count={count}")
     Assert.Equal(statusCode, response.Result.StatusCode)

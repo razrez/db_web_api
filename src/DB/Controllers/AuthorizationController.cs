@@ -1,5 +1,6 @@
 using System.Security.Claims;
-using DB.Data;
+using DB.Attributes;
+using DB.Infrastructure;
 using DB.Data.Repository;
 using DB.Models;
 using DB.Models.Authorization;
@@ -44,11 +45,31 @@ public class AuthorizationController : ControllerBase
         }
         return (IUserEmailStore<UserInfo>)_userStore;
     }
-    
+
+    [AuthorizeWithJwt]
+    [HttpPost("refresh_token")]
+    [Produces("application/json")]
+    [Consumes("application/x-www-form-urlencoded")]
+    public async Task<IActionResult> RefreshToken([FromForm] RefreshTokenData refreshTokenData)
+    {
+        var claimsPrincipal = (await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)).Principal;
+        return SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+    }
+
+    [AuthorizeWithJwt]
+    [HttpGet("validate_token")]
+    [Produces("application/json")]
+    [Consumes("application/x-www-form-urlencoded")]
+    public async Task<IActionResult> ValidateToken()
+    {
+        var claims = TokenHandler.GetClaims(Request);
+        return Ok(claims);
+    }
+
     [HttpPost("signup")]
     [Produces("application/json")]
     [Consumes("application/x-www-form-urlencoded")]
-    public async Task<IActionResult> SignUp([FromForm] AuthorizationData authorizationData, [FromForm] ProfileData profileData)
+    public async Task<IActionResult> SignUp([FromForm] PasswordFlowData passwordFlowData, [FromForm] ProfileData profileData)
     {
         var request = HttpContext.GetOpenIddictServerRequest();
         if (request?.IsPasswordGrantType() == true)
@@ -65,11 +86,12 @@ public class AuthorizationController : ControllerBase
                 var userId = await _userManager.GetUserIdAsync(user);
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 await _userManager.ConfirmEmailAsync(user, code);
+                await _userManager.AddToRoleAsync(user, "User");
 
                 var profile = new Profile()
                 {
                     UserId = user.Id,
-                    Username = profileData.Name ?? authorizationData.username,
+                    Username = profileData.Name ?? passwordFlowData.username,
                     Birthday = new DateOnly(profileData.BirthYear, profileData.BirthMonth, profileData.BirthDay),
                     Country = profileData.Country,
                     ProfileImg = profileData.ProfileImg,
@@ -95,9 +117,9 @@ public class AuthorizationController : ControllerBase
                 principal.SetScopes(new[]
                 {
                     Scopes.Email,
-                    Scopes.Profile,
                     Scopes.Roles
                 }.Intersect(request.GetScopes()));
+                principal.SetScopes(OpenIddictConstants.Scopes.OfflineAccess);
 
                 foreach (var claim in principal.Claims)
                 {
@@ -130,7 +152,7 @@ public class AuthorizationController : ControllerBase
     [HttpPost("login")]
     [Produces("application/json")]
     [Consumes("application/x-www-form-urlencoded")]
-    public async Task<IActionResult> LogIn([FromForm] AuthorizationData authorizationData)
+    public async Task<IActionResult> LogIn([FromForm] PasswordFlowData passwordFlowData)
     {
         var request = HttpContext.GetOpenIddictServerRequest();
             if (request?.IsPasswordGrantType() == true)
@@ -150,6 +172,10 @@ public class AuthorizationController : ControllerBase
                 
                 var result = await _signInManager
                     .CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
+                if (_userManager.GetRolesAsync(user).Result.Count() == 0)
+                {
+                    await _userManager.AddToRoleAsync(user, "User");
+                }
                 if (!result.Succeeded)
                 {
                     var properties = new AuthenticationProperties(new Dictionary<string, string?>
@@ -163,24 +189,25 @@ public class AuthorizationController : ControllerBase
                 }
                 
                 var principal = await _signInManager.CreateUserPrincipalAsync(user);
-                
+
                 principal.SetScopes(new[]
                 {
                     Scopes.Email,
-                    Scopes.Profile,
                     Scopes.Roles
                 }.Intersect(request.GetScopes()));
+                principal.SetScopes(OpenIddictConstants.Scopes.OfflineAccess);
 
                 foreach (var claim in principal.Claims)
                 {
                     claim.SetDestinations(GetDestinations(claim, principal));
                 }
-
+                
                 return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
 
             throw new NotImplementedException("The specified grant type is not implemented.");
-        }
+    }
+    
     
     private IEnumerable<string> GetDestinations(Claim claim, ClaimsPrincipal principal)
     {

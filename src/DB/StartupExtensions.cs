@@ -1,4 +1,5 @@
 ﻿using DB.Data;
+using DB.Infrastructure;
 using DB.Models;
 using Microsoft.AspNetCore.Identity;
 using OpenIddict.Abstractions;
@@ -8,14 +9,17 @@ namespace DB;
 
 public static class StartupExtensions
 {
-    public static IServiceCollection AddAuthenticationAndJwt(this IServiceCollection sc)
+    public static IServiceCollection AddAuthenticationAndJwt(this IServiceCollection sc, IConfiguration cf)
     {
         sc.AddAuthentication(configureOptions =>
             {
                 configureOptions.DefaultAuthenticateScheme = AuthenticationScheme;
                 configureOptions.DefaultChallengeScheme = AuthenticationScheme;
             })
-            .AddJwtBearer(options => { options.ClaimsIssuer = AuthenticationScheme; });
+            .AddJwtBearer(options =>
+            {
+                options.ClaimsIssuer = AuthenticationScheme;
+            });
         return sc;
     }
     
@@ -32,15 +36,27 @@ public static class StartupExtensions
             })
             .AddServer(options =>
             {
+                
+                
                 options
                     .AcceptAnonymousClients()
                     .AllowPasswordFlow()
                     .AllowRefreshTokenFlow();
 
                 options
-                    .SetTokenEndpointUris("/api/auth/signup", "/api/auth/login");
+                    .SetTokenEndpointUris(
+                        "/api/auth/signup", 
+                        "/api/auth/login", 
+                        "/api/auth/refresh_token"
+                    );
                 
-                // Register the ASP.NET Core host and configure the ASP.NET Core-specific options.
+                options
+                    .AddEphemeralEncryptionKey()
+                    .AddEphemeralSigningKey();
+                
+                options
+                    .RegisterScopes(OpenIddictConstants.Scopes.OfflineAccess);
+                
                 var cfg = options.UseAspNetCore();
                 if (environment.IsDevelopment() || environment.IsStaging())
                 {
@@ -52,6 +68,9 @@ public static class StartupExtensions
                 options
                     .AddDevelopmentEncryptionCertificate()
                     .AddDevelopmentSigningCertificate();
+                
+                options
+                    .DisableAccessTokenEncryption();
             }).AddValidation(options =>
             {
                 options.UseAspNetCore();
@@ -71,12 +90,29 @@ public static class StartupExtensions
         // which saves you from doing the mapping in your authorization controller.
         services.Configure<IdentityOptions>(options =>
         {
-            options.ClaimsIdentity.UserNameClaimType = OpenIddictConstants.Claims.Name;
             options.ClaimsIdentity.UserIdClaimType = OpenIddictConstants.Claims.Subject;
             options.ClaimsIdentity.RoleClaimType = OpenIddictConstants.Claims.Role;
+            options.ClaimsIdentity.UserNameClaimType = OpenIddictConstants.Claims.Name;
             options.ClaimsIdentity.EmailClaimType = OpenIddictConstants.Claims.Email;
         });
-        
+
         return services;
+    }
+
+    public static async Task CreateRoles(this IServiceCollection services, string[] roleNames)
+    {
+        var serviceProvider = services.BuildServiceProvider();
+        //initializing custom roles 
+        var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        IdentityResult roleResult;
+
+        foreach (var roleName in roleNames)
+        {
+            var roleExist = await roleManager.RoleExistsAsync(roleName);
+            if (!roleExist)
+            {
+                roleResult = await roleManager.CreateAsync(new IdentityRole(roleName));
+            }
+        }
     }
 }
