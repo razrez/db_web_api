@@ -69,6 +69,7 @@ public class Startup
             options.UseOpenIddict();
         });
         services.AddIdentity();
+        services.CreateRoles(new[]{"User", "Artist", "Admin"});
         services.AddScoped<ISpotifyRepository, SpotifyRepository>();
     }
 

@@ -95,7 +95,24 @@ public static class StartupExtensions
             options.ClaimsIdentity.RoleClaimType = OpenIddictConstants.Claims.Role;
             options.ClaimsIdentity.EmailClaimType = OpenIddictConstants.Claims.Email;
         });
-        
+
         return services;
+    }
+
+    public static async Task CreateRoles(this IServiceCollection services, string[] roleNames)
+    {
+        var serviceProvider = services.BuildServiceProvider();
+        //initializing custom roles 
+        var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        IdentityResult roleResult;
+
+        foreach (var roleName in roleNames)
+        {
+            var roleExist = await roleManager.RoleExistsAsync(roleName);
+            if (!roleExist)
+            {
+                roleResult = await roleManager.CreateAsync(new IdentityRole(roleName));
+            }
+        }
     }
 }
