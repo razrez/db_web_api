@@ -57,7 +57,7 @@ public class AuthorizationController : ControllerBase
     }
 
     [AuthorizeWithJwt]
-    [HttpPost("validate_token")]
+    [HttpGet("validate_token")]
     [Produces("application/json")]
     [Consumes("application/x-www-form-urlencoded")]
     public async Task<IActionResult> ValidateToken()
@@ -172,6 +172,10 @@ public class AuthorizationController : ControllerBase
                 
                 var result = await _signInManager
                     .CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
+                if (_userManager.GetRolesAsync(user).Result.Count() == 0)
+                {
+                    await _userManager.AddToRoleAsync(user, "User");
+                }
                 if (!result.Succeeded)
                 {
                     var properties = new AuthenticationProperties(new Dictionary<string, string?>

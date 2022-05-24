@@ -19,7 +19,7 @@ let ``Correct Sign Up returns JWT`` () =
     let client = _factory.CreateClient();
     let values = [|
         KeyValuePair<string, string>("grant_type", "password");
-        KeyValuePair<string, string>("username", "Admin111@gmail.com");
+        KeyValuePair<string, string>("username", "Admin112@gmail.com");
         KeyValuePair<string, string>("password", "AsdQwe-123");
         KeyValuePair<string, string>("Name", "User");
         KeyValuePair<string, string>("BirthYear", "2000");
@@ -138,6 +138,6 @@ let ``Validate Token returns user's claims`` () =
     let authResponse = AuthorizeUser
     let access_token = authResponse.access_token
     client.DefaultRequestHeaders.Authorization <- new AuthenticationHeaderValue("Bearer", access_token)
-    let response = client.PostAsync($"api/auth/validate_token", null)
+    let response = client.GetAsync($"api/auth/validate_token")
     Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
    
