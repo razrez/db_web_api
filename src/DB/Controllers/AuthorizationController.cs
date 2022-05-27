@@ -53,14 +53,16 @@ public class AuthorizationController : ControllerBase
     public async Task<IActionResult> RefreshToken([FromForm] RefreshTokenData refreshTokenData)
     {
         var claimsPrincipal = (await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)).Principal;
-        return SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        if (claimsPrincipal != null)
+            return SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        return NotFound("Invalid token");
     }
 
     [AuthorizeWithJwt]
     [HttpGet("validate_token")]
     [Produces("application/json")]
     [Consumes("application/x-www-form-urlencoded")]
-    public async Task<IActionResult> ValidateToken()
+    public IActionResult ValidateToken()
     {
         var claims = TokenHandler.GetClaims(Request);
         return Ok(claims);
@@ -76,14 +78,13 @@ public class AuthorizationController : ControllerBase
         {
             var user = new UserInfo();
 
-            await _userStore.SetUserNameAsync(user, request?.Username, CancellationToken.None);
-            await _emailStore.SetEmailAsync(user, request?.Username, CancellationToken.None);
-            user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, request?.Password);
+            await _userStore.SetUserNameAsync(user, request.Username, CancellationToken.None);
+            await _emailStore.SetEmailAsync(user, request.Username, CancellationToken.None);
+            user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, request.Password);
             var result = await _userManager.CreateAsync(user);
 
             if (result.Succeeded)
             {
-                var userId = await _userManager.GetUserIdAsync(user);
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 await _userManager.ConfirmEmailAsync(user, code);
                 await _userManager.AddToRoleAsync(user, "User");
@@ -91,7 +92,7 @@ public class AuthorizationController : ControllerBase
                 var profile = new Profile()
                 {
                     UserId = user.Id,
-                    Username = profileData.Name ?? passwordFlowData.username,
+                    Username = profileData.Name,
                     Birthday = new DateOnly(profileData.BirthYear, profileData.BirthMonth, profileData.BirthDay),
                     Country = profileData.Country,
                     ProfileImg = profileData.ProfileImg,

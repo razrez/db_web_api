@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DB.Data;
-using DB.Models;
+﻿using DB.Models;
 using DB.Models.EnumTypes;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -277,7 +272,7 @@ public class SpotifyRepository : ISpotifyRepository
             userType = UserType.Artist;
         var result = await _ctx.Profiles
             .Where(p => p.UserType == userType)
-            .Where(p => p.Username.ToUpper().Contains(input.ToUpper()))
+            .Where(p => p.Username!.ToUpper().Contains(input.ToUpper()))
             .ToListAsync();
         return result;
     }

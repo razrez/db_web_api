@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using DB.Models;
+﻿using DB.Models;
 
 namespace DB.Data.Repository;
 

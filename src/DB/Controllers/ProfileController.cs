@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
+﻿using System.Text.Json;
 using DB.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using DB.Models.EnumTypes;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Web;
 using DB.Data;
+using DB.Infrastructure;
 
 namespace DB.Controllers
 {
@@ -21,12 +14,10 @@ namespace DB.Controllers
     [Produces("application/json")]
     public class ProfileController : ControllerBase
     {
-        private readonly ILogger<ProfileController> _logger;
         private readonly SpotifyContext _ctx;
         private readonly UserManager<UserInfo> _userManager;
-        public ProfileController(ILogger<ProfileController> logger, SpotifyContext ctx, UserManager<UserInfo> userManager)
+        public ProfileController(SpotifyContext ctx, UserManager<UserInfo> userManager)
         {
-            _logger = logger;
             _ctx = ctx;
             _userManager = userManager;
         }
@@ -46,7 +37,7 @@ namespace DB.Controllers
                     s.UserType,
                     s.Birthday,
                     s.Country,
-                    email = s.User.Email,
+                    email = s.User!.Email,
                 })
                 .ToListAsync();
             
@@ -58,7 +49,7 @@ namespace DB.Controllers
 
         [HttpPost]
         [Route("user/editProfile/{userId},{username},{country}, {birthday}, {email}", Name = "EditProfile")]
-        public async Task<IActionResult> ChangeProfile(string userId, string username, Country country, string birthday, string email)
+        public async Task<IActionResult> ChangeProfile(string? userId, string? username, Country country, string? birthday, string? email)
         {
             if (userId == null || username == null || country == null || birthday == null || email == null)
             {
@@ -74,13 +65,21 @@ namespace DB.Controllers
 
             var profile = _ctx.Profiles.FirstOrDefault(x => x.UserId == userId);
 
-            profile.Username = username;
-            profile.Country = country;
-            profile.Birthday = date;
+            if (profile != null)
+            {
+                profile.Username = username;
+                profile.Country = country;
+                profile.Birthday = date;
 
-            await _userManager.UpdateAsync(user);
+                await _userManager.UpdateAsync(user);
 
-            _ctx.Profiles.Update(profile);
+                _ctx.Profiles.Update(profile);
+            }
+            else
+            {
+                return NotFound("Failed to find user profile");
+            }
+
             await _ctx.SaveChangesAsync();
 
             var profileJson = await _ctx.Profiles

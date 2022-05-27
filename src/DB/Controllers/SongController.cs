@@ -1,6 +1,5 @@
 ﻿using DB.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using DB.Data.Repository;
 
@@ -12,13 +11,11 @@ namespace DB.Controllers
 
     public class SongController : ControllerBase
     {
-        private readonly UserManager<UserInfo> _userManager;
         private readonly ISpotifyRepository _ctx;
         
-        public SongController(ISpotifyRepository ctx, UserManager<UserInfo> userManager)
+        public SongController(ISpotifyRepository ctx)
         {
             _ctx = ctx;
-            _userManager = userManager;
         }
 
         [HttpGet]

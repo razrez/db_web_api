@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using DB.Data.Repository;
+﻿using DB.Data.Repository;
 using DB.Models;
 using Microsoft.AspNetCore.Mvc;
 
