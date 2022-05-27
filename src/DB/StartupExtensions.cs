@@ -1,5 +1,4 @@
 ﻿using DB.Data;
-using DB.Infrastructure;
 using DB.Models;
 using Microsoft.AspNetCore.Identity;
 using OpenIddict.Abstractions;
@@ -102,16 +101,14 @@ public static class StartupExtensions
     public static async Task CreateRoles(this IServiceCollection services, string[] roleNames)
     {
         var serviceProvider = services.BuildServiceProvider();
-        //initializing custom roles 
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        IdentityResult roleResult;
 
         foreach (var roleName in roleNames)
         {
             var roleExist = await roleManager.RoleExistsAsync(roleName);
             if (!roleExist)
             {
-                roleResult = await roleManager.CreateAsync(new IdentityRole(roleName));
+                await roleManager.CreateAsync(new IdentityRole(roleName));
             }
         }
     }

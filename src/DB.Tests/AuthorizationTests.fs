@@ -19,7 +19,7 @@ let ``Correct Sign Up returns JWT`` () =
     let client = _factory.CreateClient();
     let values = [|
         KeyValuePair<string, string>("grant_type", "password");
-        KeyValuePair<string, string>("username", "Admin112@gmail.com");
+        KeyValuePair<string, string>("username", "Admin333@gmail.com");
         KeyValuePair<string, string>("password", "AsdQwe-123");
         KeyValuePair<string, string>("Name", "User");
         KeyValuePair<string, string>("BirthYear", "2000");
