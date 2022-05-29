@@ -275,6 +275,112 @@ public class SpotifyRepository : ISpotifyRepository
         return result;
     }
 
+    public async Task<Profile> GetProfile(string userId)
+    {
+        var profile = _ctx.Profiles
+            .FirstOrDefaultAsync(x => x.UserId == userId).Result;
+
+        return profile;
+    }
+
+    public async Task<bool> ChangeProfile(string userId, string username, Country country, string birthday, string email)
+    {
+        try
+        {
+            if (userId == null || username == null || birthday == null || email == null)
+            {
+                return false;
+            }
+            var date = Parse(birthday);
+            var user = await _userManager.FindByIdAsync(userId);
+            user.Email = email;
+            user.NormalizedEmail = email.ToUpper();
+            user.NormalizedUserName = username.ToUpper();
+
+            var profile = _ctx.Profiles.FirstOrDefault(x => x.UserId == userId);
+            profile!.Username = username;
+            profile.Country = country;
+            profile.Birthday = date;
+            
+            await _userManager.UpdateAsync(user);
+
+            _ctx.Profiles.Update(profile);
+            _ctx.SaveChangesAsync();
+
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> ChangePremium(string userId, PremiumType premiumType)
+    {
+        try
+        {
+            var premium = _ctx.Premia.FirstOrDefaultAsync(x => x.UserId == userId).Result;
+            if (premium == null)
+            {
+                return false;
+            }
+            premium.PremiumType = premiumType;
+            DateTime date = DateTime.Now;
+            premium.StartAt = date;
+            premium.EndAt = date.AddMonths(1);
+            
+            _ctx.Premia.Update(premium);
+            await _ctx.SaveChangesAsync();
+            
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> ChangePassword(string userId, string oldPassword, string newPassword)
+    {
+        try
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            
+            if (oldPassword == newPassword)
+            {
+                return false;
+            }
+            if (user == null)
+            {
+                return false;
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
+            if (result.Succeeded)
+            {
+                await _ctx.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+    
+    public static DateOnly Parse(string s)
+    {
+        var str = s.Split('.');
+
+        int[] array = new int[3];
+        array[0] = int.Parse(str[0]);
+        array[1] = int.Parse(str[1]);
+        array[2] = int.Parse(str[2]);
+
+        return new DateOnly(array[0], array[1], array[2]);
+    }
+
     //Other operations
     public async Task Save()
     {

@@ -7,8 +7,7 @@ using DB.Data.Repository;
 namespace DB.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    [Produces("application/json")]
+    [Route("api/song")]
 
     public class SongController : ControllerBase
     {
@@ -21,18 +20,13 @@ namespace DB.Controllers
             _userManager = userManager;
         }
 
-        [HttpGet]
-        [Route("getSong/{songId}")]
+        [HttpGet("getSong")]
         public async Task<IActionResult> GetSong(int songId)
         {
             var song = await _ctx.GetSong(songId);
-            if (song == null) return NotFound(new {Error = "not found"});
+            if (song.Name == "") return NotFound();
 
-            var result = new JsonResult(new
-            {
-                song.Id, song.UserId, song.Name, song.Source
-            });
-            return result;
+            return new JsonResult(song);
         }
 
         [HttpPost("addSongToPlaylist")]

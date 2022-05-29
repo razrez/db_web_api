@@ -13,93 +13,46 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Web;
 using DB.Data;
+using DB.Data.Repository;
 
 namespace DB.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    [Produces("application/json")]
+    [Route("api/profile")]
     public class ProfileController : ControllerBase
     {
-        private readonly ILogger<ProfileController> _logger;
-        private readonly SpotifyContext _ctx;
         private readonly UserManager<UserInfo> _userManager;
-        public ProfileController(ILogger<ProfileController> logger, SpotifyContext ctx, UserManager<UserInfo> userManager)
+        private readonly ISpotifyRepository _ctx;
+        public ProfileController(UserManager<UserInfo> userManager, ISpotifyRepository ctx)
         {
-            _logger = logger;
-            _ctx = ctx;
             _userManager = userManager;
+            _ctx = ctx;
         }
 
-
-        [HttpGet]
-        [Route("user/getProfile/{userId}", Name = "GetProfile")]
-        public async Task<IActionResult> Get(string userId)
+        [HttpGet("getProfile")]
+        public async Task<IActionResult> GetProfile(string userId)
         {
-            var profile = await _ctx.Profiles
-                .Include(u => u.User)
-                .AsSplitQuery()
-                .Where(x => x.UserId == userId)
-                .Select(s => new
-                {
-                    s.Username,
-                    s.UserType,
-                    s.Birthday,
-                    s.Country,
-                    email = s.User.Email,
-                })
-                .ToListAsync();
-            
+            var profile = await _ctx.GetProfile(userId);
+            if (profile == null)
+            {
+                return NotFound();
+            }
             var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
             options.Converters.Add(new DateOnlyConverter());
-            
+
             return new JsonResult(profile, options);
         }
-
-        [HttpPost]
-        [Route("user/editProfile/{userId},{username},{country}, {birthday}, {email}", Name = "EditProfile")]
+        
+        [HttpPost("changeProfile/{userId},{username},{country},{birthday},{email}")]
         public async Task<IActionResult> ChangeProfile(string userId, string username, Country country, string birthday, string email)
         {
-            if (userId == null || username == null || country == null || birthday == null || email == null)
-            {
-                return BadRequest("Fields cannot be empty");
-            }
+            if (!ModelState.IsValid) return BadRequest("not a valid model");
+
+            var createRes = await _ctx.ChangeProfile(userId, username, country, birthday, email);
             
-            var date = Parse(birthday);
-
-            var user = await _userManager.FindByIdAsync(userId);
-            user.Email = email;
-            user.NormalizedEmail = email.ToUpper();
-            user.NormalizedUserName = username.ToUpper();
-
-            var profile = _ctx.Profiles.FirstOrDefault(x => x.UserId == userId);
-
-            profile.Username = username;
-            profile.Country = country;
-            profile.Birthday = date;
-
-            await _userManager.UpdateAsync(user);
-
-            _ctx.Profiles.Update(profile);
-            await _ctx.SaveChangesAsync();
-
-            var profileJson = await _ctx.Profiles
-                .Include(x => x.User)
-                .AsSplitQuery()
-                .Where(x => x.UserId == userId)
-                .Select(s => new
-                {
-                    s.Username,
-                    s.UserType,
-                    s.Birthday,
-                    s.Country,
-                    s.User.Email
-                })
-                .ToListAsync();
-            
-            return Ok("Changes done");
+            return createRes ? Ok("changes accepted") : BadRequest(new {Error = "something went wrong"});
         }
-
+        
         public static DateOnly Parse(string s)
         {
             var str = s.Split('.');
@@ -112,54 +65,26 @@ namespace DB.Controllers
             return new DateOnly(array[0], array[1], array[2]);
         }
 
-        [HttpPost]
-        [Route("user/changePassword/{userId},{oldPassword},{newPassword}", Name = "ChangePassword")]
+        [HttpPost("changePassword/{userId},{oldPassword},{newPassword}")]
         public async Task<IActionResult> ChangePassword(string userId, string oldPassword, string newPassword)
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            if (!ModelState.IsValid) return BadRequest("not a valid model");
 
-            if (oldPassword == newPassword)
-            {
-                return BadRequest("New password must be different from the old");
-            }
-
-            if (user == null)
-            {
-                return NotFound("User not found");
-            }
-
-            var res = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
-
-            if (res.Succeeded)
-            {
-                await _ctx.SaveChangesAsync();
-                return Ok();
-            }
-            else
-                return BadRequest("Error change password");
+            var createRes = await _ctx.ChangePassword(userId, oldPassword, newPassword);
+            
+            return createRes ? Ok("password changed") : BadRequest(new {Error = "something went wrong"});
         }
-
-        [HttpPost]
-        [Route("user/changePremium/{userId},{premiumType}")]
+        
+        [HttpPost("changePremium/{userId},{premiumType}")]
         public async Task<IActionResult> ChangePremium(string userId, PremiumType premiumType)
         {
-            var premium = _ctx.Premia.FirstOrDefaultAsync(x => x.UserId == userId).Result;
-            if (premium == null)
-            {
-                throw new Exception("User not found");
-            }
-            premium.PremiumType = premiumType;
-            DateTime date = DateTime.Now;
-            premium.StartAt = date;
-            premium.EndAt = date.AddMonths(1);
-            
-            _ctx.Premia.Update(premium);
+            if (!ModelState.IsValid) return BadRequest("not a valid model");
 
-            await _ctx.SaveChangesAsync();
+            var createRes = await _ctx.ChangePremium(userId, premiumType);
             
-            return Ok("Change done");
+            return createRes ? Ok("changes accepted") : BadRequest(new {Error = "something went wrong"});
         }
 
-    }
+}
 }
 
