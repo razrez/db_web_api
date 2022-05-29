@@ -2,6 +2,7 @@
 
 open System.Net
 open DB.Tests.UserContentTests
+open Microsoft.AspNetCore.Mvc
 open Microsoft.AspNetCore.Mvc.Testing
 open System.Text.Json
 open Xunit
@@ -36,19 +37,64 @@ let ``Search Profile return Not Found``(userId: string) =
     Assert.Equal(HttpStatusCode.BadRequest, response.Result.StatusCode)
     
     
-    
 [<Fact>]
 let ``Change Profile returns Profile``() =
+    let _factory = new WebApplicationFactory<Startup>()
+    let client = _factory.CreateClient();
     let userId = "5f34130c-2ed9-4c83-a600-e474e8f48bac"
     let username = "user01@gmail.com"
     let birthday = "2000.01.01"
     let email = "user01@gmail.com"
     let country = Country.Greece
-    let path = $"/api/profile/changeProfile?{userId}, {username}, {country} {birthday}, {email}"
     
-    let response = getResponseAsync path
+    let response = client.PostAsync($"/api/profile/changeProfile/{userId}, {username}, {country}, {birthday}, {email}", null)
     Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
     
     
+[<Fact>]
+let ``Change Profile returns NotFound``() =
+    let _factory = new WebApplicationFactory<Startup>()
+    let client = _factory.CreateClient();
+    let userId = "noProfile"
+    let username = "name"
+    let birthday = "1.1.1"
+    let email = "mail"
+    let country = Country.Greece
+    
+    let response = client.PostAsync($"/api/profile/changeProfile/{userId}, {username}, {country}, {birthday}, {email}", null)
+    Assert.Equal(HttpStatusCode.NotFound, response.Result.StatusCode)
+    
+    
+[<Fact>]
+let ``Change Password returns Success``() =
+    let _factory = new WebApplicationFactory<Startup>()
+    let client = _factory.CreateClient();
+    let userId = "120877ed-84b9-4ed5-9b87-d78965fc4fe0"
+    let oldPassword = "qWe!123"
+    let newPassword = "newqWe!123"
+    
+    let response = client.PostAsync($"/api/profile/changePassword/{userId},{oldPassword}, {newPassword}", null)
+    Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
     
 
+[<Fact>]
+let ``Change Password returns Password Wrong``() =
+    let _factory = new WebApplicationFactory<Startup>()
+    let client = _factory.CreateClient();
+    let userId = "120877ed-84b9-4ed5-9b87-d78965fc4fe0"
+    let oldPassword = "qWe!123"
+    let newPassword = "newqWe!123"
+    
+    let response = client.PostAsync($"/api/profile/changePassword/{userId},{oldPassword}, {newPassword}", null)
+    Assert.Equal(HttpStatusCode.BadRequest, response.Result.StatusCode)
+    
+[<Fact>]
+let ``Change Password returns NotFound``() =
+    let _factory = new WebApplicationFactory<Startup>()
+    let client = _factory.CreateClient();
+    let userId = "noUser"
+    let oldPassword = "qWe!123"
+    let newPassword = "newqWe!123"
+    
+    let response = client.PostAsync($"/api/profile/changePassword/{userId},{oldPassword}, {newPassword}", null)
+    Assert.Equal(HttpStatusCode.BadRequest, response.Result.StatusCode)

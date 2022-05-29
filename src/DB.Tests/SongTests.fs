@@ -29,3 +29,24 @@ let ``Search Song return Not Found``(songId: string) =
     let path = $"/api/song/getSong?songId={songId}"
     let response = getResponseAsync path
     Assert.Equal(HttpStatusCode.BadRequest, response.Result.StatusCode)
+    
+    
+[<Fact>]
+let ``Successfully Adding a Song to a Playlist``() =
+    let _factory = new WebApplicationFactory<Startup>()
+    let client = _factory.CreateClient();
+    let songId = "2"
+    let playlistId = "2"
+    
+    let response = client.PostAsync($"/api/song/addSongToPlaylist/{songId},{playlistId}", null)
+    Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
+    
+[<Fact>]
+let ``Error Adding a Song to a Playlist``() =
+    let _factory = new WebApplicationFactory<Startup>()
+    let client = _factory.CreateClient();
+    let songId = "wrongId"
+    let playlistId = "wrongId"
+    
+    let response = client.PostAsync($"/api/song/addSongToPlaylist/{songId},{playlistId}", null)
+    Assert.Equal(HttpStatusCode.NotFound, response.Result.StatusCode)

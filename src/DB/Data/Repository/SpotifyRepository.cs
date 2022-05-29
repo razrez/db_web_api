@@ -287,25 +287,33 @@ public class SpotifyRepository : ISpotifyRepository
     {
         try
         {
+            var check = _userManager.FindByIdAsync(userId);
+                      
             if (userId == null || username == null || birthday == null || email == null)
             {
                 return false;
             }
-            var date = Parse(birthday);
-            var user = await _userManager.FindByIdAsync(userId);
-            user.Email = email;
-            user.NormalizedEmail = email.ToUpper();
-            user.NormalizedUserName = username.ToUpper();
 
-            var profile = _ctx.Profiles.FirstOrDefault(x => x.UserId == userId);
-            profile!.Username = username;
-            profile.Country = country;
-            profile.Birthday = date;
-            
-            await _userManager.UpdateAsync(user);
-
-            _ctx.Profiles.Update(profile);
-            _ctx.SaveChangesAsync();
+            if (check.Result.Id != "")
+            {
+                var date = Parse(birthday);
+                var user = await _userManager.FindByIdAsync(userId);
+                user.Email = email;
+                user.NormalizedEmail = email.ToUpper();
+                user.NormalizedUserName = username.ToUpper();
+                
+                var profile = _ctx.Profiles.FirstOrDefault(x => x.UserId == userId);
+                profile!.Username = username;
+                profile.Country = country;
+                profile.Birthday = date;
+                
+                await _userManager.UpdateAsync(user);
+                
+                _ctx.Profiles.Update(profile);
+                _ctx.SaveChangesAsync();
+                
+                return true;
+            }
 
             return true;
         }

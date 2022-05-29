@@ -33,10 +33,7 @@ namespace DB.Controllers
         public async Task<IActionResult> GetProfile(string userId)
         {
             var profile = await _ctx.GetProfile(userId);
-            if (profile == null)
-            {
-                return NotFound();
-            }
+            
             var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
             options.Converters.Add(new DateOnlyConverter());
 
@@ -50,21 +47,9 @@ namespace DB.Controllers
 
             var createRes = await _ctx.ChangeProfile(userId, username, country, birthday, email);
             
-            return createRes ? Ok("changes accepted") : BadRequest(new {Error = "something went wrong"});
+            return createRes ? Ok("changes accepted") : NotFound(new {Error = "not found id"});
         }
         
-        public static DateOnly Parse(string s)
-        {
-            var str = s.Split('.');
-
-            int[] array = new int[3];
-            array[0] = int.Parse(str[0]);
-            array[1] = int.Parse(str[1]);
-            array[2] = int.Parse(str[2]);
-
-            return new DateOnly(array[0], array[1], array[2]);
-        }
-
         [HttpPost("changePassword/{userId},{oldPassword},{newPassword}")]
         public async Task<IActionResult> ChangePassword(string userId, string oldPassword, string newPassword)
         {
@@ -72,7 +57,7 @@ namespace DB.Controllers
 
             var createRes = await _ctx.ChangePassword(userId, oldPassword, newPassword);
             
-            return createRes ? Ok("password changed") : BadRequest(new {Error = "something went wrong"});
+            return createRes ? Ok("password changed") : BadRequest(new {Error = "password wrong"});
         }
         
         [HttpPost("changePremium/{userId},{premiumType}")]
