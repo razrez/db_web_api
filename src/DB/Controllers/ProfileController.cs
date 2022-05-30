@@ -67,7 +67,7 @@ namespace DB.Controllers
 
             var createRes = await _ctx.ChangePremium(userId, premiumType);
             
-            return createRes ? Ok("changes accepted") : BadRequest(new {Error = "something went wrong"});
+            return createRes ? Ok("changes accepted") : BadRequest(new {Error = "you already have this premium"});
         }
 
 }

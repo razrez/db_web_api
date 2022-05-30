@@ -36,7 +36,7 @@ namespace DB.Controllers
 
             var createRes = await _ctx.AddSongToPlaylist(songId, playlistId);
             
-            return createRes ? Ok("song added to playlist") : NotFound(new {Error = "the song was not added"});
+            return createRes ? Ok("song added to playlist") : BadRequest(new {Error = "the song was not added or already added"});
         }
     }
     

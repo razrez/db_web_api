@@ -35,8 +35,8 @@ let ``Search Song return Not Found``(songId: string) =
 let ``Successfully Adding a Song to a Playlist``() =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient();
-    let songId = "2"
-    let playlistId = "2"
+    let songId = 2
+    let playlistId = 2
     
     let response = client.PostAsync($"/api/song/addSongToPlaylist/{songId},{playlistId}", null)
     Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
@@ -45,8 +45,8 @@ let ``Successfully Adding a Song to a Playlist``() =
 let ``Error Adding a Song to a Playlist``() =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient();
-    let songId = "wrongId"
-    let playlistId = "wrongId"
+    let songId = 999999
+    let playlistId = 999999
     
     let response = client.PostAsync($"/api/song/addSongToPlaylist/{songId},{playlistId}", null)
-    Assert.Equal(HttpStatusCode.NotFound, response.Result.StatusCode)
+    Assert.Equal(HttpStatusCode.BadRequest, response.Result.StatusCode)

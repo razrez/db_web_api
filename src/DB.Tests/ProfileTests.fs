@@ -69,7 +69,7 @@ let ``Change Profile returns NotFound``() =
 let ``Change Password returns Success``() =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient();
-    let userId = "120877ed-84b9-4ed5-9b87-d78965fc4fe0"
+    let userId = "5f34130c-2ed9-4c83-a600-e474e8f44bac"
     let oldPassword = "qWe!123"
     let newPassword = "newqWe!123"
     
@@ -81,9 +81,9 @@ let ``Change Password returns Success``() =
 let ``Change Password returns Password Wrong``() =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient();
-    let userId = "120877ed-84b9-4ed5-9b87-d78965fc4fe0"
-    let oldPassword = "qWe!123"
-    let newPassword = "newqWe!123"
+    let userId = "5f34130c-2ed9-4c83-a600-e474e8f43bac"
+    let oldPassword = "noPassword"
+    let newPassword = "qWe!123"
     
     let response = client.PostAsync($"/api/profile/changePassword/{userId},{oldPassword}, {newPassword}", null)
     Assert.Equal(HttpStatusCode.BadRequest, response.Result.StatusCode)
@@ -98,3 +98,34 @@ let ``Change Password returns NotFound``() =
     
     let response = client.PostAsync($"/api/profile/changePassword/{userId},{oldPassword}, {newPassword}", null)
     Assert.Equal(HttpStatusCode.BadRequest, response.Result.StatusCode)
+    
+    
+[<Fact>]
+let ``Change Premium returns Success``() =
+    let _factory = new WebApplicationFactory<Startup>()
+    let client = _factory.CreateClient()
+    let userId = "5f34130c-2ed9-4c83-a600-e474e8f48bac"
+    let premiumType = PremiumType.Duo
+    let response = client.PostAsync($"/api/profile/changePremium/{userId},{premiumType}", null)
+    Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
+    
+[<Fact>]
+let ``Change Premium returns Already such a Premium``() =
+    let _factory = new WebApplicationFactory<Startup>()
+    let client = _factory.CreateClient()
+    let userId = "5f34130c-2ed9-4c83-a600-e474e8f48bac"
+    let premiumType = PremiumType.Duo
+    let response = client.PostAsync($"/api/profile/changePremium/{userId},{premiumType}", null)
+    Assert.Equal(HttpStatusCode.BadRequest, response.Result.StatusCode)
+    
+    
+[<Fact>]
+let ``Change Premium returns NotFound``() =
+    let _factory = new WebApplicationFactory<Startup>()
+    let client = _factory.CreateClient()
+    let userId = "noUser"
+    let premiumType = PremiumType.Duo
+    let response = client.PostAsync($"/api/profile/changePremium/{userId},{premiumType}", null)
+    Assert.Equal(HttpStatusCode.BadRequest, response.Result.StatusCode)
+    
+    

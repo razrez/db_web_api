@@ -332,6 +332,9 @@ public class SpotifyRepository : ISpotifyRepository
             {
                 return false;
             }
+
+            if (premium.PremiumType == premiumType)
+                return false;
             premium.PremiumType = premiumType;
             DateTime date = DateTime.Now;
             premium.StartAt = date;
