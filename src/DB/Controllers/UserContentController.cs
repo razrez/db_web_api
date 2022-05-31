@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DB.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/user/content")]
 [Produces("application/json")]
 public class UserContentController : ControllerBase
 {
@@ -18,7 +18,7 @@ public class UserContentController : ControllerBase
     }
 
     [HttpGet]
-    [Route("name/user/{userId}", Name="GetUserName")]
+    [Route("name/{userId}", Name="GetUserName")]
     public async Task<IActionResult> GetUserName(string userId)
     {
         try
@@ -35,7 +35,7 @@ public class UserContentController : ControllerBase
     
     //5f34130c-2ed9-4c83-a600-e474e8f48bac
     [HttpGet]
-    [Route("playlists/user/{userId}", Name="GetUsersPlaylists")]
+    [Route("playlists/{userId}", Name="GetUsersPlaylists")]
     public async Task<IActionResult> GetPlaylists(string userId)
     {
         var user = await _repository.FindUserByIdAsync(userId);

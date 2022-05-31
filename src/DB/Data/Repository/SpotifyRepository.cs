@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DB.Data;
-using DB.Models;
+﻿using DB.Models;
 using DB.Models.EnumTypes;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -216,9 +211,15 @@ public class SpotifyRepository : ISpotifyRepository
         try
         {
             var currentPlaylist = await _ctx.Playlists.FindAsync(playlistId);
-            if (currentPlaylist != null) _ctx.Remove(currentPlaylist);
-            await _ctx.SaveChangesAsync();
-            return true;
+            if (currentPlaylist != null)
+            {
+                _ctx.Remove(currentPlaylist);
+                
+                await _ctx.SaveChangesAsync();
+                return true;
+            }
+            return false;
+            
         }
         catch (Exception)
         {
@@ -240,6 +241,7 @@ public class SpotifyRepository : ISpotifyRepository
     
     public async Task<IEnumerable<Playlist>?> GetUserLibrary(string userId)
     {
+        if (await _ctx.Users.FirstOrDefaultAsync(u => u.Id == userId) == null) return null;
         var userLibrary = await _ctx.Users
             .Include(p => p.Playlists)
             .ThenInclude(s => s.Songs)
@@ -270,7 +272,7 @@ public class SpotifyRepository : ISpotifyRepository
             userType = UserType.Artist;
         var result = await _ctx.Profiles
             .Where(p => p.UserType == userType)
-            .Where(p => p.Username.ToUpper().Contains(input.ToUpper()))
+            .Where(p => p.Username!.ToUpper().Contains(input.ToUpper()))
             .ToListAsync();
         return result;
     }

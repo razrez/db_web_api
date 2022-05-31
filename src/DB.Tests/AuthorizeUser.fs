@@ -20,5 +20,4 @@ let AuthorizeUser =
     content.Headers.ContentType <- Headers.MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded")
     let response = client.PostAsync($"/api/auth/login", content)
     let responseJson = response.Result.Content.ReadAsStringAsync().Result
-    let responseData = JsonSerializer.Deserialize<ResponseToken> responseJson
-    responseData.access_token
+    JsonSerializer.Deserialize<ResponseToken> responseJson

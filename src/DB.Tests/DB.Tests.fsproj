@@ -8,15 +8,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="GetResponse.fs" />
         <Compile Include="ResponseToken.fs" />
         <Compile Include="AuthorizeUser.fs" />
-        <Compile Include="AuthorizationTests.fs" />
+        <Compile Include="GetResponse.fs" />
         <Compile Include="NewHomePageTests.fs" />
+        <Compile Include="AuthorizationTests.fs" />
         <Compile Include="UserContentTests.fs" />
         <Compile Include="SearchPageTests.fs" />
-        <Compile Include="ProfileTests.fs" />
-        <Compile Include="SongTests.fs" />
+        <Compile Include="PlaylistTests.fs" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,13 +1,6 @@
-﻿using System.Net;
-using System.Runtime.InteropServices;
-using System.Text.Json;
-using System.Threading.Tasks;
-using DB.Attributes;
-using DB.Data;
+﻿using DB.Attributes;
 using DB.Data.Repository;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace DB.Controllers;
 

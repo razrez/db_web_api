@@ -1,12 +1,11 @@
-﻿using System.Threading.Tasks;
-using DB.Data.Repository;
+﻿using DB.Data.Repository;
 using DB.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DB.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/playlist")]
 [Produces("application/json")]
 public class PlaylistController : ControllerBase
 {
@@ -17,14 +16,14 @@ public class PlaylistController : ControllerBase
         _ctx = ctx;
     }
 
-    [HttpDelete("delete/{playlistId}")]
+    [HttpDelete("{playlistId:int}")]
     public async Task<IActionResult> DeletePlaylist(int playlistId)
     {
         var res = await _ctx.DeletePlaylist(playlistId);
         return res ? Ok() : NotFound(new {Error = "not found"});
     }
 
-    [HttpPut("edit")]
+    [HttpPut]
     public async Task<IActionResult> EditPlaylist(Playlist newPlaylist)
     {
         if (!ModelState.IsValid) return BadRequest("not a valid model");
@@ -34,7 +33,7 @@ public class PlaylistController : ControllerBase
         return editRes ? Ok() : BadRequest(new {Error = "something went wrong"});
     }
 
-    [HttpPost("create")]
+    [HttpPost]
     public async Task<IActionResult> CreatePlaylist(Playlist newPlaylist)
     {
         if (!ModelState.IsValid) return BadRequest("not a valid model");
@@ -44,7 +43,7 @@ public class PlaylistController : ControllerBase
         return createRes ? Ok() : BadRequest(new {Error = "something went wrong"});
     }
 
-    [HttpGet("getInfo/{playlistId}")]
+    [HttpGet("{playlistId:int}")]
     public async Task<IActionResult> GetPlaylistInfo(int playlistId)
     {
         var playlist = await _ctx.GetPlaylistInfo(playlistId);
