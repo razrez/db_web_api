@@ -17,7 +17,7 @@ let ``Correct Sign Up returns JWT`` () =
     let client = _factory.CreateClient();
     let values = [|
         KeyValuePair<string, string>("grant_type", "password");
-        KeyValuePair<string, string>("username", "Admin102@gmail.com");
+        KeyValuePair<string, string>("username", "Admin103@gmail.com");
         KeyValuePair<string, string>("password", "AsdQwe-123");
         KeyValuePair<string, string>("Name", "User");
         KeyValuePair<string, string>("BirthYear", "2000");
@@ -41,7 +41,7 @@ let ``Sign Up with wrong data return BadRequest`` () =
     let values = [|
         KeyValuePair<string, string>("grant_type", "password");
         KeyValuePair<string, string>("username", "user01@gmail.com");
-        KeyValuePair<string, string>("password", "qWe!123");
+        KeyValuePair<string, string>("password", "newqWe!123");
         KeyValuePair<string, string>("Name", "User");
         KeyValuePair<string, string>("BirthYear", "2000");
         KeyValuePair<string, string>("BirthMonth", "2");
@@ -64,7 +64,7 @@ let ``Correct Login returns JWT`` () =
     let values = [|
         KeyValuePair<string, string>("grant_type", "password");
         KeyValuePair<string, string>("username", "user01@gmail.com");
-        KeyValuePair<string, string>("password", "qWe!123");
+        KeyValuePair<string, string>("password", "newqWe!123");
     |]
     let content = new FormUrlEncodedContent(values)
     content.Headers.ContentType <- Headers.MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded")

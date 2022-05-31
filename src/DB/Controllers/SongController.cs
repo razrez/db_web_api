@@ -30,13 +30,13 @@ namespace DB.Controllers
         }
 
         [HttpPost("addSongToPlaylist")]
-        public async Task<IActionResult> AddSongToPlaylist(int songId, int playlistId)
+        public async Task<IActionResult> AddSongToPlaylist([FromForm]int songId, [FromForm]int playlistId)
         {
             if (!ModelState.IsValid) return BadRequest("not a valid model");
 
             var createRes = await _ctx.AddSongToPlaylist(songId, playlistId);
             
-            return createRes ? Ok("song added to playlist") : BadRequest(new {Error = "the song was not added or already added"});
+            return createRes ? Ok("song added to playlist") : BadRequest(new {Error = "the song/playlist was not found or already added"});
         }
     }
     

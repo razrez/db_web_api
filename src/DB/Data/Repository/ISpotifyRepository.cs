@@ -46,7 +46,7 @@ public interface ISpotifyRepository : IDisposable
     Task<Profile> GetProfile(string userId);
     Task<bool> ChangeProfile(string userId, string username, Country country, string birthday, string email);
     Task<bool> ChangePremium(string userId, PremiumType premiumType);
-    Task<bool> ChangePassword(string userId, string oldPassword, string newPassword);
+    Task<bool> ChangePassword(UserInfo user, string oldPassword, string newPassword);
 
     //Other operations
     Task Save();

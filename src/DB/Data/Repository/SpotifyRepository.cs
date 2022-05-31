@@ -351,17 +351,11 @@ public class SpotifyRepository : ISpotifyRepository
         }
     }
 
-    public async Task<bool> ChangePassword(string userId, string oldPassword, string newPassword)
+    public async Task<bool> ChangePassword(UserInfo user, string oldPassword, string newPassword)
     {
         try
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            
             if (oldPassword == newPassword)
-            {
-                return false;
-            }
-            if (user == null)
             {
                 return false;
             }

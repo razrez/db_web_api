@@ -32,7 +32,8 @@ namespace DB.Controllers
         [HttpGet("getProfile")]
         public async Task<IActionResult> GetProfile(string userId)
         {
-            var profile = await _ctx.GetProfile(userId);
+            var profile = _ctx.GetProfile(userId).Result;
+            if (profile == null) return NotFound("user not found");
             
             var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
             options.Converters.Add(new DateOnlyConverter());
@@ -40,30 +41,32 @@ namespace DB.Controllers
             return new JsonResult(profile, options);
         }
         
-        [HttpPost("changeProfile/{userId},{username},{country},{birthday},{email}")]
-        public async Task<IActionResult> ChangeProfile(string userId, string username, Country country, string birthday, string email)
+        [HttpPost("changeProfile")]
+        public async Task<IActionResult> ChangeProfile([FromForm]string userId, [FromForm]string username, [FromForm]Country country, [FromForm]string birthday, [FromForm]string email)
         {
-            if (!ModelState.IsValid) return BadRequest("not a valid model");
+            var user = _userManager.FindByIdAsync(userId).Result;
+            if (user == null) return NotFound("User not found");
 
             var createRes = await _ctx.ChangeProfile(userId, username, country, birthday, email);
             
-            return createRes ? Ok("changes accepted") : NotFound(new {Error = "not found id"});
+            return createRes ? Ok("changes accepted") : NotFound(new {Error = "not found"});
         }
         
-        [HttpPost("changePassword/{userId},{oldPassword},{newPassword}")]
-        public async Task<IActionResult> ChangePassword(string userId, string oldPassword, string newPassword)
+        [HttpPost("changePassword")]
+        public async Task<IActionResult> ChangePassword([FromForm]string userId, [FromForm]string oldPassword, [FromForm]string newPassword)
         {
-            if (!ModelState.IsValid) return BadRequest("not a valid model");
-
-            var createRes = await _ctx.ChangePassword(userId, oldPassword, newPassword);
+            var user = _userManager.FindByIdAsync(userId).Result;
+            if (user == null) return NotFound("User not found");
+            var createRes = await _ctx.ChangePassword(user, oldPassword, newPassword);
             
             return createRes ? Ok("password changed") : BadRequest(new {Error = "password wrong"});
         }
         
-        [HttpPost("changePremium/{userId},{premiumType}")]
-        public async Task<IActionResult> ChangePremium(string userId, PremiumType premiumType)
+        [HttpPost("changePremium")]
+        public async Task<IActionResult> ChangePremium([FromForm]string userId, [FromForm]PremiumType premiumType)
         {
-            if (!ModelState.IsValid) return BadRequest("not a valid model");
+            var user = _userManager.FindByIdAsync(userId).Result;
+            if (user == null) return NotFound("User not found");
 
             var createRes = await _ctx.ChangePremium(userId, premiumType);
             

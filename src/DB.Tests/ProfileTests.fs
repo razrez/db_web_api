@@ -1,18 +1,29 @@
 ﻿module DB.Tests.ProfileTests
 
+open System
+open System.Collections.Generic
 open System.Net
+open System.Net.Http
+open DB.Controllers
 open DB.Tests.UserContentTests
 open Microsoft.AspNetCore.Mvc
 open Microsoft.AspNetCore.Mvc.Testing
 open System.Text.Json
+open Microsoft.AspNetCore.WebUtilities
 open Xunit
+open DB.Data.Repository
 open DB
 open DB.Models.EnumTypes
 open GetResponse
+open Moq
+open Moq.FSharp.Extensions
 
 type responseNotFound = { error: string }
 type profile = {userId:string; username:string; birthday:string; email:string; country:Country}
 type responseProfile = List<profile>
+
+type IRepository =
+    inherit ISpotifyRepository
 
 [<Theory>]
 [<InlineData("5f34130c-2ed9-4c83-a600-e474e8f48bac")>]
@@ -41,13 +52,15 @@ let ``Search Profile return Not Found``(userId: string) =
 let ``Change Profile returns Profile``() =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient();
-    let userId = "5f34130c-2ed9-4c83-a600-e474e8f48bac"
-    let username = "user01@gmail.com"
-    let birthday = "2000.01.01"
-    let email = "user01@gmail.com"
-    let country = Country.Greece
-    
-    let response = client.PostAsync($"/api/profile/changeProfile/{userId}, {username}, {country}, {birthday}, {email}", null)
+    let values = [|
+        KeyValuePair<string, string>("userId", "5f34130c-2ed9-4c83-a600-e474e8f48bac");
+        KeyValuePair<string, string>("username", "user01@gmail.com");
+        KeyValuePair<string, string>("birthday", "2000.01.01");
+        KeyValuePair<string, string>("email", "user01@gmail.com");
+        KeyValuePair<string, string>("country", "Greece");
+    |]
+    let content = new FormUrlEncodedContent(values)
+    let response = client.PostAsync($"/api/profile/changeProfile", content)
     Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
     
     
@@ -55,13 +68,16 @@ let ``Change Profile returns Profile``() =
 let ``Change Profile returns NotFound``() =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient();
-    let userId = "noProfile"
-    let username = "name"
-    let birthday = "1.1.1"
-    let email = "mail"
-    let country = Country.Greece
+    let values = [|
+        KeyValuePair<string, string>("userId", "noProfile");
+        KeyValuePair<string, string>("username", "user01@gmail.com");
+        KeyValuePair<string, string>("birthday", "2000.01.01");
+        KeyValuePair<string, string>("email", "user01@gmail.com");
+        KeyValuePair<string, string>("country", "Greece");
+    |]
+    let content = new FormUrlEncodedContent(values)
     
-    let response = client.PostAsync($"/api/profile/changeProfile/{userId}, {username}, {country}, {birthday}, {email}", null)
+    let response = client.PostAsync($"/api/profile/changeProfile", content)
     Assert.Equal(HttpStatusCode.NotFound, response.Result.StatusCode)
     
     
@@ -69,11 +85,14 @@ let ``Change Profile returns NotFound``() =
 let ``Change Password returns Success``() =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient();
-    let userId = "5f34130c-2ed9-4c83-a600-e474e8f44bac"
-    let oldPassword = "qWe!123"
-    let newPassword = "newqWe!123"
+    let values = [|
+        KeyValuePair<string, string>("userId", "5f34130c-2ed9-4c83-a600-e474e8f43bac");
+        KeyValuePair<string, string>("oldPassword", "qWe!123");
+        KeyValuePair<string, string>("newPassword", "newqWe!123");
+    |]
+    let content = new FormUrlEncodedContent(values)
     
-    let response = client.PostAsync($"/api/profile/changePassword/{userId},{oldPassword}, {newPassword}", null)
+    let response = client.PostAsync($"/api/profile/changePassword", content)
     Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
     
 
@@ -81,41 +100,55 @@ let ``Change Password returns Success``() =
 let ``Change Password returns Password Wrong``() =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient();
-    let userId = "5f34130c-2ed9-4c83-a600-e474e8f43bac"
-    let oldPassword = "noPassword"
-    let newPassword = "qWe!123"
+    let values = [|
+        KeyValuePair<string, string>("userId", "5f34130c-2ed9-4c83-a600-e474e8f44bac");
+        KeyValuePair<string, string>("oldPassword", "wrondPassword");
+        KeyValuePair<string, string>("newPassword", "123");
+    |]
+    let content = new FormUrlEncodedContent(values)
     
-    let response = client.PostAsync($"/api/profile/changePassword/{userId},{oldPassword}, {newPassword}", null)
+    let response = client.PostAsync($"/api/profile/changePassword", content)
     Assert.Equal(HttpStatusCode.BadRequest, response.Result.StatusCode)
     
 [<Fact>]
 let ``Change Password returns NotFound``() =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient();
-    let userId = "noUser"
-    let oldPassword = "qWe!123"
-    let newPassword = "newqWe!123"
+    let values = [|
+        KeyValuePair<string, string>("userId", "123");
+        KeyValuePair<string, string>("oldPassword", "qWe!123");
+        KeyValuePair<string, string>("newPassword", "newqWe!123");
+    |]
+    let content = new FormUrlEncodedContent(values)
     
-    let response = client.PostAsync($"/api/profile/changePassword/{userId},{oldPassword}, {newPassword}", null)
-    Assert.Equal(HttpStatusCode.BadRequest, response.Result.StatusCode)
+    let response = client.PostAsync($"/api/profile/changePassword", content)
+    Assert.Equal(HttpStatusCode.NotFound, response.Result.StatusCode)
     
     
 [<Fact>]
 let ``Change Premium returns Success``() =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient()
-    let userId = "5f34130c-2ed9-4c83-a600-e474e8f48bac"
-    let premiumType = PremiumType.Duo
-    let response = client.PostAsync($"/api/profile/changePremium/{userId},{premiumType}", null)
+    let values = [|
+        KeyValuePair<string, string>("userId", "5f34130c-2ed9-4c83-a600-e474e8f48bac");
+        KeyValuePair<string, string>("premiumType", "Family");
+    |]
+    let content = new FormUrlEncodedContent(values)
+    let response = client.PostAsync($"/api/profile/changePremium", content)
     Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
+    
     
 [<Fact>]
 let ``Change Premium returns Already such a Premium``() =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient()
-    let userId = "5f34130c-2ed9-4c83-a600-e474e8f48bac"
-    let premiumType = PremiumType.Duo
-    let response = client.PostAsync($"/api/profile/changePremium/{userId},{premiumType}", null)
+    let values = [|
+        KeyValuePair<string, string>("userId", "120877ed-84b9-4ed5-9b87-d78965fc4fe0");
+        KeyValuePair<string, string>("premiumType", "Individual");
+    |]
+    
+    let content = new FormUrlEncodedContent(values)
+    let response = client.PostAsync($"/api/profile/changePremium", content)
     Assert.Equal(HttpStatusCode.BadRequest, response.Result.StatusCode)
     
     
@@ -123,9 +156,12 @@ let ``Change Premium returns Already such a Premium``() =
 let ``Change Premium returns NotFound``() =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient()
-    let userId = "noUser"
-    let premiumType = PremiumType.Duo
-    let response = client.PostAsync($"/api/profile/changePremium/{userId},{premiumType}", null)
-    Assert.Equal(HttpStatusCode.BadRequest, response.Result.StatusCode)
+    let values = [|
+        KeyValuePair<string, string>("userId", "noUser");
+        KeyValuePair<string, string>("premiumType", "Duo");
+    |]
+    let content = new FormUrlEncodedContent(values)
+    let response = client.PostAsync($"/api/profile/changePremium", content)
+    Assert.Equal(HttpStatusCode.NotFound, response.Result.StatusCode)
     
     

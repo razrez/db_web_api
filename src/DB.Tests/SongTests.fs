@@ -1,6 +1,8 @@
 ﻿module DB.Tests.SongTests
 
+open System.Collections.Generic
 open System.Net
+open System.Net.Http
 open Microsoft.AspNetCore.Mvc.Testing
 open System.Text.Json
 open Xunit
@@ -32,21 +34,28 @@ let ``Search Song return Not Found``(songId: string) =
     
     
 [<Fact>]
-let ``Successfully Adding a Song to a Playlist``() =
+let `` Successfully Adding a Song to a Playlist``() =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient();
-    let songId = 2
-    let playlistId = 2
+    let values = [|
+        KeyValuePair<string, string>("songId", "4");
+        KeyValuePair<string, string>("playlistId", "2");
+    |]
+    let content = new FormUrlEncodedContent(values)
     
-    let response = client.PostAsync($"/api/song/addSongToPlaylist/{songId},{playlistId}", null)
+    let response = client.PostAsync($"/api/song/addSongToPlaylist", content)
     Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
+    
     
 [<Fact>]
 let ``Error Adding a Song to a Playlist``() =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient();
-    let songId = 999999
-    let playlistId = 999999
+    let values = [|
+        KeyValuePair<string, string>("songId", "1");
+        KeyValuePair<string, string>("playlistId", "2");
+    |]
+    let content = new FormUrlEncodedContent(values)
     
-    let response = client.PostAsync($"/api/song/addSongToPlaylist/{songId},{playlistId}", null)
+    let response = client.PostAsync($"/api/song/addSongToPlaylist", content)
     Assert.Equal(HttpStatusCode.BadRequest, response.Result.StatusCode)
