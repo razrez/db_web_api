@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Web;
 using DB.Data;
 using DB.Data.Repository;
+using DB.Infrastructure;
 
 namespace DB.Controllers
 {
