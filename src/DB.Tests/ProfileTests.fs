@@ -1,22 +1,17 @@
 ﻿module DB.Tests.ProfileTests
 
-open System
 open System.Collections.Generic
 open System.Net
 open System.Net.Http
-open DB.Controllers
-open DB.Tests.UserContentTests
-open Microsoft.AspNetCore.Mvc
+open DB.Models
 open Microsoft.AspNetCore.Mvc.Testing
 open System.Text.Json
-open Microsoft.AspNetCore.WebUtilities
 open Xunit
 open DB.Data.Repository
 open DB
 open DB.Models.EnumTypes
 open GetResponse
-open Moq
-open Moq.FSharp.Extensions
+open Microsoft.AspNetCore.Identity
 
 type responseNotFound = { error: string }
 type profile = {userId:string; username:string; birthday:string; email:string; country:Country}
@@ -24,7 +19,7 @@ type responseProfile = List<profile>
 
 type IRepository =
     inherit ISpotifyRepository
-
+    
 [<Theory>]
 [<InlineData("5f34130c-2ed9-4c83-a600-e474e8f48bac")>]
 [<InlineData("ca2aa01b-a215-4611-838a-f11b9552103e")>]
@@ -86,7 +81,7 @@ let ``Change Password returns Success``() =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient();
     let values = [|
-        KeyValuePair<string, string>("userId", "5f34130c-2ed9-4c83-a600-e474e8f43bac");
+        KeyValuePair<string, string>("userId", "5f34130c-2ed9-4c83-a600-e474e8f44bac");
         KeyValuePair<string, string>("oldPassword", "qWe!123");
         KeyValuePair<string, string>("newPassword", "newqWe!123");
     |]
@@ -106,7 +101,6 @@ let ``Change Password returns Password Wrong``() =
         KeyValuePair<string, string>("newPassword", "123");
     |]
     let content = new FormUrlEncodedContent(values)
-    
     let response = client.PostAsync($"/api/profile/changePassword", content)
     Assert.Equal(HttpStatusCode.BadRequest, response.Result.StatusCode)
     

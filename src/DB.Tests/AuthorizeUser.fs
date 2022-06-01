@@ -1,7 +1,6 @@
 module DB.Tests.AuthorizeUser
 
 open System.Collections.Generic
-open System.Net
 open System.Net.Http
 open System.Text.Json
 open Microsoft.AspNetCore.Mvc.Testing
@@ -14,7 +13,7 @@ let AuthorizeUser =
     let values = [|
         KeyValuePair<string, string>("grant_type", "password");
         KeyValuePair<string, string>("username", "user01@gmail.com");
-        KeyValuePair<string, string>("password", "newqWe!123");
+        KeyValuePair<string, string>("password", "qWe!123");
     |]
     let content = new FormUrlEncodedContent(values)
     content.Headers.ContentType <- Headers.MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded")

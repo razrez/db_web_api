@@ -226,6 +226,21 @@ namespace DB.Data
                     .WithOne(p => p.Premium)
                     .HasForeignKey<Premium>(d => d.UserId)
                     .HasConstraintName("fk_premium");
+                entity.HasData(new Premium()
+                {
+                    UserId = "120877ed-84b9-4ed5-9b87-d78965fc4fe0",
+                    PremiumType = PremiumType.Individual,
+                    StartAt = new DateTime(2020, 1, 1),
+                    EndAt = new DateTime(2020, 6, 6)
+                });
+                entity.HasData(new Premium()
+                {
+                    UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac",
+                    PremiumType = PremiumType.Student,
+                    StartAt = new DateTime(2020, 1, 1),
+                    EndAt = new DateTime(2020, 6, 6)
+                });
+
             });
 
             modelBuilder.Entity<Profile>(entity =>
@@ -322,22 +337,7 @@ namespace DB.Data
                         new Song{Id = 5, UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac", Name = "song5", Source = "src5"},
                     });
             });
-            var profile = new Profile()
-            {
-                UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac",
-                Username = "user01@gmail.com",
-                Birthday = new DateOnly(2020, 01, 01),
-                Country = Country.Ukraine,
-                UserType = UserType.User,
-            };
 
-            var premium = new Premium()
-            {
-                UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac",
-                PremiumType = PremiumType.Student,
-                StartAt = new DateTime(2020, 1, 1),
-                EndAt = new DateTime(2020, 6, 6)
-            };
 
 
             //modelBuilder.Entity<UserInfo>().HasData(user);
