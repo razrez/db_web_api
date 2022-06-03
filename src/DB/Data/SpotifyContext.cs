@@ -330,19 +330,13 @@ namespace DB.Data
                 entity.HasData(
                     new Song[]
                     {
-                        new Song{Id = 1, UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac", Name = "song1", Source = "src1"},
-                        new Song{Id = 2, UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac", Name = "song2", Source = "src2"},
+                        new Song{Id = 1, UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac", Name = "song1", Source = "pp.mp3"},
+                        new Song{Id = 2, UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac", Name = "song2", Source = "hp.mp3"},
                         new Song{Id = 3, UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac", Name = "song3", Source = "src3"},
                         new Song{Id = 4, UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac", Name = "song4", Source = "src4"},
                         new Song{Id = 5, UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac", Name = "song5", Source = "src5"},
                     });
             });
-
-
-
-            //modelBuilder.Entity<UserInfo>().HasData(user);
-            //modelBuilder.Entity<Profile>().HasData(profile);
-            //modelBuilder.Entity<Premium>().HasData(premium);
         }
     }
 }

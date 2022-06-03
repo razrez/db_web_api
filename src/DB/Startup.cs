@@ -2,6 +2,7 @@
 using DB.Data.Repository;
 using DB.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 
 
@@ -86,7 +87,7 @@ public class Startup
             });
         }
         app
-            .UseStaticFiles()
+            .UseStaticFiles() //for wwwroot
             .UseRouting()
             .UseAuthentication()
             .UseAuthorization()
