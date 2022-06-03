@@ -21,10 +21,11 @@ public class FileController : ControllerBase
     public IActionResult GetSongFile(int songId)
     {
         var root = _env.ContentRootPath;
-        var directory = Path.Combine(root, "..\\..\\Files\\Songs\\");
+        var directory = Path.Combine(root, "..\\..\\files\\songs\\");
         var songSource = _context.GetSong(songId).Result.Source;
         var songPath = Path.Combine(directory, songSource);
         var song = System.IO.File.ReadAllBytes(songPath);
-        return Ok(File(song, "audio/mpeg"));
+        Response.Headers.Add("Content-Disposition", $"filename=\"{songSource}\"");
+        return File(song, "audio/mpeg", songSource);
     }
 }
