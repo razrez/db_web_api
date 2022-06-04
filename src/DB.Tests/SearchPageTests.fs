@@ -59,34 +59,3 @@ let ``Search Artists return Artists``(input: string) =
     let responseJson = response.Result.Content.ReadAsStringAsync().Result
     let responseData = JsonSerializer.Deserialize<List<DB.Models.Profile>> responseJson
     Assert.NotNull(responseData)
-    
-[<Theory>]
-[<InlineData("NotExistingName")>]
-let ``Search Playlists return Not Found``(input: string) =
-    let path = $"/api/search/playlists?input={input}"
-    let response = getResponseAsync path
-    Assert.Equal(HttpStatusCode.NotFound, response.Result.StatusCode)
-
-[<Theory>]
-[<InlineData("NotExistingName")>]
-let ``Search Songs return Not Found``(input: string) =
-    let path = $"/api/search/songs?input={input}"
-    let response = getResponseAsync path
-    Assert.Equal(HttpStatusCode.NotFound, response.Result.StatusCode)
-    
-[<Theory>]
-[<InlineData("NotExistingName")>]
-let ``Search Users return Not Found``(input: string) =
-    let path = $"/api/search/users?input={input}"
-    let response = getResponseAsync path
-    Assert.Equal(HttpStatusCode.NotFound, response.Result.StatusCode)
-    
-[<Theory>]
-[<InlineData("NotExistingName")>]
-let ``Search Artists return Not Found``(input: string) =
-    let path = $"/api/search/artists?input={input}"
-    let response = getResponseAsync path
-    Assert.Equal(HttpStatusCode.NotFound, response.Result.StatusCode)
-
-
-
