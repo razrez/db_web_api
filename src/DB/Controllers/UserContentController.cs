@@ -105,7 +105,7 @@ public class UserContentController : ControllerBase
                 {
                     sk.Id, sk.UserId, sk.Name, sk.Source
                 })
-            });
+            }).Take(40);//offset
         
         return new JsonResult(usersPlaylists);
     }

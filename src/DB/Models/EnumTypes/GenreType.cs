@@ -7,6 +7,5 @@ public enum GenreType
     Techno,
     Electro,
     Country,
-    Pop,
-    Mixed
+    Pop
 }

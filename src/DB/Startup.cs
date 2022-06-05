@@ -22,6 +22,29 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        
+        services.AddDbContext<SpotifyContext>(options =>
+        {
+            options.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"));
+            options.UseOpenIddict();
+        });
+        services.AddIdentity();
+        services.AddScoped<ISpotifyRepository, SpotifyRepository>();
+        //services.CreateRoles(new[]{"User", "Artist", "Admin"});
+        
+        services.AddAuthenticationAndJwt(_configuration)
+                        .AddAuthorization()
+                        .AddOpenIddictServer(_env);
+        services.AddCors(opt =>
+        {
+            opt.AddDefaultPolicy(builder =>
+            {
+                builder
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
         services.AddControllersWithViews();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(option =>
@@ -65,31 +88,9 @@ public class Startup
                 //generate XML docs 
                 var xmlFile = $"{Assembly.GetEntryAssembly()?.GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                
                 option.IncludeXmlComments(xmlPath);
             }
         );
-        services.AddCors(opt =>
-        {
-            opt.AddDefaultPolicy(builder =>
-            {
-                builder
-                    .AllowAnyOrigin()
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
-            });
-        });
-        services.AddAuthenticationAndJwt(_configuration)
-            .AddAuthorization()
-            .AddOpenIddictServer(_env);
-        services.AddDbContext<SpotifyContext>(options =>
-        {
-            options.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"));
-            options.UseOpenIddict();
-        });
-        services.AddIdentity();
-        services.CreateRoles(new[]{"User", "Artist", "Admin"});
-        services.AddScoped<ISpotifyRepository, SpotifyRepository>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
