@@ -3,7 +3,6 @@ using DB.Data;
 using DB.Data.Repository;
 using DB.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 
 
@@ -22,10 +21,11 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        
+        var connectionString = _configuration.GetConnectionString("DefaultConnection");
         services.AddDbContext<SpotifyContext>(options =>
         {
-            options.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"));
+            //options.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"));
+            options.UseNpgsql(connectionString);
             options.UseOpenIddict();
         });
         services.AddIdentity();
@@ -85,10 +85,18 @@ public class Startup
                     Version = "v1"
                 });
                 
-                //generate XML docs 
+                //я сгенерировал и закоммитил, потому что из-за рефлексии падают тесты
+                //так как фшарп не может просто создать копию Startup из-за кода ниже
+                //если захотели написать документацию, то раскоммитьте снизу, чтобы сгенерировать
+                
+                /*
+                //generate XML docs
                 var xmlFile = $"{Assembly.GetEntryAssembly()?.GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 option.IncludeXmlComments(xmlPath);
+                */
+                
+                option.IncludeXmlComments("DB.xml");
             }
         );
     }
