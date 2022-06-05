@@ -15,7 +15,12 @@ public class PlaylistController : ControllerBase
     {
         _ctx = ctx;
     }
-
+    
+    /// <summary>
+    /// Delete specific playlist by given id
+    /// </summary>
+    /// <param name="playlistId"></param>
+    /// <returns></returns>
     [HttpDelete("{playlistId:int}")]
     public async Task<IActionResult> DeletePlaylist(int playlistId)
     {
@@ -32,7 +37,12 @@ public class PlaylistController : ControllerBase
         
         return editRes ? Ok() : BadRequest(new {Error = "something went wrong"});
     }
-
+    
+    /// <summary>
+    /// Creates a Playlist.
+    /// </summary>
+    /// <param name="newPlaylist"></param>
+    /// <returns>A newly created Playlist</returns>
     [HttpPost]
     public async Task<IActionResult> CreatePlaylist(Playlist newPlaylist)
     {
