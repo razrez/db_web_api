@@ -31,7 +31,7 @@ type IRepository =
     inherit ISpotifyRepository
     
 type song = {id: int; userId: string; name:string; source: string}
-type playlist = { id: int; userId: string; title: string; playlistType:int; genreType:int; imgSrc:string; songs:List<song> }
+type playlist = { id: int; userId: string; title: string; playlistType:int; genreType:int; songs:List<song> }
     
 [<Fact>]
 let ``Delete nonexistent Playlist and get NotFound`` () =

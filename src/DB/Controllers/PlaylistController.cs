@@ -52,6 +52,17 @@ public class PlaylistController : ControllerBase
     /// <summary>
     /// Creates a Playlist.
     /// </summary>
+    /// <remarks>
+    /// Minimal request JSON:
+    ///
+    ///     {
+    ///        "title": "SuperTitle", 
+    ///        "userId": "5f34130c-2ed9-4c83-a600-e474e8f48bac",
+    ///        "playlistType": 3,
+    ///        "genreType": 4,
+    ///     }
+    ///
+    /// </remarks>
     /// <param name="newPlaylist"></param>
     /// <response code="200">If request is succeed.</response>
     /// <response code="400">Not valid request.</response>
@@ -80,7 +91,6 @@ public class PlaylistController : ControllerBase
     ///        "title": "simple playlist",
     ///        "playlistType": 3,
     ///        "genreType": 3,
-    ///        "imgSrc": "src12",
     ///        "songs": []
     ///     }
     ///
@@ -98,7 +108,7 @@ public class PlaylistController : ControllerBase
         var result = new JsonResult(new
         {
             playlist.Id, playlist.UserId, playlist.Title,
-            playlist.PlaylistType, playlist.GenreType, playlist.ImgSrc,
+            playlist.PlaylistType, playlist.GenreType,
             Songs = playlist.Songs.Select(sk => new
             {
                 sk.Id, sk.UserId, sk.Name, sk.Source
@@ -127,6 +137,29 @@ public class PlaylistController : ControllerBase
     /// <summary>
     /// Gets all playlists which were liked by user.
     /// </summary>
+    /// <remarks>
+    /// Sample response:
+    ///     
+    ///     [
+    ///      {
+    ///          "id": 1,
+    ///          "userId": "5f34130c-2ed9-4c83-a600-e474e8f48bac",
+    ///          "title": "LikedSongs",
+    ///          "playlistType": 4,
+    ///          "genreType": 4,
+    ///          "songs": []
+    ///      },
+    ///      {
+    ///          "id": 3,
+    ///          "userId": "5f34130c-2ed9-4c83-a600-e474e8f48bac",
+    ///          "title": "string",
+    ///          "playlistType": 3,
+    ///          "genreType": 0,
+    ///          "songs": []
+    ///      }
+    ///     ]
+    ///
+    /// </remarks>
     /// <param name="userId"></param>
     /// <response code="200">If request is succeed.</response>
     /// <response code="404">If playlist with preferable ID doesn't exist.</response>
@@ -142,7 +175,7 @@ public class PlaylistController : ControllerBase
                 .Select(playlist => new
                 {
                     playlist.Id, playlist.UserId, 
-                    playlist.Title, playlist.PlaylistType, playlist.GenreType, playlist.ImgSrc,
+                    playlist.Title, playlist.PlaylistType, playlist.GenreType,
                     Songs = playlist.Songs.Select(sk => new
                     {
                         sk.Id, sk.UserId, sk.Name, sk.Source

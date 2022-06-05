@@ -123,7 +123,8 @@ public class SpotifyRepository : ISpotifyRepository
                 UserId = user.Id,
                 Title = newPlaylist.Title,
                 PlaylistType = newPlaylist.PlaylistType,
-                ImgSrc = "src3",
+                GenreType = newPlaylist.GenreType,
+                ImgSrc = "default",
                 Verified = true
             };
             
