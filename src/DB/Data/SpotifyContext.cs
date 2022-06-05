@@ -1,5 +1,6 @@
 ﻿using DB.Models;
 using DB.Models.EnumTypes;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,6 +40,16 @@ namespace DB.Data
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.HasPostgresExtension("uuid-ossp");
+
+            modelBuilder.Entity<IdentityRole>(entity =>
+                entity.HasData(new[]
+                {
+                    new IdentityRole("User"),
+                    new IdentityRole("Artist"),
+                    new IdentityRole("Admin"),
+                })
+                );
+            
             modelBuilder.Entity<UserInfo>(entity =>
             {
                 entity.HasMany(p => p.Songs)

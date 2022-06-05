@@ -21,7 +21,26 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllersWithViews();
+        services.AddDbContext<SpotifyContext>(options =>
+        {
+            options.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"));
+            options.UseOpenIddict();
+        });
+        services.AddIdentity();
+        services.AddCors(opt =>
+        {
+            opt.AddDefaultPolicy(builder =>
+            {
+                builder
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
+        services.AddAuthenticationAndJwt(_configuration)
+            .AddAuthorization()
+            .AddOpenIddictServer(_env);
+        services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(option =>
             {
@@ -51,26 +70,7 @@ public class Startup
                 option.SchemaFilter<EnumSchemaFilter>();
             }
         );
-        services.AddCors(opt =>
-        {
-            opt.AddDefaultPolicy(builder =>
-            {
-                builder
-                    .AllowAnyOrigin()
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
-            });
-        });
-        services.AddAuthenticationAndJwt(_configuration)
-            .AddAuthorization()
-            .AddOpenIddictServer(_env);
-        services.AddDbContext<SpotifyContext>(options =>
-        {
-            options.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"));
-            options.UseOpenIddict();
-        });
-        services.AddIdentity();
-        services.CreateRoles(new[]{"User", "Artist", "Admin"});
+        
         services.AddScoped<ISpotifyRepository, SpotifyRepository>();
     }
 
