@@ -21,20 +21,12 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        var connectionString = _configuration.GetConnectionString("DefaultConnection");
         services.AddDbContext<SpotifyContext>(options =>
         {
-            //options.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"));
-            options.UseNpgsql(connectionString);
+            options.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"));
             options.UseOpenIddict();
         });
         services.AddIdentity();
-        services.AddScoped<ISpotifyRepository, SpotifyRepository>();
-        //services.CreateRoles(new[]{"User", "Artist", "Admin"});
-        
-        services.AddAuthenticationAndJwt(_configuration)
-                        .AddAuthorization()
-                        .AddOpenIddictServer(_env);
         services.AddCors(opt =>
         {
             opt.AddDefaultPolicy(builder =>
@@ -45,7 +37,10 @@ public class Startup
                     .AllowAnyMethod();
             });
         });
-        services.AddControllersWithViews();
+        services.AddAuthenticationAndJwt(_configuration)
+            .AddAuthorization()
+            .AddOpenIddictServer(_env);
+        services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(option =>
             {
@@ -99,6 +94,8 @@ public class Startup
                 option.IncludeXmlComments("DB.xml");
             }
         );
+        
+        services.AddScoped<ISpotifyRepository, SpotifyRepository>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
