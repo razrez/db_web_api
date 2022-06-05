@@ -17,18 +17,29 @@ public class PlaylistController : ControllerBase
     }
     
     /// <summary>
-    /// Delete specific playlist by given id
+    /// Deletes a playlist by given ID.
     /// </summary>
     /// <param name="playlistId"></param>
-    /// <returns></returns>
+    /// <response code="200">If request is succeed.</response>
+    /// <response code="404">If playlist with preferable ID doesn't exist.</response>
     [HttpDelete("{playlistId:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeletePlaylist(int playlistId)
     {
         var res = await _ctx.DeletePlaylist(playlistId);
         return res ? Ok() : NotFound(new {Error = "not found"});
     }
-
+    
+    /// <summary>
+    /// Edit a Playlist.
+    /// </summary>
+    /// <param name="newPlaylist"></param>
+    /// <response code="200">If request is succeed.</response>
+    /// <response code="400">Not valid request.</response>
     [HttpPut]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> EditPlaylist(Playlist newPlaylist)
     {
         if (!ModelState.IsValid) return BadRequest("not a valid model");
@@ -42,8 +53,11 @@ public class PlaylistController : ControllerBase
     /// Creates a Playlist.
     /// </summary>
     /// <param name="newPlaylist"></param>
-    /// <returns>A newly created Playlist</returns>
+    /// <response code="200">If request is succeed.</response>
+    /// <response code="400">Not valid request.</response>
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreatePlaylist(Playlist newPlaylist)
     {
         if (!ModelState.IsValid) return BadRequest("not a valid model");
@@ -53,7 +67,29 @@ public class PlaylistController : ControllerBase
         return createRes ? Ok() : BadRequest(new {Error = "something went wrong"});
     }
 
+    /// <summary>
+    /// Gets a playlist with full information.
+    /// </summary>
+    /// <param name="playlistId"></param>
+    /// <remarks>
+    /// Sample response:
+    ///
+    ///     {
+    ///        "id": 2,
+    ///        "userId": "5f34130c-2ed9-4c83-a600-e474e8f48bac",
+    ///        "title": "simple playlist",
+    ///        "playlistType": 3,
+    ///        "genreType": 3,
+    ///        "imgSrc": "src12",
+    ///        "songs": []
+    ///     }
+    ///
+    /// </remarks>
+    /// <response code="200">If request is succeed.</response>
+    /// <response code="404">If playlist with preferable ID doesn't exist.</response>
     [HttpGet("{playlistId:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetPlaylistInfo(int playlistId)
     {
         var playlist = await _ctx.GetPlaylistInfo(playlistId);
@@ -61,7 +97,8 @@ public class PlaylistController : ControllerBase
         
         var result = new JsonResult(new
         {
-            playlist.Id, playlist.UserId, playlist.Title, playlist.PlaylistType,
+            playlist.Id, playlist.UserId, playlist.Title,
+            playlist.PlaylistType, playlist.GenreType, playlist.ImgSrc,
             Songs = playlist.Songs.Select(sk => new
             {
                 sk.Id, sk.UserId, sk.Name, sk.Source
@@ -71,28 +108,46 @@ public class PlaylistController : ControllerBase
         return result;
     }
 
+    /// <summary>
+    /// Likes a playlist.
+    /// </summary>
+    /// <param name="playlistId"></param>
+    /// <param name="userId"></param>
+    /// <response code="200">If request is succeed.</response>
+    /// <response code="400">If playlist or user with preferable IDs don't exist.</response>
     [HttpPost("like")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> LikePlaylist(int playlistId, string userId)
     {
         var res = await _ctx.LikePlaylist(playlistId, userId);
         return res ? Ok() : BadRequest(new {Error = "something went wrong"});
     }
 
+    /// <summary>
+    /// Gets all playlists which were liked by user.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <response code="200">If request is succeed.</response>
+    /// <response code="404">If playlist with preferable ID doesn't exist.</response>
     [HttpGet("library/user/{userId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetUserLibrary(string userId)
     {
         var userLibrary = await _ctx.GetUserLibrary(userId);
         if (userLibrary != null)
         {
             var result = userLibrary
-                .Select(s => new
+                .Select(playlist => new
                 {
-                    s.Id, s.UserId, s.Title, s.PlaylistType,
-                    Songs = s.Songs.Select(sk => new
+                    playlist.Id, playlist.UserId, 
+                    playlist.Title, playlist.PlaylistType, playlist.GenreType, playlist.ImgSrc,
+                    Songs = playlist.Songs.Select(sk => new
                     {
                         sk.Id, sk.UserId, sk.Name, sk.Source
                     })
-                });
+                }).Take(40); //offset
             
             return new JsonResult(result);
         }

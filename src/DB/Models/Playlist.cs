@@ -44,6 +44,7 @@ namespace DB.Models
         //это для индекс таблицы playlist_song (связь многие ко многим)
         [ForeignKey("PlaylistId")]
         [InverseProperty("Playlists")]
+        [JsonIgnore]
         public ICollection<Song> Songs { get; set; }
         
         //это тоже для индекс таблицы liked_playlist (связь многие ко многим)

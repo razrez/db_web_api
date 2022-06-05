@@ -347,7 +347,7 @@ public class SpotifyRepository : ISpotifyRepository
             
             return true;
         }
-        catch (Exception e)
+        catch (Exception)
         {
             return false;
         }
