@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DB.Data
 {
-    public class SpotifyContext : IdentityDbContext<UserInfo>
+    public sealed class SpotifyContext : IdentityDbContext<UserInfo>
     {
         public SpotifyContext()
         {
