@@ -55,7 +55,7 @@ let ``Change Profile returns Profile``() =
         KeyValuePair<string, string>("country", "Greece");
     |]
     let content = new FormUrlEncodedContent(values)
-    let response = client.PostAsync($"/api/profile/changeProfile", content)
+    let response = client.PutAsync($"/api/profile/changeProfile", content)
     Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
     
     
@@ -72,7 +72,7 @@ let ``Change Profile returns NotFound``() =
     |]
     let content = new FormUrlEncodedContent(values)
     
-    let response = client.PostAsync($"/api/profile/changeProfile", content)
+    let response = client.PutAsync($"/api/profile/changeProfile", content)
     Assert.Equal(HttpStatusCode.NotFound, response.Result.StatusCode)
     
     

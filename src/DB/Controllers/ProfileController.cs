@@ -42,10 +42,10 @@ namespace DB.Controllers
             return new JsonResult(profile, options);
         }
         
-        [HttpPost("changeProfile")]
-        public async Task<IActionResult> ChangeProfile([FromForm]string userId, [FromForm]string username, [FromForm]Country country, [FromForm]string birthday, [FromForm]string email)
+        [HttpPut("changeProfile")]
+        public async Task<IActionResult> ChangeProfile([FromForm]string userId, [FromForm]string? username, [FromForm]Country? country, [FromForm]string? birthday, [FromForm]string? email)
         {
-            var user = _userManager.FindByIdAsync(userId).Result;
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null) return NotFound("User not found");
 
             var createRes = await _ctx.ChangeProfile(userId, username, country, birthday, email);

@@ -1,4 +1,5 @@
-﻿using DB.Models;
+﻿using System.Threading.Tasks;
+using DB.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using DB.Data.Repository;
@@ -21,7 +22,7 @@ namespace DB.Controllers
         public async Task<IActionResult> GetSong(int songId)
         {
             var song = await _ctx.GetSong(songId);
-            if (song.Name == "") return NotFound();
+            if (song == null) return NotFound(new {Error = "song not found"});
 
             return new JsonResult(song);
         }

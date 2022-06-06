@@ -1,4 +1,7 @@
-﻿using DB.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using DB.Models;
 using DB.Models.EnumTypes;
 
 namespace DB.Data.Repository;
@@ -41,7 +44,7 @@ public interface ISpotifyRepository : IDisposable
     Task<bool> CreateProfileAsync(Profile newProfile);
     Task<List<Profile>> SearchProfile(string input, bool isArtist);
     Task<Profile> GetProfile(string userId);
-    Task<bool> ChangeProfile(string userId, string username, Country country, string birthday, string email);
+    Task<bool> ChangeProfile(string userId, string? username, Country? country, string? birthday, string? email);
     Task<bool> ChangePremium(string userId, PremiumType premiumType);
     Task<bool> ChangePassword(UserInfo user, string oldPassword, string newPassword);
 
