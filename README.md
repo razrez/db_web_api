@@ -1,2 +1,2 @@
 # db_web_api
-всем привет, всё круто
+Web API for our cs semester proj. Written with ASP.NET Core (C#) + XUnit test(F#)
