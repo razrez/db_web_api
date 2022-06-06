@@ -48,10 +48,10 @@ let ``Change Profile returns Profile``() =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient();
     let values = [|
-        KeyValuePair<string, string>("userId", "5f34130c-2ed9-4c83-a600-e474e8f48bac");
-        KeyValuePair<string, string>("username", "user01@gmail.com");
+        KeyValuePair<string, string>("userId", "5f34130c-2ed9-4c83-a600-e474e8f44bac");
+        KeyValuePair<string, string>("username", "user04@gmail.com");
         KeyValuePair<string, string>("birthday", "2000.01.01");
-        KeyValuePair<string, string>("email", "user01@gmail.com");
+        KeyValuePair<string, string>("email", "user04@gmail.com");
         KeyValuePair<string, string>("country", "Greece");
     |]
     let content = new FormUrlEncodedContent(values)
