@@ -41,12 +41,19 @@ namespace DB.Data
             base.OnModelCreating(modelBuilder);
             modelBuilder.HasPostgresExtension("uuid-ossp");
 
+            var userRole = new IdentityRole("User");
+            userRole.NormalizedName = "USER";
+            var artistRole = new IdentityRole("Artist");
+            artistRole.NormalizedName = "ARTIST";
+            var adminRole = new IdentityRole("Admin");
+            adminRole.NormalizedName = "ADMIN";
+
             modelBuilder.Entity<IdentityRole>(entity =>
                 entity.HasData(new[]
                 {
-                    new IdentityRole("User"),
-                    new IdentityRole("Artist"),
-                    new IdentityRole("Admin"),
+                    userRole,
+                    artistRole,
+                    adminRole,
                 })
                 );
             
