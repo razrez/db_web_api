@@ -52,7 +52,7 @@ let ``Error Adding a Song to a Playlist``() =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient();
     let values = [|
-        KeyValuePair<string, string>("songId", "1");
+        KeyValuePair<string, string>("songId", "777");
         KeyValuePair<string, string>("playlistId", "2");
     |]
     let content = new FormUrlEncodedContent(values)

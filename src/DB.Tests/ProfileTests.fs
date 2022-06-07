@@ -48,14 +48,14 @@ let ``Change Profile returns Profile``() =
     let _factory = new WebApplicationFactory<Startup>()
     let client = _factory.CreateClient();
     let values = [|
-        KeyValuePair<string, string>("userId", "5f34130c-2ed9-4c83-a600-e474e8f48bac");
-        KeyValuePair<string, string>("username", "user01@gmail.com");
+        KeyValuePair<string, string>("userId", "5f34130c-2ed9-4c83-a600-e474e8f44bac");
+        KeyValuePair<string, string>("username", "user04@gmail.com");
         KeyValuePair<string, string>("birthday", "2000.01.01");
-        KeyValuePair<string, string>("email", "user01@gmail.com");
+        KeyValuePair<string, string>("email", "user04@gmail.com");
         KeyValuePair<string, string>("country", "Greece");
     |]
     let content = new FormUrlEncodedContent(values)
-    let response = client.PostAsync($"/api/profile/changeProfile", content)
+    let response = client.PutAsync($"/api/profile/changeProfile", content)
     Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
     
     
@@ -72,7 +72,7 @@ let ``Change Profile returns NotFound``() =
     |]
     let content = new FormUrlEncodedContent(values)
     
-    let response = client.PostAsync($"/api/profile/changeProfile", content)
+    let response = client.PutAsync($"/api/profile/changeProfile", content)
     Assert.Equal(HttpStatusCode.NotFound, response.Result.StatusCode)
     
     
@@ -157,5 +157,4 @@ let ``Change Premium returns NotFound``() =
     let content = new FormUrlEncodedContent(values)
     let response = client.PostAsync($"/api/profile/changePremium", content)
     Assert.Equal(HttpStatusCode.NotFound, response.Result.StatusCode)
-    
     
