@@ -1,4 +1,9 @@
-﻿using DB.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using DB.Data;
+using DB.Models;
 using DB.Models.EnumTypes;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -286,29 +291,37 @@ public class SpotifyRepository : ISpotifyRepository
         return profile;
     }
 
-    public async Task<bool> ChangeProfile(string userId, string username, Country country, string birthday, string email)
+    public async Task<bool> ChangeProfile(string userId, string? username, Country? country, string? birthday, string? email)
     {
         try
         {
-            var check = _userManager.FindByIdAsync(userId);
-                      
-            if (userId == null || username == null || birthday == null || email == null)
+            var user = await _userManager.FindByIdAsync(userId);
+            var profile = _ctx.Profiles.FirstOrDefault(x => x.UserId == userId);          
+            DateOnly date;
+            if (user != null)
             {
-                return false;
-            }
+                if (birthday != null)
+                {
+                    date = Parse(birthday);
+                    profile.Birthday = date;
+                }
 
-            if (check.Result.Id != "")
-            {
-                var date = Parse(birthday);
-                var user = await _userManager.FindByIdAsync(userId);
-                user.Email = email;
-                user.NormalizedEmail = email.ToUpper();
-                user.NormalizedUserName = username.ToUpper();
-                
-                var profile = _ctx.Profiles.FirstOrDefault(x => x.UserId == userId);
-                profile!.Username = username;
-                profile.Country = country;
-                profile.Birthday = date;
+                if (username != null)
+                {
+                    profile!.Username = username;
+                    user.NormalizedUserName = username.ToUpper();
+                }
+
+                if (email != null)
+                {
+                    user.Email = email;
+                    user.NormalizedEmail = email.ToUpper();
+                }
+
+                if (country != null)
+                {
+                    profile.Country = country;
+                }
                 
                 await _userManager.UpdateAsync(user);
                 
@@ -318,7 +331,7 @@ public class SpotifyRepository : ISpotifyRepository
                 return true;
             }
 
-            return true;
+            return false;
         }
         catch (Exception)
         {
