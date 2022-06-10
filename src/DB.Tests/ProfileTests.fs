@@ -125,7 +125,7 @@ let ``Change Premium returns Success``() =
     let client = _factory.CreateClient()
     let values = [|
         KeyValuePair<string, string>("userId", "5f34130c-2ed9-4c83-a600-e474e8f48bac");
-        KeyValuePair<string, string>("premiumType", "Family");
+        KeyValuePair<string, string>("premiumId", "1");
     |]
     let content = new FormUrlEncodedContent(values)
     let response = client.PostAsync($"/api/profile/changePremium", content)
