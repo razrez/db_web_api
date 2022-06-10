@@ -168,7 +168,19 @@ public class SpotifyRepository : ISpotifyRepository
             .ToListAsync();
         return result;
     }
-    
+
+    public async Task<Playlist?> GetOriginPlaylist(int songId, string authorId)
+    {
+        //получение оригинального плейлиста
+        var authorPlaylists = await _ctx.Playlists
+            .Include(x => x.Songs.Where(s => s.Id == songId))
+            .Include(x => x.Users)
+            .AsSplitQuery()
+            .Where(k => k.UserId == authorId)
+            .FirstOrDefaultAsync();
+        return authorPlaylists;
+    }
+
     public async Task<Playlist?> GetPlaylistInfo(int playlistId)
     {
         var playlist = await _ctx.Playlists

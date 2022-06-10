@@ -36,6 +36,7 @@ public class PlaylistController : ControllerBase
         return res ? Ok() : NotFound(new {Error = "not found"});
     }
     
+    
     /// <summary>
     /// Edit a Playlist.
     /// </summary>
@@ -53,6 +54,7 @@ public class PlaylistController : ControllerBase
         
         return editRes ? Ok() : BadRequest(new {Error = "something went wrong"});
     }
+    
     
     /// <summary>
     /// Creates a Playlist.
@@ -84,6 +86,7 @@ public class PlaylistController : ControllerBase
         return createRes ? Ok() : BadRequest(new {Error = "something went wrong"});
     }
 
+    
     /// <summary>
     /// Gets a playlist with full information.
     /// </summary>
@@ -123,6 +126,7 @@ public class PlaylistController : ControllerBase
         
         return result;
     }
+    
 
     /// <summary>
     /// Likes a playlist.
@@ -139,6 +143,7 @@ public class PlaylistController : ControllerBase
         var res = await _ctx.LikePlaylist(playlistId, userId);
         return res ? Ok() : BadRequest(new {Error = "something went wrong"});
     }
+    
 
     /// <summary>
     /// Gets all playlists which were liked by user.
@@ -189,6 +194,33 @@ public class PlaylistController : ControllerBase
                 }).Take(40); //offset
             
             return new JsonResult(result);
+        }
+        
+        return NotFound(new {Error = "not found"});
+    }
+
+
+    //просто тест
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetOriginPlaylist(int songId, string authorId)
+    {
+        var originPlaylist = await _ctx.GetOriginPlaylist(songId, authorId);
+        if (originPlaylist != null)
+        {
+            /*var result = originPlaylist
+                .Select(playlist => new
+                {
+                    playlist.Id, playlist.UserId, 
+                    playlist.Title, playlist.PlaylistType, playlist.GenreType,
+                    Songs = playlist.Songs.Select(sk => new
+                    {
+                        sk.Id, sk.UserId, sk.Name, sk.Source
+                    })
+                }).Take(40); //offset
+            
+            return new JsonResult(result);*/
+            return new JsonResult(originPlaylist);
         }
         
         return NotFound(new {Error = "not found"});
