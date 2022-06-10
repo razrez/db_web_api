@@ -339,24 +339,24 @@ public class SpotifyRepository : ISpotifyRepository
         }
     }
 
-    public async Task<bool> ChangePremium(string userId, PremiumType premiumType)
+    public async Task<bool> ChangePremium(string userId, int premiumId)
     {
         try
         {
-            var premium = _ctx.Premia.FirstOrDefaultAsync(x => x.UserId == userId).Result;
+            var premium = _ctx.UserPremiums.FirstOrDefaultAsync(x => x.UserId == userId).Result;
             if (premium == null)
             {
                 return false;
             }
 
-            if (premium.PremiumType == premiumType)
+            if (premium.PremiumId == premiumId)
                 return false;
-            premium.PremiumType = premiumType;
+            premium.PremiumId = premiumId;
             DateTime date = DateTime.Now;
             premium.StartAt = date;
             premium.EndAt = date.AddMonths(1);
             
-            _ctx.Premia.Update(premium);
+            _ctx.UserPremiums.Update(premium);
             await _ctx.SaveChangesAsync();
             
             return true;
@@ -389,7 +389,22 @@ public class SpotifyRepository : ISpotifyRepository
             return false;
         }
     }
-    
+
+    public async Task<Premium?> GetUserPremium(string userId)
+    {
+        var userPremium = await _ctx.UserPremiums.FirstOrDefaultAsync(p => p.UserId == userId);
+        if (userPremium == null)
+            return null;
+        var premium = await _ctx.Premiums.FirstOrDefaultAsync(p => p.Id == userPremium.PremiumId);
+        return premium;
+    }
+
+    public async Task<List<Premium>> GetAllPremiums()
+    {
+        var premiums = await _ctx.Premiums.ToListAsync();
+        return premiums;
+    }
+
     public static DateOnly Parse(string s)
     {
         var str = s.Split('.');

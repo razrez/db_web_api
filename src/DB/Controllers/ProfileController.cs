@@ -64,16 +64,34 @@ namespace DB.Controllers
         }
         
         [HttpPost("changePremium")]
-        public async Task<IActionResult> ChangePremium([FromForm]string userId, [FromForm]PremiumType premiumType)
+        public async Task<IActionResult> ChangePremium([FromForm]string userId, [FromForm]int premiumId)
         {
             var user = _userManager.FindByIdAsync(userId).Result;
             if (user == null) return NotFound("User not found");
 
-            var createRes = await _ctx.ChangePremium(userId, premiumType);
+            var createRes = await _ctx.ChangePremium(userId, premiumId);
             
             return createRes ? Ok("changes accepted") : BadRequest(new {Error = "you already have this premium"});
         }
 
-}
+        [HttpGet("user_premium/{userId}")]
+        public async Task<IActionResult> GetUserPremium(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if(user == null)
+                return BadRequest("User not fount");
+            var premium = await _ctx.GetUserPremium(userId);
+            if (premium == null)
+                return BadRequest("User's premium not found");
+            return Ok(premium);
+        }
+
+        [HttpGet("premiums")]
+        public async Task<IActionResult> GetAllPremiums()
+        {
+            var premiums = await _ctx.GetAllPremiums();
+            return Ok(premiums);
+        }
+    }
 }
 

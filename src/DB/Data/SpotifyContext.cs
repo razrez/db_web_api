@@ -18,7 +18,8 @@ namespace DB.Data
         }
 
         public DbSet<Playlist> Playlists { get; set; } = null!;
-        public DbSet<Premium> Premia { get; set; } = null!;
+        public DbSet<UserPremium> UserPremiums { get; set; } = null!;
+        public DbSet<Premium> Premiums { get; set; } = null!;
         public DbSet<Profile> Profiles { get; set; } = null!;
         public DbSet<Song> Songs { get; set; } = null!;
         public DbSet<Genre> Genres { get; set; } = null!;
@@ -235,26 +236,65 @@ namespace DB.Data
 
             modelBuilder.Entity<Premium>(entity =>
             {
+                entity.HasMany(p => p.UserPremiums)
+                    .WithOne(p => p.Premium);
+
+                entity.HasData(new Premium()
+                {
+                    Id = 1,
+                    Name = "Individual",
+                    Description = "Some Description",
+                    Price = 10,
+                    UserCount = 1,
+                });
+                entity.HasData(new Premium()
+                {
+                    Id = 2,
+                    Name = "Student",
+                    Description = "Some Description",
+                    Price = 7.50,
+                    UserCount = 1,
+                });
+                entity.HasData(new Premium()
+                {
+                    Id = 3,
+                    Name = "Duo",
+                    Description = "Some Description",
+                    Price = 12,
+                    UserCount = 2,
+                });
+                entity.HasData(new Premium()
+                {
+                    Id = 4,
+                    Name = "Family",
+                    Description = "Some Description",
+                    Price = 16,
+                    UserCount = 2,
+                });
+            });
+            
+            modelBuilder.Entity<UserPremium>(entity =>
+            {
                 entity.HasKey(e => e.UserId)
                     .HasName("premium_pkey");
 
                 entity.Property(e => e.UserId).ValueGeneratedNever();
 
                 entity.HasOne(d => d.User)
-                    .WithOne(p => p.Premium)
-                    .HasForeignKey<Premium>(d => d.UserId)
+                    .WithOne(p => p.UserPremium)
+                    .HasForeignKey<UserPremium>(d => d.UserId)
                     .HasConstraintName("fk_premium");
-                entity.HasData(new Premium()
+                entity.HasData(new UserPremium()
                 {
                     UserId = "120877ed-84b9-4ed5-9b87-d78965fc4fe0",
-                    PremiumType = PremiumType.Individual,
+                    PremiumId = 1,
                     StartAt = new DateTime(2020, 1, 1),
                     EndAt = new DateTime(2020, 6, 6)
                 });
-                entity.HasData(new Premium()
+                entity.HasData(new UserPremium()
                 {
                     UserId = "5f34130c-2ed9-4c83-a600-e474e8f48bac",
-                    PremiumType = PremiumType.Student,
+                    PremiumId = 2,
                     StartAt = new DateTime(2020, 1, 1),
                     EndAt = new DateTime(2020, 6, 6)
                 });

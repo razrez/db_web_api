@@ -4,15 +4,16 @@ using DB.Models.EnumTypes;
 
 namespace DB.Models
 {
-    [Table("premium")]
-    public class Premium
+    [Table("user_premium")]
+    public class UserPremium
     {
         [Key]
         [Column("user_id")]
         public string UserId { get; set; } = null!;
-
-        [Column("premium_type")] 
-        public PremiumType PremiumType { get; set; }
+        
+        [Key]
+        [Column("premium_id")]
+        public int PremiumId { get; set; }
 
         [Column("start_at", TypeName = "timestamp without time zone")]
         public DateTime StartAt { get; set; }
@@ -21,7 +22,9 @@ namespace DB.Models
         public DateTime EndAt { get; set; }
 
         [ForeignKey("UserId")]
-        [InverseProperty("Premium")]
+        [InverseProperty("UserPremium")]
         public virtual UserInfo User { get; set; } = null!;
+        
+        public Premium Premium { get; set; }
     }
 }

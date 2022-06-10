@@ -24,7 +24,7 @@ namespace DB.Models
         
 
         [InverseProperty("User")]
-        public Premium Premium { get; set; } = null!;
+        public UserPremium UserPremium { get; set; } = null!;
 
         [InverseProperty("User")]
         public Profile Profile { get; set; } = null!;
