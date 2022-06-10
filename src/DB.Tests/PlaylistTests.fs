@@ -36,30 +36,31 @@ type playlist = { id: int; userId: string; title: string; playlistType:int; genr
 [<Fact>]
 let ``Delete nonexistent Playlist and get NotFound`` () =
     let id = 234567892
+    let userId = "userId"
     
     let path id = $"/api/playlist/{id}"
     let response = deleteResponseAsync path
     Assert.Equal(HttpStatusCode.NotFound, response.Result.StatusCode)
     
     let moq = Mock<IRepository>()
-    moq.SetupFunc<bool>(fun f -> f.DeletePlaylist(It.IsAny<int>()).Result).Returns(false) |> ignore
+    moq.SetupFunc<bool>(fun f -> f.DeletePlaylist(It.IsAny<int>(),It.IsAny<string>()).Result).Returns(false) |> ignore
     
-    Assert.False(moq.Object.DeletePlaylist(id).Result)
+    Assert.False(moq.Object.DeletePlaylist(id,userId).Result)
     let playlistController = PlaylistController(moq.Object)
     
-    let myActionResult = playlistController.DeletePlaylist(id).Result
+    let myActionResult = playlistController.DeletePlaylist(id,userId).Result
     Assert.IsType<NotFoundObjectResult>(myActionResult)
     
 [<Fact>]
 let ``Delete existent Playlist and get Ok`` () =
     let id = 2
-    
+    let userId = "userId"
     let moq = Mock<IRepository>()
-    moq.SetupFunc<bool>(fun f -> f.DeletePlaylist(It.IsAny<int>()).Result).Returns(true) |> ignore
-    Assert.True(moq.Object.DeletePlaylist(id).Result)
+    moq.SetupFunc<bool>(fun f -> f.DeletePlaylist(It.IsAny<int>(),It.IsAny<string>()).Result).Returns(true) |> ignore
+    Assert.True(moq.Object.DeletePlaylist(id, userId).Result)
     
     let playlistController = PlaylistController(moq.Object)
-    let myActionResult = playlistController.DeletePlaylist(id).Result
+    let myActionResult = playlistController.DeletePlaylist(id, userId).Result
     Assert.IsType<OkResult>(myActionResult)
     
 [<Fact>]

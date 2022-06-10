@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DB.Models
@@ -18,6 +17,10 @@ namespace DB.Models
         
         [Column("user_id")]
         public string UserId { get; set; }
+        
+        // в бд по дефолту значение = 0
+        [Column("origin_playlist_id")]
+        public int OriginPlaylistId { get; set; }
         
         [Column("name")]
         [StringLength(250)]

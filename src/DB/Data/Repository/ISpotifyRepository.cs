@@ -33,7 +33,7 @@ public interface ISpotifyRepository : IDisposable
     /// </returns>
     Task<Playlist?> GetPlaylistInfo(int playlistId);
     Task<bool> EditPlaylist(Playlist newPlaylist);
-    Task<bool> DeletePlaylist(int playlistId);
+    Task<bool> DeletePlaylist(int playlistId, string userId);
     
     //Operations with users
     Task<string> GetUserName(string userId);

@@ -15,21 +15,27 @@ public class PlaylistController : ControllerBase
     {
         _ctx = ctx;
     }
-    
+
     /// <summary>
     /// Deletes a playlist by given ID.
     /// </summary>
+    /// <remarks>
+    /// Предполагается, что мы достаем из принципала или из джвт токена userId(откуда там достается)
+    /// и только потом удаляем плейлист. Это нужно, чтобы юзеры не могли удалятьь чужие плейлисты :)
+    /// </remarks>
     /// <param name="playlistId"></param>
+    /// <param name="userId"></param>
     /// <response code="200">If request is succeed.</response>
     /// <response code="404">If playlist with preferable ID doesn't exist.</response>
-    [HttpDelete("{playlistId:int}")]
+    [HttpDelete]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeletePlaylist(int playlistId)
+    public async Task<IActionResult> DeletePlaylist(int playlistId, string userId)
     {
-        var res = await _ctx.DeletePlaylist(playlistId);
+        var res = await _ctx.DeletePlaylist(playlistId, userId);
         return res ? Ok() : NotFound(new {Error = "not found"});
     }
+    
     
     /// <summary>
     /// Edit a Playlist.
@@ -49,6 +55,7 @@ public class PlaylistController : ControllerBase
         return editRes ? Ok() : BadRequest(new {Error = "something went wrong"});
     }
     
+    
     /// <summary>
     /// Creates a Playlist.
     /// </summary>
@@ -60,6 +67,7 @@ public class PlaylistController : ControllerBase
     ///        "userId": "5f34130c-2ed9-4c83-a600-e474e8f48bac",
     ///        "playlistType": 3,
     ///        "genreType": 4,
+    ///        "verified": true
     ///     }
     ///
     /// </remarks>
@@ -78,6 +86,7 @@ public class PlaylistController : ControllerBase
         return createRes ? Ok() : BadRequest(new {Error = "something went wrong"});
     }
 
+    
     /// <summary>
     /// Gets a playlist with full information.
     /// </summary>
@@ -117,6 +126,7 @@ public class PlaylistController : ControllerBase
         
         return result;
     }
+    
 
     /// <summary>
     /// Likes a playlist.
@@ -133,6 +143,7 @@ public class PlaylistController : ControllerBase
         var res = await _ctx.LikePlaylist(playlistId, userId);
         return res ? Ok() : BadRequest(new {Error = "something went wrong"});
     }
+    
 
     /// <summary>
     /// Gets all playlists which were liked by user.
@@ -187,4 +198,5 @@ public class PlaylistController : ControllerBase
         
         return NotFound(new {Error = "not found"});
     }
+
 }
