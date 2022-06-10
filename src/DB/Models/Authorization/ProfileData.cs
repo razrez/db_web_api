@@ -9,5 +9,5 @@ public class ProfileData
     public int BirthMonth { get; set; }
     public int BirthDay { get; set; }
     public Country Country { get; set; }
-    public string ProfileImg { get; set; }
+    public string? ProfileImg { get; set; }
 }

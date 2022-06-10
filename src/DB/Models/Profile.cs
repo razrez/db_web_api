@@ -20,7 +20,7 @@ namespace DB.Models
 
         [Column("username")]
         [StringLength(255)]
-        public string? Username { get; set; }
+        public string Username { get; set; }
         
         [Column("birthday")]
         public DateOnly? Birthday { get; set; }

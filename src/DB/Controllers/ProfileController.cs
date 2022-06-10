@@ -33,7 +33,7 @@ namespace DB.Controllers
         [HttpGet("getProfile")]
         public async Task<IActionResult> GetProfile(string userId)
         {
-            var profile = _ctx.GetProfile(userId).Result;
+            var profile = await _ctx.GetProfile(userId);
             if (profile == null) return NotFound("user not found");
             
             var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
