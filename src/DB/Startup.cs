@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using DB.Data;
+﻿using DB.Data;
 using DB.Data.Repository;
 using DB.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -85,11 +84,11 @@ public class Startup
                 //если захотели написать документацию, то раскоммитьте снизу, чтобы сгенерировать
                 
                 //generate XML docs
-                var xmlFile = $"{Assembly.GetEntryAssembly()?.GetName().Name}.xml";
+                /*var xmlFile = $"{Assembly.GetEntryAssembly()?.GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                option.IncludeXmlComments(xmlPath);
+                option.IncludeXmlComments(xmlPath);*/
                 
-                //option.IncludeXmlComments("DB.xml");
+                option.IncludeXmlComments("DB.xml");
             }
         );
         
