@@ -34,12 +34,10 @@ namespace DB.Models
         [Column("genre_type")] 
         public GenreType GenreType { get; set; }
         
-        [AllowNull]
         [Column("img_src")]
         [StringLength(255)]
         public string? ImgSrc { get; set; }
         
-        [AllowNull]
         [Column("verified")]
         public bool? Verified { get; set; }
         

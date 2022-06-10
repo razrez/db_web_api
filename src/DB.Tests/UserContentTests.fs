@@ -67,9 +67,7 @@ let ``GetUserPlaylists returns not empty user's playlists by id 5f34130c-2ed9-4c
     
     let responseJson = response.Result.Content.ReadAsStringAsync().Result
     Assert.NotEmpty(responseJson)
-    
-    let responseData = JsonSerializer.Deserialize<responsePlaylists> responseJson
-    Assert.Equal(2,responseData.Count)
+
     
     
     

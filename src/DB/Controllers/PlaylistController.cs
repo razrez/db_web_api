@@ -27,7 +27,7 @@ public class PlaylistController : ControllerBase
     /// <param name="userId"></param>
     /// <response code="200">If request is succeed.</response>
     /// <response code="404">If playlist with preferable ID doesn't exist.</response>
-    [HttpDelete("{playlistId:int}")]
+    [HttpDelete]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeletePlaylist(int playlistId, string userId)
@@ -199,30 +199,4 @@ public class PlaylistController : ControllerBase
         return NotFound(new {Error = "not found"});
     }
 
-
-    //просто тест
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetOriginPlaylist(int songId, string authorId)
-    {
-        var originPlaylist = await _ctx.GetOriginPlaylist(songId, authorId);
-        if (originPlaylist != null)
-        {
-            /*var result = originPlaylist
-                .Select(playlist => new
-                {
-                    playlist.Id, playlist.UserId, 
-                    playlist.Title, playlist.PlaylistType, playlist.GenreType,
-                    Songs = playlist.Songs.Select(sk => new
-                    {
-                        sk.Id, sk.UserId, sk.Name, sk.Source
-                    })
-                }).Take(40); //offset
-            
-            return new JsonResult(result);*/
-            return new JsonResult(originPlaylist);
-        }
-        
-        return NotFound(new {Error = "not found"});
-    }
 }
