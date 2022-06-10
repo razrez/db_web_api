@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using DB.Models.EnumTypes;
 
@@ -33,10 +34,12 @@ namespace DB.Models
         [Column("genre_type")] 
         public GenreType GenreType { get; set; }
         
+        [AllowNull]
         [Column("img_src")]
         [StringLength(255)]
         public string? ImgSrc { get; set; }
         
+        [AllowNull]
         [Column("verified")]
         public bool? Verified { get; set; }
         

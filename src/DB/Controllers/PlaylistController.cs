@@ -15,19 +15,24 @@ public class PlaylistController : ControllerBase
     {
         _ctx = ctx;
     }
-    
+
     /// <summary>
     /// Deletes a playlist by given ID.
     /// </summary>
+    /// <remarks>
+    /// Предполагается, что мы достаем из принципала или из джвт токена userId(откуда там достается)
+    /// и только потом удаляем плейлист. Это нужно, чтобы юзеры не могли удалятьь чужие плейлисты :)
+    /// </remarks>
     /// <param name="playlistId"></param>
+    /// <param name="userId"></param>
     /// <response code="200">If request is succeed.</response>
     /// <response code="404">If playlist with preferable ID doesn't exist.</response>
     [HttpDelete("{playlistId:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeletePlaylist(int playlistId)
+    public async Task<IActionResult> DeletePlaylist(int playlistId, string userId)
     {
-        var res = await _ctx.DeletePlaylist(playlistId);
+        var res = await _ctx.DeletePlaylist(playlistId, userId);
         return res ? Ok() : NotFound(new {Error = "not found"});
     }
     
@@ -60,6 +65,7 @@ public class PlaylistController : ControllerBase
     ///        "userId": "5f34130c-2ed9-4c83-a600-e474e8f48bac",
     ///        "playlistType": 3,
     ///        "genreType": 4,
+    ///        "verified": true
     ///     }
     ///
     /// </remarks>

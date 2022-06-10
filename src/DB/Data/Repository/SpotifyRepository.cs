@@ -124,7 +124,6 @@ public class SpotifyRepository : ISpotifyRepository
                 Title = newPlaylist.Title,
                 PlaylistType = newPlaylist.PlaylistType,
                 GenreType = newPlaylist.GenreType,
-                ImgSrc = "default",
                 Verified = true
             };
             
@@ -207,12 +206,12 @@ public class SpotifyRepository : ISpotifyRepository
         }
     }
 
-    public async Task<bool> DeletePlaylist(int playlistId)
+    public async Task<bool> DeletePlaylist(int playlistId, string userId)
     {
         try
         {
             var currentPlaylist = await _ctx.Playlists.FindAsync(playlistId);
-            if (currentPlaylist != null)
+            if (currentPlaylist != null & currentPlaylist!.UserId == userId)
             {
                 _ctx.Remove(currentPlaylist);
                 

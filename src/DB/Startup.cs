@@ -84,14 +84,12 @@ public class Startup
                 //так как фшарп не может просто создать копию Startup из-за кода ниже
                 //если захотели написать документацию, то раскоммитьте снизу, чтобы сгенерировать
                 
-                /*
                 //generate XML docs
                 var xmlFile = $"{Assembly.GetEntryAssembly()?.GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 option.IncludeXmlComments(xmlPath);
-                */
                 
-                option.IncludeXmlComments("DB.xml");
+                //option.IncludeXmlComments("DB.xml");
             }
         );
         
