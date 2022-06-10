@@ -56,7 +56,7 @@ public class SpotifyRepository : ISpotifyRepository
     {
         try
         {
-            var userId = _ctx.Songs.FirstOrDefaultAsync(x=>x.Id==songId).Result.UserId;
+            var userId = _ctx.Songs.FirstOrDefaultAsync(x=>x.Id==songId).Result!.UserId;
             var song = _ctx.Songs.FirstOrDefaultAsync(x => x.Id == songId).Result;
             
             var songPlaylist = await _ctx.Playlists
@@ -78,9 +78,9 @@ public class SpotifyRepository : ISpotifyRepository
 
     public async Task<Song> GetSong(int songId)
     {
-        var song = _ctx.Songs
-            .FirstOrDefaultAsync(x => x.Id == songId).Result;
-        return song;
+        var song = await _ctx.Songs
+            .FirstOrDefaultAsync(x => x.Id == songId);
+        return song!;
     }
     
     public async Task<List<Song>> SearchSongs(string input)
@@ -285,10 +285,10 @@ public class SpotifyRepository : ISpotifyRepository
 
     public async Task<Profile> GetProfile(string userId)
     {
-        var profile = _ctx.Profiles
-            .FirstOrDefaultAsync(x => x.UserId == userId).Result;
+        var profile = await _ctx.Profiles
+            .FirstOrDefaultAsync(x => x.UserId == userId);
 
-        return profile;
+        return profile!;
     }
 
     public async Task<bool> ChangeProfile(string userId, string? username, Country? country, string? birthday, string? email)
@@ -303,7 +303,7 @@ public class SpotifyRepository : ISpotifyRepository
                 if (birthday != null)
                 {
                     date = Parse(birthday);
-                    profile.Birthday = date;
+                    profile!.Birthday = date;
                 }
 
                 if (username != null)
@@ -320,13 +320,13 @@ public class SpotifyRepository : ISpotifyRepository
 
                 if (country != null)
                 {
-                    profile.Country = country;
+                    profile!.Country = country;
                 }
                 
                 await _userManager.UpdateAsync(user);
                 
-                _ctx.Profiles.Update(profile);
-                _ctx.SaveChangesAsync();
+                _ctx.Profiles.Update(profile!);
+                await _ctx.SaveChangesAsync();
                 
                 return true;
             }
