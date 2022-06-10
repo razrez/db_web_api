@@ -24,7 +24,7 @@ public class Premium
     public double Price { get; set; }
     [DefaultValue(1)]
     [Column("users_count")]
-    public  int UserCount { get; set; }
+    public int UserCount { get; set; }
     
     [JsonIgnore]
     public ICollection<UserPremium> UserPremiums { get; set; }

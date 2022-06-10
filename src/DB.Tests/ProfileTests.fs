@@ -16,9 +16,6 @@ open Microsoft.AspNetCore.Identity
 type responseNotFound = { error: string }
 type profile = {userId:string; username:string; birthday:string; email:string; country:Country}
 type responseProfile = List<profile>
-
-type IRepository =
-    inherit ISpotifyRepository
     
 [<Theory>]
 [<InlineData("5f34130c-2ed9-4c83-a600-e474e8f48bac")>]

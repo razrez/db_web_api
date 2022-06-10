@@ -343,10 +343,21 @@ public class SpotifyRepository : ISpotifyRepository
     {
         try
         {
+            var isContain = await _userManager.Users.FirstOrDefaultAsync(user => user.Id == userId);
             var premium = _ctx.UserPremiums.FirstOrDefaultAsync(x => x.UserId == userId).Result;
-            if (premium == null)
+            if (isContain != null && premium == null)
             {
-                return false;
+                var newPremium = new UserPremium
+                {
+                    UserId = userId,
+                    PremiumId = premiumId,
+                    StartAt = DateTime.Now,
+                    EndAt = DateTime.Now.AddMonths(1)
+                };
+
+                await _ctx.UserPremiums.AddAsync(newPremium);
+                var res = await _ctx.SaveChangesAsync();
+                return res != 0;
             }
 
             if (premium.PremiumId == premiumId)
