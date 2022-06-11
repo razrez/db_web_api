@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using DB.Models.EnumTypes;
 
 namespace DB.Models
@@ -25,6 +26,7 @@ namespace DB.Models
         [InverseProperty("UserPremium")]
         public virtual UserInfo User { get; set; } = null!;
         
+        [JsonIgnore]
         public Premium Premium { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 
 namespace DB.Models
@@ -29,12 +30,13 @@ namespace DB.Models
         [InverseProperty("User")]
         public Profile Profile { get; set; } = null!;
         
-        
+        [JsonIgnore]
         [InverseProperty("User")]
         public ICollection<Song> Songs { get; set; }
         
         //плейлисты, которые юзер лайкнул many-many
         //(созданные становятся лайкнутыми автоматом)
+        [JsonIgnore]
         public ICollection<Playlist> Playlists { get; set; }
     }
 }

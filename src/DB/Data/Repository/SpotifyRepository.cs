@@ -170,7 +170,9 @@ public class SpotifyRepository : ISpotifyRepository
     {
         
         var result = await _ctx.Playlists
-            .Where(p => p.Title.ToUpper().Contains(input.ToUpper()))
+            .Where(p => 
+                p.PlaylistType != PlaylistType.LikedSongs 
+                && p.Title.ToUpper().Contains(input.ToUpper()))
             .ToListAsync();
         return result;
     }
