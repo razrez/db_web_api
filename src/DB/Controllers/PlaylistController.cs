@@ -230,7 +230,7 @@ public class PlaylistController : ControllerBase
     /// </remarks>
     /// <response code="200">If request is succeed. Also if preferable genre exists, but no matches for playlists  </response>
     /// <response code="404">If preferable genre doesn't exist.</response>
-    [HttpGet("{playlistId:int}")]
+    [HttpGet("{genreType}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetRandomPlaylistsByGenre(GenreType genreType)
