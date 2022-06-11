@@ -45,8 +45,10 @@ public interface ISpotifyRepository : IDisposable
     Task<List<Profile>> SearchProfile(string input, bool isArtist);
     Task<Profile> GetProfile(string userId);
     Task<bool> ChangeProfile(string userId, string? username, Country? country, string? birthday, string? email);
-    Task<bool> ChangePremium(string userId, PremiumType premiumType);
+    Task<bool> ChangePremium(string userId, int premiumId);
     Task<bool> ChangePassword(UserInfo user, string oldPassword, string newPassword);
+    Task<Premium?> GetUserPremium(string userId);
+    Task<List<Premium>> GetAllPremiums();
 
     //Other operations
     Task Save();

@@ -1,27 +1,31 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using DB.Models.EnumTypes;
+using System.Text.Json.Serialization;
 
-namespace DB.Models
+namespace DB.Models;
+
+[Table("premium")]
+public class Premium
 {
-    [Table("premium")]
-    public class Premium
+    public Premium()
     {
-        [Key]
-        [Column("user_id")]
-        public string UserId { get; set; } = null!;
-
-        [Column("premium_type")] 
-        public PremiumType PremiumType { get; set; }
-
-        [Column("start_at", TypeName = "timestamp without time zone")]
-        public DateTime StartAt { get; set; }
-        
-        [Column("end_at", TypeName = "timestamp without time zone")]
-        public DateTime EndAt { get; set; }
-
-        [ForeignKey("UserId")]
-        [InverseProperty("Premium")]
-        public virtual UserInfo User { get; set; } = null!;
+        UserPremiums = new HashSet<UserPremium>();
     }
+    
+    [Key]
+    [Column("id")]
+    public int Id { get; set; }
+    [Column("name")]
+    public string Name { get; set; } = null!;
+    [Column("description")]
+    public string Description { get; set; } = null!;
+    [Column("price")]
+    public double Price { get; set; }
+    [DefaultValue(1)]
+    [Column("users_count")]
+    public int UserCount { get; set; }
+    
+    [JsonIgnore]
+    public ICollection<UserPremium> UserPremiums { get; set; }
 }

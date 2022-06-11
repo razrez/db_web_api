@@ -16,9 +16,6 @@ open Microsoft.AspNetCore.Identity
 type responseNotFound = { error: string }
 type profile = {userId:string; username:string; birthday:string; email:string; country:Country}
 type responseProfile = List<profile>
-
-type IRepository =
-    inherit ISpotifyRepository
     
 [<Theory>]
 [<InlineData("5f34130c-2ed9-4c83-a600-e474e8f48bac")>]
@@ -125,7 +122,7 @@ let ``Change Premium returns Success``() =
     let client = _factory.CreateClient()
     let values = [|
         KeyValuePair<string, string>("userId", "5f34130c-2ed9-4c83-a600-e474e8f48bac");
-        KeyValuePair<string, string>("premiumType", "Family");
+        KeyValuePair<string, string>("premiumId", "1");
     |]
     let content = new FormUrlEncodedContent(values)
     let response = client.PostAsync($"/api/profile/changePremium", content)
@@ -157,4 +154,18 @@ let ``Change Premium returns NotFound``() =
     let content = new FormUrlEncodedContent(values)
     let response = client.PostAsync($"/api/profile/changePremium", content)
     Assert.Equal(HttpStatusCode.NotFound, response.Result.StatusCode)
+  
     
+[<Fact>]
+let ``Get Premiums returns Premiums``() =
+    let _factory = new WebApplicationFactory<Startup>()
+    let client = _factory.CreateClient()
+    let response = client.GetAsync($"/api/profile/premiums")
+    Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
+    
+[<Fact>]
+let ``Get user Premium returns Premium``() =
+    let _factory = new WebApplicationFactory<Startup>()
+    let client = _factory.CreateClient()
+    let response = client.GetAsync($"/api/profile/user_premium/120877ed-84b9-4ed5-9b87-d78965fc4fe0")
+    Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode)
