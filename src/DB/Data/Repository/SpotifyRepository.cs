@@ -77,19 +77,40 @@ public class SpotifyRepository : ISpotifyRepository
         }
     }
 
-    public async Task<Song> GetSong(int songId)
+    public async Task<SongResponse?> GetSong(int songId)
     {
         var song = await _ctx.Songs
             .FirstOrDefaultAsync(x => x.Id == songId);
-        return song!;
+        var playlist = await _ctx.Playlists.FirstOrDefaultAsync(p => p.Id == song.OriginPlaylistId);
+        if (song != null && playlist != null)
+            return new SongResponse()
+            {
+                Id = song.Id,
+                UserId = song.UserId,
+                Name = song.Name,
+                Source = song.Source,
+                OriginPlaylistId = song.OriginPlaylistId,
+                OriginPlaylistTitle = playlist.Title,
+            };
+        return null;
     }
     
-    public async Task<List<Song>> SearchSongs(string input)
+    public async Task<List<SongResponse>> SearchSongs(string input)
     {
-        var result = await _ctx.Songs
+        var songs = await _ctx.Songs.Include(p => p.Playlists)
+            .AsSplitQuery()
             .Where(p => p.Name.ToUpper().Contains(input.ToUpper()))
+            .Select(s => new SongResponse()
+            {
+                Id = s.Id, 
+                UserId = s.UserId,
+                Name = s.Name, 
+                Source = s.Source, 
+                OriginPlaylistId = s.OriginPlaylistId,
+                OriginPlaylistTitle = s.Playlists.First(p => p.Id == s.OriginPlaylistId).Title
+            })
             .ToListAsync();
-        return result;
+        return songs;
     }
     
     //Operations with playlists

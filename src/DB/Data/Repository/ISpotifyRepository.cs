@@ -13,8 +13,8 @@ public interface ISpotifyRepository : IDisposable
     Task<IEnumerable<Song>> GetSongs(); 
     Task<bool> LikeSong(int songId, string userId);
     Task<bool> AddSongToPlaylist(int songId, int playlistId);
-    Task<Song> GetSong(int songId);
-    Task<List<Song>> SearchSongs(string input);
+    Task<SongResponse?> GetSong(int songId);
+    Task<List<SongResponse>> SearchSongs(string input);
     
     //Operations with playlists
     Task<IEnumerable<Playlist>> GetAllPlaylists();
