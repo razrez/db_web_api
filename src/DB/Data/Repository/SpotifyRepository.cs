@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DB.Data;
 using DB.Models;
 using DB.Models.EnumTypes;
+using DB.Models.Responses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -282,12 +283,21 @@ public class SpotifyRepository : ISpotifyRepository
         return result;
     }
 
-    public async Task<Profile> GetProfile(string userId)
+    public async Task<ProfileResponse?> GetProfile(string userId)
     {
+        var user = await _userManager.FindByIdAsync(userId);
         var profile = await _ctx.Profiles
             .FirstOrDefaultAsync(x => x.UserId == userId);
-
-        return profile!;
+        if (user != null && profile != null)
+            return new ProfileResponse()
+            {
+                Email = user.Email,
+                Username = profile.Username,
+                Birthday = profile.Birthday,
+                Country = profile.Country,
+                ProfileImg = profile.ProfileImg
+            };
+        return null;
     }
 
     public async Task<bool> ChangeProfile(string userId, string? username, Country? country, string? birthday, string? email)
