@@ -283,6 +283,7 @@ public class SpotifyRepository : ISpotifyRepository
     public async Task<IEnumerable<Playlist>?> GetRandomPlaylistsByGenre(GenreType genreType)
     {
         var playlistsByGenre = await _ctx.Playlists
+            .Include(p => p.Songs)
             .OrderBy(r => Guid.NewGuid())
             .AsSplitQuery()
             .Where(p => p.GenreType == genreType)
