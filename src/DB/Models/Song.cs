@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace DB.Models
 {
@@ -30,13 +31,12 @@ namespace DB.Models
         [StringLength(150)]
         public string Source { get; set; } = null!;
         
-        
-        
-
+        [JsonIgnore]
         [ForeignKey("UserId")]
         [InverseProperty("Songs")]
         public UserInfo User { get; set; } = null!;
 
+        [JsonIgnore]
         [ForeignKey("SongId")]
         [InverseProperty("Songs")]
         public ICollection<Playlist> Playlists { get; set; }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using DB.Models.EnumTypes;
 
 namespace DB.Models
@@ -9,11 +10,6 @@ namespace DB.Models
     [Table("profile")]
     public class Profile
     {
-        public Profile()
-        {
-            Premiums = new HashSet<UserPremium>();
-        }
-
         [Key]
         [Column("user_id")]
         public string UserId { get; set; } = null!;
@@ -36,10 +32,9 @@ namespace DB.Models
         public UserType UserType { get; set; }
         
         
-        
+        [JsonIgnore]
         [ForeignKey("UserId")]
         [InverseProperty("Profile")]
         public UserInfo? User { get; set; }
-        public virtual ICollection<UserPremium> Premiums { get; set; }
     }
 }

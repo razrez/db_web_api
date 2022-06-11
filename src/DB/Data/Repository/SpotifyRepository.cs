@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DB.Data;
 using DB.Models;
 using DB.Models.EnumTypes;
+using DB.Models.Responses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -76,19 +77,40 @@ public class SpotifyRepository : ISpotifyRepository
         }
     }
 
-    public async Task<Song> GetSong(int songId)
+    public async Task<SongResponse?> GetSong(int songId)
     {
         var song = await _ctx.Songs
             .FirstOrDefaultAsync(x => x.Id == songId);
-        return song!;
+        var playlist = await _ctx.Playlists.FirstOrDefaultAsync(p => p.Id == song.OriginPlaylistId);
+        if (song != null && playlist != null)
+            return new SongResponse()
+            {
+                Id = song.Id,
+                UserId = song.UserId,
+                Name = song.Name,
+                Source = song.Source,
+                OriginPlaylistId = song.OriginPlaylistId,
+                OriginPlaylistTitle = playlist.Title,
+            };
+        return null;
     }
     
-    public async Task<List<Song>> SearchSongs(string input)
+    public async Task<List<SongResponse>> SearchSongs(string input)
     {
-        var result = await _ctx.Songs
+        var songs = await _ctx.Songs.Include(p => p.Playlists)
+            .AsSplitQuery()
             .Where(p => p.Name.ToUpper().Contains(input.ToUpper()))
+            .Select(s => new SongResponse()
+            {
+                Id = s.Id, 
+                UserId = s.UserId,
+                Name = s.Name, 
+                Source = s.Source, 
+                OriginPlaylistId = s.OriginPlaylistId,
+                OriginPlaylistTitle = s.Playlists.First(p => p.Id == s.OriginPlaylistId).Title
+            })
             .ToListAsync();
-        return result;
+        return songs;
     }
     
     //Operations with playlists
@@ -169,7 +191,9 @@ public class SpotifyRepository : ISpotifyRepository
     {
         
         var result = await _ctx.Playlists
-            .Where(p => p.Title.ToUpper().Contains(input.ToUpper()))
+            .Where(p => 
+                p.PlaylistType != PlaylistType.LikedSongs 
+                && p.Title.ToUpper().Contains(input.ToUpper()))
             .ToListAsync();
         return result;
     }
@@ -282,12 +306,21 @@ public class SpotifyRepository : ISpotifyRepository
         return result;
     }
 
-    public async Task<Profile> GetProfile(string userId)
+    public async Task<ProfileResponse?> GetProfile(string userId)
     {
+        var user = await _userManager.FindByIdAsync(userId);
         var profile = await _ctx.Profiles
             .FirstOrDefaultAsync(x => x.UserId == userId);
-
-        return profile!;
+        if (user != null && profile != null)
+            return new ProfileResponse()
+            {
+                Email = user.Email,
+                Username = profile.Username,
+                Birthday = profile.Birthday,
+                Country = profile.Country,
+                ProfileImg = profile.ProfileImg
+            };
+        return null;
     }
 
     public async Task<bool> ChangeProfile(string userId, string? username, Country? country, string? birthday, string? email)
