@@ -279,7 +279,19 @@ public class SpotifyRepository : ISpotifyRepository
             .ToListAsync();
         return userLibrary.SelectMany(s => s.Playlists);
     }
-    
+
+    public async Task<IEnumerable<Playlist>?> GetRandomPlaylistsByGenre(GenreType genreType)
+    {
+        var playlistsByGenre = await _ctx.Playlists
+            .OrderBy(r => Guid.NewGuid())
+            .AsSplitQuery()
+            .Where(p => p.GenreType == genreType)
+            .Take(new Random().Next(10,30))
+            .ToListAsync();
+        return playlistsByGenre;
+    }
+
+
     //Operations with profiles
     public async Task<bool> CreateProfileAsync(Profile newProfile)
     {
