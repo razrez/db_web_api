@@ -40,6 +40,7 @@ public interface ISpotifyRepository : IDisposable
     Task<string> GetUserName(string userId);
     Task<UserInfo?> FindUserByIdAsync(string userId);
     Task<IEnumerable<Playlist>?> GetUserLibrary(string userId);
+    Task<IEnumerable<Playlist>?> GetRandomPlaylistsByGenre(GenreType genreType);
 
     //Operations with profiles
     Task<bool> CreateProfileAsync(Profile newProfile);

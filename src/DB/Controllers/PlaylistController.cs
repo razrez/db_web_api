@@ -1,5 +1,6 @@
 ﻿using DB.Data.Repository;
 using DB.Models;
+using DB.Models.EnumTypes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DB.Controllers;
@@ -191,7 +192,7 @@ public class PlaylistController : ControllerBase
                     {
                         sk.Id, sk.UserId, sk.Name, sk.Source
                     })
-                }).Take(40); //offset
+                }); //offset
             
             return new JsonResult(result);
         }
@@ -199,4 +200,58 @@ public class PlaylistController : ControllerBase
         return NotFound(new {Error = "not found"});
     }
 
+
+    /// <summary>
+    /// Gets a random playlists by preferred GENRE TYPE.
+    /// </summary>
+    /// <param name="genreType"></param>
+    /// <remarks>
+    /// Sample response:
+    ///     
+    ///     [
+    ///      {
+    ///          "id": 1,
+    ///          "userId": "5f34130c-2ed9-4c83-a600-e474e8f48bac",
+    ///          "title": "LikedSongs",
+    ///          "playlistType": 4,
+    ///          "genreType": 4,
+    ///          "songs": []
+    ///      },
+    ///      {
+    ///          "id": 3,
+    ///          "userId": "5f34130c-2ed9-4c83-a600-e474e8f48bac",
+    ///          "title": "string",
+    ///          "playlistType": 3,
+    ///          "genreType": 0,
+    ///          "songs": []
+    ///      }
+    ///     ]
+    ///
+    /// </remarks>
+    /// <response code="200">If request is succeed. Also if preferable genre exists, but no matches for playlists  </response>
+    /// <response code="404">If preferable genre doesn't exist.</response>
+    [HttpGet("{genreType}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetRandomPlaylistsByGenre(GenreType genreType)
+    {
+        var playlistByGenre = await _ctx.GetRandomPlaylistsByGenre(genreType);
+        if (playlistByGenre != null)
+        {
+            var result = playlistByGenre
+                .Select(playlist => new
+                {
+                    playlist.Id, playlist.UserId, 
+                    playlist.Title, playlist.PlaylistType, playlist.GenreType,
+                    Songs = playlist.Songs.Select(sk => new
+                    {
+                        sk.Id, sk.UserId, sk.OriginPlaylistId, sk.Name, sk.Source
+                    })
+                });
+            
+            return new JsonResult(result);
+        }
+        
+        return NotFound(new {Error = "not found"});
+    }
 }
