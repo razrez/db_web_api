@@ -54,4 +54,6 @@ public interface ISpotifyRepository : IDisposable
     //Other operations
     Task Save();
     Task LikeAllSongs(UserInfo user);
+
+    Task<bool> IsSongLiked(string uId, int sId);
 }

@@ -36,6 +36,14 @@ namespace DB.Controllers
             
             return createRes ? Ok("song added to playlist") : BadRequest(new {Error = "the song/playlist was not found or already added"});
         }
+        
+        [HttpGet("isSongLiked")]
+        public async Task<IActionResult> IsSongLiked(int songId, string userId)
+        {
+            var likedSongs = await _ctx.IsSongLiked(userId, songId);
+
+            return likedSongs ? new JsonResult(true) : new JsonResult(false);
+        }
     }
     
     

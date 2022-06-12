@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml;
 using DB.Data;
 using DB.Models;
 using DB.Models.EnumTypes;
@@ -471,7 +472,7 @@ public class SpotifyRepository : ISpotifyRepository
         var playlist = await _ctx.Playlists.FirstAsync();
         //like song
         foreach (var song in songs) playlist.Songs.Add(song);
-        playlist.Users.Add(user); //нужно чтобы по дефолту при
+        playlist.Users.Add(user); //TODO нужно чтобы по дефолту при
         //создании пользователя у него был плейлист LikedSongs
         //а при создании плейлиста пользователем надо их связать через индекс LikedPlaylists
         _ctx.Playlists.Update(playlist);
@@ -482,6 +483,15 @@ public class SpotifyRepository : ISpotifyRepository
             _ctx.Playlists.Update(playlist);
             await _ctx.SaveChangesAsync();
         }*/
+    }
+
+    public async Task<bool> IsSongLiked(string uId, int sId)
+    {
+        var res = await _ctx.Playlists
+            .Where(p=>p.UserId == uId && p.PlaylistType == PlaylistType.LikedSongs)
+            .Include(w => w.Songs).SelectMany(s=>s.Songs).FirstOrDefaultAsync(s=>s.Id==sId);
+
+        return res!=null;
     }
 
     public void Dispose()
