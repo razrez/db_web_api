@@ -19,13 +19,22 @@ namespace DB.Controllers
         }
 
         [HttpGet("getSong")]
-    public async Task<IActionResult> GetSong(int songId)
-    {
-        var song = await _ctx.GetSong(songId);
-        if (song == null) return NotFound(new {Error = "song not found"});
+        public async Task<IActionResult> GetSong(int songId)
+        {
+            var song = await _ctx.GetSong(songId);
+            if (song == null) return NotFound(new {Error = "song not found"});
+    
+            return new JsonResult(song);
+        }
 
-        return new JsonResult(song);
-    }
+        [HttpGet("getLikedSongs")]
+        public async Task<IActionResult> GetLikedSongs(string userId)
+        {
+            var likedSongs = await _ctx.GetLikedSongs(userId);
+            if (likedSongs == null) return NotFound(new {Error = "songs not found"});
+            
+            return new JsonResult(likedSongs);
+        }
 
         [HttpPost("addSongToPlaylist")]
         public async Task<IActionResult> AddSongToPlaylist([FromForm]int songId, [FromForm]int playlistId)
