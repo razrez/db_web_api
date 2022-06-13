@@ -86,10 +86,12 @@ namespace DB.Controllers
             return Ok(premium);
         }
 
-        [HttpGet("premiums")]
-        public async Task<IActionResult> GetAllPremiums()
+        [HttpGet("premiums/{userId}")]
+        public async Task<IActionResult> GetAvailablePremiums(string userId)
         {
-            var premiums = await _ctx.GetAllPremiums();
+            var premiums = await _ctx.GetAvailablePremiums(userId);
+            if (premiums == null)
+                return BadRequest("wrong user id");
             return Ok(premiums);
         }
     }

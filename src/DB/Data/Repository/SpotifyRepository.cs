@@ -487,6 +487,17 @@ public class SpotifyRepository : ISpotifyRepository
         return premiums;
     }
 
+    public async Task<List<Premium>?> GetAvailablePremiums(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return null;
+        var userPremium = await GetUserPremium(userId);
+        if(userPremium != null)
+            return await _ctx.Premiums.Where(p => p.Id != userPremium.Id).ToListAsync();
+        return await _ctx.Premiums.ToListAsync();
+    }
+
     public static DateOnly Parse(string s)
     {
         var str = s.Split('.');
