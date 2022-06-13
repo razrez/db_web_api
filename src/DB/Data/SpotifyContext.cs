@@ -223,7 +223,7 @@ namespace DB.Data
                             Title = "LikedSongs",
                             PlaylistType = PlaylistType.LikedSongs,
                             GenreType = GenreType.Country,
-                            ImgSrc = "src1",
+                            ImgSrc = "playlist_test.jpg",
                             Verified = true
                         },
                         new Playlist{
@@ -232,7 +232,7 @@ namespace DB.Data
                             Title = "simple playlist",
                             PlaylistType = PlaylistType.User,
                             GenreType = GenreType.Electro,
-                            ImgSrc = "src12",
+                            ImgSrc = "playlist_test.jpg",
                             Verified = true
                         }
                     });

@@ -297,8 +297,8 @@ public class SpotifyRepository : ISpotifyRepository
     //Operations with users
     public async Task<string> GetUserName(string userId)
     {
-        var name = await _userManager.FindByIdAsync(userId);
-        return name.UserName;
+        var name = await _ctx.Profiles.FirstOrDefaultAsync(u => u.UserId == userId);
+        return name!=null ? name.Username : "user" ;
     }
 
     public async Task<UserInfo?> FindUserByIdAsync(string userId)
