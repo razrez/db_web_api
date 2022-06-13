@@ -94,6 +94,15 @@ namespace DB.Controllers
                 return BadRequest("wrong user id");
             return Ok(premiums);
         }
+
+        [HttpGet("premium/{premiumId}")]
+        public async Task<IActionResult> GetPremium(int premiumId)
+        {
+            var premium = await _ctx.GetPremium(premiumId);
+            if (premium == null)
+                return BadRequest("wrong premium id");
+            return Ok(premium);
+        }
     }
 }
 

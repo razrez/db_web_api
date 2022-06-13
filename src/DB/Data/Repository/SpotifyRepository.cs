@@ -481,10 +481,10 @@ public class SpotifyRepository : ISpotifyRepository
         return premium;
     }
 
-    public async Task<List<Premium>> GetAllPremiums()
+    public async Task<Premium?> GetPremium(int premiumId)
     {
-        var premiums = await _ctx.Premiums.ToListAsync();
-        return premiums;
+        var premium = await _ctx.Premiums.FirstOrDefaultAsync(p => p.Id == premiumId);
+        return premium ?? null;
     }
 
     public async Task<List<Premium>?> GetAvailablePremiums(string userId)

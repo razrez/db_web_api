@@ -51,7 +51,7 @@ public interface ISpotifyRepository : IDisposable
     Task<bool> ChangePremium(string userId, int premiumId);
     Task<bool> ChangePassword(UserInfo user, string oldPassword, string newPassword);
     Task<Premium?> GetUserPremium(string userId);
-    Task<List<Premium>> GetAllPremiums();
+    Task<Premium?> GetPremium(int premiumId);
     Task<List<Premium>?> GetAvailablePremiums(string userId);
 
     //Other operations
