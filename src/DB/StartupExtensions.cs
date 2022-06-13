@@ -1,6 +1,11 @@
-﻿using DB.Data;
+﻿using System.Threading.Tasks;
+using DB.Data;
 using DB.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using OpenIddict.Abstractions;
 using static Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults;
 

@@ -42,7 +42,6 @@ public class SpotifyRepository : ISpotifyRepository
             if (likedSongsPlaylist == null || song == null || user == null) return false;
 
             likedSongsPlaylist.Songs.Add(song);
-            //likedSongsPlaylist.Users.Add(user);
             _ctx.Playlists.Update(likedSongsPlaylist);
             await _ctx.SaveChangesAsync();
 
@@ -53,6 +52,32 @@ public class SpotifyRepository : ISpotifyRepository
             return false;
         }
     }
+    
+    public async Task<bool> DeleteLikeSong(int songId, string userId)
+    {
+        try
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            var song = await _ctx.Songs.FindAsync(songId);
+            var likedSongsPlaylist = await _ctx.Playlists.Include(x=>x.Songs)
+                .Where(k => k.UserId == userId && k.PlaylistType == PlaylistType.LikedSongs)
+                .FirstOrDefaultAsync();
+            
+            //if any is empty
+            if (likedSongsPlaylist == null || song == null || user == null) return false;
+            likedSongsPlaylist.Songs.Remove(song);
+            _ctx.Playlists.Update(likedSongsPlaylist);
+            await _ctx.SaveChangesAsync();
+
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+    
+    
 
     public async Task<bool> AddSongToPlaylist(int songId, int playlistId)
     {
