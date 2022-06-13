@@ -8,6 +8,7 @@ using DB.Models;
 using DB.Models.EnumTypes;
 using DB.Models.Responses;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DB.Data.Repository;
@@ -119,6 +120,17 @@ public class SpotifyRepository : ISpotifyRepository
                 OriginPlaylistTitle = playlist.Title,
             };
         return null;
+    }
+
+    public async Task<IEnumerable<Song>> GetLikedSongs(string userId)
+    {
+        var likedPlaylist = await _ctx.Playlists
+            .Include(x=>x.Songs)
+            .FirstOrDefaultAsync(x => x.PlaylistType == PlaylistType.LikedSongs && x.UserId == userId);
+        if (likedPlaylist == null) return null;    
+        var songs = likedPlaylist.Songs.ToList();
+            
+        return songs;
     }
     
     public async Task<List<SongResponse>> SearchSongs(string input)

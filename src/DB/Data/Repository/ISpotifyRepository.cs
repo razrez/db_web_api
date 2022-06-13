@@ -15,6 +15,7 @@ public interface ISpotifyRepository : IDisposable
     Task<bool> DeleteLikeSong(int songId, string userId);
     Task<bool> AddSongToPlaylist(int songId, int playlistId);
     Task<SongResponse?> GetSong(int songId);
+    Task<IEnumerable<Song>> GetLikedSongs(string userId);
     Task<List<SongResponse>> SearchSongs(string input);
     
     //Operations with playlists
