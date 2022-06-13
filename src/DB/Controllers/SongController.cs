@@ -44,6 +44,27 @@ namespace DB.Controllers
 
             return likedSongs ? new JsonResult(true) : new JsonResult(false);
         }
+
+        [HttpPost("likeSong")]
+        public async Task<IActionResult> LikeSong(int songId, string userId)
+        {
+            if (!ModelState.IsValid) return BadRequest("not a valid model");
+
+            var createRes = await _ctx.LikeSong(songId, userId);
+            
+            return createRes ? Ok("song added  liked playlist") : BadRequest(new {Error = "the song/playlist was not found or already added"});
+        }
+        
+        [HttpPost("deleteLikeSong")]
+        public async Task<IActionResult> DeleteLikeSong(int songId, string userId)
+        {
+            if (!ModelState.IsValid) return BadRequest("not a valid model");
+
+            var createRes = await _ctx.DeleteLikeSong(songId, userId);
+            
+            return createRes ? Ok("song deleted in liked playlist") : BadRequest(new {Error = "the song/playlist was not found or already deleted"});
+        }
+        
     }
     
     
