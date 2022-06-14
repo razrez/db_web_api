@@ -31,6 +31,7 @@ public class FileController : ControllerBase
         var songSrc = song.Source;
         var songPath = Path.Combine(_directoryPath, $"songs\\{songSrc}");
         var img = System.IO.File.ReadAllBytes(songPath);
+        Response.Headers.Add("Accept-Ranges", "bytes");
         return File(img, "audio/mpeg", songSrc);
     }
     
