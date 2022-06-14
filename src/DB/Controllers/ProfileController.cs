@@ -53,6 +53,26 @@ namespace DB.Controllers
             return createRes ? Ok("changes accepted") : NotFound(new {Error = "not found"});
         }
         
+        #region just for JSON mapping
+        public class ChangePasswordForm
+        {
+            public string userId { get; set; }
+            public string oldPassword { get; set; }
+            public string newPassword { get; set; }
+        }
+        #endregion
+        
+        [HttpPost("password/change")]
+        [Produces("application/json")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordForm changePasswordForm)
+        {
+            var user = await _userManager.FindByIdAsync(changePasswordForm.userId);
+            if (user == null) return NotFound("User not found");
+            var createRes = await _ctx.ChangePassword(user, changePasswordForm.oldPassword, changePasswordForm.newPassword);
+            
+            return createRes ? Ok("password changed") : BadRequest(new {Error = "password wrong"});
+        }
+        
         [HttpPost("changePassword")]
         public async Task<IActionResult> ChangePassword([FromForm]string userId, [FromForm]string oldPassword, [FromForm]string newPassword)
         {
