@@ -122,15 +122,23 @@ public class SpotifyRepository : ISpotifyRepository
         return null;
     }
 
-    public async Task<IEnumerable<Song>> GetLikedSongs(string userId)
+    public async Task<object> GetLikedSongs(string userId)
     {
-        var likedPlaylist = await _ctx.Playlists
-            .Include(x=>x.Songs)
-            .FirstOrDefaultAsync(x => x.PlaylistType == PlaylistType.LikedSongs && x.UserId == userId);
-        if (likedPlaylist == null) return null;    
-        var songs = likedPlaylist.Songs.ToList();
-            
-        return songs;
+        var likedPlaylist =await _ctx.Playlists
+            .Include(x => x.Songs)
+            .Where(x => x.PlaylistType == PlaylistType.LikedSongs && x.UserId == userId)
+            .Select(s => new
+            {
+                s.Id, s.Title, s.PlaylistType, s.GenreType, s.UserId,
+                Songs = s.Songs.Select(w => new
+                {
+                    w.Id, w.Name, w.Source, w.UserId, w.OriginPlaylistId
+                })
+            }).FirstOrDefaultAsync();
+        
+        if (likedPlaylist == null) return null;  
+        
+        return likedPlaylist;
     }
     
     public async Task<List<SongResponse>> SearchSongs(string input)
