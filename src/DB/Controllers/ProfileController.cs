@@ -53,12 +53,33 @@ namespace DB.Controllers
             return createRes ? Ok("changes accepted") : NotFound(new {Error = "not found"});
         }
         
+        [HttpPut("change")]
+        [Produces("application/json")]
+        public async Task<IActionResult> ChangeProfile([FromBody] ChangeProfileForm changeProfileForm)
+        {
+            var user = await _userManager.FindByIdAsync(changeProfileForm.userId);
+            if (user == null) return NotFound("User not found");
+    
+            var createRes = await _ctx.ChangeProfile(changeProfileForm.userId, changeProfileForm.username, (Country?)int.Parse(changeProfileForm.country!), changeProfileForm.birthday, changeProfileForm.email);
+                
+            return createRes ? Ok("changes accepted") : NotFound(new {Error = "not found"});
+        }
+        
         #region just for JSON mapping
         public class ChangePasswordForm
         {
             public string userId { get; set; }
             public string oldPassword { get; set; }
             public string newPassword { get; set; }
+        }
+        
+        public class ChangeProfileForm
+        {
+            public string userId { get; set; }
+            public string? username { get; set; }
+            public string? country { get; set; }
+            public string? birthday { get; set; }
+            public string? email { get; set; }
         }
         #endregion
         
