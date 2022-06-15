@@ -180,7 +180,7 @@ public class SpotifyRepository : ISpotifyRepository
             .Include(x => x.Songs)
             .Include(x => x.Users)
             .AsSplitQuery()
-            .Where(k => k.UserId == userId)
+            .Where(k => k.UserId == userId && k.PlaylistType != PlaylistType.LikedSongs) 
             .ToListAsync();
         return usersPlaylists;
     }
