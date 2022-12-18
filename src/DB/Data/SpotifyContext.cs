@@ -19,6 +19,7 @@ namespace DB.Data
         public SpotifyContext(DbContextOptions<SpotifyContext> options)
             : base(options)
         {
+            Database.EnsureCreated();
         }
 
         public DbSet<Playlist> Playlists { get; set; } = null!;
