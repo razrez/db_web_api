@@ -94,7 +94,7 @@ public class Startup
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 option.IncludeXmlComments(xmlPath);*/
                 
-                option.IncludeXmlComments("DB.xml");
+               // option.IncludeXmlComments("DB.xml");
             }
         );
         
