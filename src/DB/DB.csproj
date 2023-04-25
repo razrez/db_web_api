@@ -15,6 +15,9 @@
 
     <ItemGroup>
         <PackageReference Include="EntityFramework" Version="6.4.4" />
+        <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="7.4.0" />
+        <PackageReference Include="HotChocolate.AspNetCore" Version="13.0.5" />
+        <PackageReference Include="HotChocolate.Data.EntityFramework" Version="13.0.5" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.4" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.4" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />

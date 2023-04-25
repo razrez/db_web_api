@@ -24,7 +24,7 @@ public class Premium
     public string Description { get; set; } = null!;
     [Column("price")]
     public double Price { get; set; }
-    [DefaultValue(1)]
+    [System.ComponentModel.DefaultValue(1)]
     [Column("users_count")]
     public int UserCount { get; set; }
     

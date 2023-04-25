@@ -23,6 +23,8 @@ namespace DB.Models
         [Column("title")]
         [StringLength(255)]
         public string Title { get; set; } = null!;
+
+        public string Photo { get; set; } = null!;
         
         //айдишник именно создателя!
         //(не юзера, который просто лайкнул, для этого есть индекс таблица Liked_Playlist)
