@@ -11,7 +11,6 @@ public class SpotifyQuery
     [UseSorting]
     public IQueryable<Song> GetSong([Service] SpotifyContext context) => context.Songs;
 
-    [UseOffsetPaging] 
     [UseProjection]
     [UseFiltering]
     public IQueryable<Playlist> GetPlaylists([Service] SpotifyContext context) => context.Playlists;
